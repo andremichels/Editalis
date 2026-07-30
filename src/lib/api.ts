@@ -1,0 +1,49 @@
+import { Article, Organ, SearchResponse } from './types';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dou-scrapper-api.vercel.app';
+
+export async function searchArticles(params: {
+  q: string;
+  organ?: string;
+  limit?: number;
+  offset?: number;
+  published_since?: string;
+  published_until?: string;
+  sort_by?: 'relevance' | 'date';
+}): Promise<SearchResponse> {
+  const searchParams = new URLSearchParams();
+  searchParams.set('q', params.q);
+  if (params.organ) searchParams.set('organ', params.organ);
+  if (params.limit) searchParams.set('limit', String(params.limit));
+  if (params.offset) searchParams.set('offset', String(params.offset));
+  if (params.published_since) searchParams.set('published_since', params.published_since);
+  if (params.published_until) searchParams.set('published_until', params.published_until);
+  if (params.sort_by) searchParams.set('sort_by', params.sort_by);
+
+  const res = await fetch(`${API_BASE}/api/v1/search?${searchParams}`);
+  if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+  const articles: Article[] = await res.json();
+  return { articles };
+}
+
+export async function getArticle(slug: string): Promise<Article> {
+  const res = await fetch(`${API_BASE}/api/v1/article/${encodeURIComponent(slug)}`);
+  if (!res.ok) throw new Error(`Article not found: ${res.status}`);
+  return res.json();
+}
+
+export async function getOrgans(query?: string): Promise<Organ[]> {
+  const url = query
+    ? `${API_BASE}/api/v1/organs?q=${encodeURIComponent(query)}`
+    : `${API_BASE}/api/v1/organs`;
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function searchByCNPJ(cnpj: string): Promise<SearchResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/search/cnpj/${cnpj.replace(/\D/g, '')}`);
+  if (!res.ok) throw new Error(`CNPJ search failed: ${res.status}`);
+  const articles: Article[] = await res.json();
+  return { articles };
+}
