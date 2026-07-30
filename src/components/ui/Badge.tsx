@@ -1,27 +1,21 @@
-import { cn } from '@/lib/utils';
-
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'blue' | 'green' | 'amber' | 'red';
+  variant?: 'accent' | 'neutral' | 'outline';
   className?: string;
 }
 
 const variants = {
-  default: 'bg-gray-100 text-gray-700',
-  blue: 'bg-blue-50 text-blue-700',
-  green: 'bg-green-50 text-green-700',
-  amber: 'bg-amber-50 text-amber-700',
-  red: 'bg-red-50 text-red-700',
+  accent: 'bg-[var(--color-accent-100)] text-[var(--color-accent-700)]',
+  neutral: 'bg-[var(--color-neutral-200)] text-[var(--color-neutral-700)]',
+  outline:
+    'border-2 border-[var(--color-divider)] bg-transparent text-[var(--color-neutral-600)]',
 } as const;
 
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
+export function Badge({ children, variant = 'neutral', className = '' }: BadgeProps) {
   return (
     <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-        variants[variant],
-        className
-      )}
+      className={`inline-flex items-center px-2.5 py-0.5 text-xs font-semibold ${variants[variant]} ${className}`}
+      style={{ fontFamily: 'var(--font-body)' }}
     >
       {children}
     </span>

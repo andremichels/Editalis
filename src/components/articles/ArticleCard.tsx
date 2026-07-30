@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Article } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
@@ -10,37 +9,56 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   const organLabel =
-    article.organ_level_2 || article.organ_level_1 || article.organ || 'Diário Oficial';
+    article.organ_level_2 || article.organ_level_1 || article.organ || '';
 
   return (
     <Link href={`/artigo/${encodeURIComponent(article.slug)}`}>
-      <Card hover padding="md" className="cursor-pointer h-full">
-        <CardContent>
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">
-              {article.title}
-            </h3>
-          </div>
+      <article
+        className="group h-full p-4 transition-colors hover:bg-[var(--color-neutral-100)]"
+        style={{
+          background: 'var(--color-surface)',
+          border: '2px solid var(--color-divider)',
+        }}
+      >
+        {/* Divider topo */}
+        <div
+          className="mb-3"
+          style={{ borderTop: '2px solid var(--color-accent)', width: '2rem' }}
+        />
 
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <Badge variant="blue">{formatDate(article.published_date)}</Badge>
-            {article.section && (
-              <Badge variant="default">
-                {article.section.replace('Seção: ', 'Seção ')}
-              </Badge>
-            )}
-          </div>
+        <h3
+          className="text-sm font-semibold leading-snug line-clamp-2 mb-3 group-hover:text-[var(--color-accent)] transition-colors"
+          style={{ color: 'var(--color-text)', fontFamily: 'var(--font-heading)' }}
+        >
+          {article.title}
+        </h3>
 
-          {article.excerpt && (
-            <p
-              className="text-xs text-gray-500 line-clamp-3 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: article.excerpt }}
-            />
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <Badge variant="accent">{formatDate(article.published_date)}</Badge>
+          {article.section && (
+            <Badge variant="neutral">
+              {article.section.replace('Seção: ', 'Seção ')}
+            </Badge>
           )}
+        </div>
 
-          <p className="text-xs text-gray-400 mt-2 truncate">{organLabel}</p>
-        </CardContent>
-      </Card>
+        {article.excerpt && (
+          <p
+            className="text-xs leading-relaxed line-clamp-3 mb-3"
+            style={{ color: 'var(--color-neutral-600)' }}
+            dangerouslySetInnerHTML={{ __html: article.excerpt }}
+          />
+        )}
+
+        {organLabel && (
+          <p
+            className="text-xs truncate"
+            style={{ color: 'var(--color-neutral-500)' }}
+          >
+            {organLabel}
+          </p>
+        )}
+      </article>
     </Link>
   );
 }

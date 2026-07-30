@@ -34,10 +34,10 @@ export default async function ArticlePage({
         </h1>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          <Badge variant="blue">{formatDate(article.published_date)}</Badge>
-          {article.section && <Badge>{article.section}</Badge>}
-          {article.edition && <Badge variant="green">{article.edition}</Badge>}
-          {article.page && <Badge variant="amber">Pág. {article.page}</Badge>}
+          <Badge variant="accent">{formatDate(article.published_date)}</Badge>
+          {article.section && <Badge variant="neutral">{article.section}</Badge>}
+          {article.edition && <Badge variant="outline">{article.edition}</Badge>}
+          {article.page && <Badge variant="neutral">Pág. {article.page}</Badge>}
         </div>
 
         {article.organ && (

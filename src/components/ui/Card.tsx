@@ -1,8 +1,6 @@
-import { cn } from '@/lib/utils';
 import { HTMLAttributes } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  hover?: boolean;
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
@@ -14,20 +12,15 @@ const paddings = {
 } as const;
 
 export function Card({
-  className,
-  hover = false,
+  className = '',
   padding = 'md',
   children,
   ...props
 }: CardProps) {
   return (
     <div
-      className={cn(
-        'rounded-xl border border-gray-200 bg-white',
-        paddings[padding],
-        hover && 'transition-shadow hover:shadow-md hover:border-gray-300',
-        className
-      )}
+      className={`bg-[var(--color-surface)] ${paddings[padding]} ${className}`}
+      style={{ border: '2px solid var(--color-divider)' }}
       {...props}
     >
       {children}
@@ -35,10 +28,11 @@ export function Card({
   );
 }
 
-export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('mb-3', className)} {...props} />;
-}
-
-export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('', className)} {...props} />;
+export function CardSection({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`border-t-2 border-[var(--color-divider)] pt-3 mt-3 first:border-t-0 first:pt-0 first:mt-0 ${className}`}
+      {...props}
+    />
+  );
 }

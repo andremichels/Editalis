@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-b99fd1f2-d387-4e97-b18d-867a37dfa822/styles.css">
+<script src="_ds/modernist-b99fd1f2-d387-4e97-b18d-867a37dfa822/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--color-bg); }
+  a { color: var(--color-accent-700); text-decoration: none; }
+  a:hover { color: var(--color-accent); }
+  * { box-sizing: border-box; }
+  input, select, button, textarea { font-family: "Archivo", system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--color-neutral-400); }
+  @keyframes ed-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @keyframes ed-wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @media (prefers-reduced-motion: reduce) { [data-anim] { opacity: 1 !important; transform: none !important; } }
+</style>
+</helmet>
+
+<div style="font-family: 'Archivo', system-ui, sans-serif; background: var(--color-bg); color: var(--color-text); min-height: 100vh;">
+
+  <div style="position: sticky; top: 0; z-index: 60; display: flex; align-items: stretch; gap: 0; background: var(--color-text); color: var(--color-neutral-100); border-bottom: 2px solid var(--color-accent);">
+    <div style="display: flex; align-items: center; padding: 0 20px; font-weight: 900; letter-spacing: -0.02em; font-size: 13px; text-transform: uppercase; border-right: 1px solid var(--color-neutral-700);">Editalis <span style="color: var(--color-accent-400); margin-left: 8px; font-weight: 500;">protótipo</span></div>
+    <sc-for list="{{ telas }}" as="t" hint-placeholder-count="8">
+      <button onClick="{{ t.go }}" style="appearance: none; border: 0; border-right: 1px solid var(--color-neutral-700); background: {{ t.bg }}; color: {{ t.fg }}; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 12px 18px; cursor: pointer;" style-hover="background: var(--color-neutral-800);">{{ t.nome }}</button>
+    </sc-for>
+  </div>
+
+  <!-- ================= LANDING ================= -->
+  <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <div style="position: sticky; top: 40px; z-index: 40; background: var(--color-bg); border-bottom: 2px solid var(--color-text);">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 76px;">
+        <div style="display: flex; align-items: baseline; gap: 14px;">
+          <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.03em;">EDITALIS</div>
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Consulta de licitações</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 32px;">
+          <a href="#produto" style="font-size: 14px; font-weight: 600; color: var(--color-text);">Produto</a>
+          <a href="#cobertura" style="font-size: 14px; font-weight: 600; color: var(--color-text);">Cobertura</a>
+          <a href="#planos" style="font-size: 14px; font-weight: 600; color: var(--color-text);">Planos</a>
+          <button onClick="{{ irEntrar }}" style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 14px; font-weight: 700; padding: 10px 20px; cursor: pointer;" style-hover="background: var(--color-text); color: var(--color-bg);">Entrar</button>
+          <button onClick="{{ irCheckout }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 14px; font-weight: 700; padding: 10px 20px; cursor: pointer;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Testar 7 dias</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 40px;">
+      <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 64px; padding: 88px 0 64px; border-bottom: 2px solid var(--color-text);">
+        <div>
+          <div data-anim="up" data-anim-delay="0" style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 28px;">Diários oficiais · União, 27 estados, 1.400+ municípios</div>
+          <h1 data-anim="up" data-anim-delay="70" style="font-family: var(--font-heading); font-weight: 900; font-size: 76px; line-height: 0.94; letter-spacing: -0.035em; margin: 0 0 28px; text-wrap: pretty;">Lemos todos os diários oficiais. Você recebe só o que a sua empresa vende.</h1>
+          <p data-anim="up" data-anim-delay="140" style="font-size: 19px; line-height: 1.5; max-width: 560px; margin: 0 0 36px; color: var(--color-neutral-800);">O Editalis lê os diários oficiais todos os dias, estrutura cada edital e entrega no seu e-mail apenas o que casa com o que você fornece. Sem garimpo em PDF, sem perder prazo.</p>
+          <div data-anim="up" data-anim-delay="210" style="display: flex; gap: 16px; align-items: center;">
+            <button onClick="{{ irCheckout }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 28px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Começar teste grátis →</button>
+            <button onClick="{{ irBusca }}" style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 16px; font-weight: 700; padding: 16px 28px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Ver a plataforma</button>
+          </div>
+          <div style="margin-top: 20px; font-size: 13px; color: var(--color-neutral-600);">7 dias sem cartão · cancele quando quiser</div>
+        </div>
+        <div data-anim="up" data-anim-delay="280" style="border: 2px solid var(--color-text); background: var(--color-neutral-100); padding: 0; align-self: end;">
+          <div style="background: var(--color-text); color: var(--color-neutral-100); padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;">Publicado hoje</div>
+          <div style="padding: 20px 16px; border-bottom: 1px solid var(--color-neutral-300);">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">Pregão eletrônico 114/2026 · SP</div>
+            <div style="font-size: 17px; font-weight: 700; margin: 6px 0 8px; line-height: 1.25;">Aquisição de equipamentos de informática para a rede municipal de ensino</div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--color-neutral-700);"><span>Prefeitura de Campinas</span><span style="font-weight: 700; color: var(--color-text);">R$ 2.480.000</span></div>
+          </div>
+          <div style="padding: 20px 16px; border-bottom: 1px solid var(--color-neutral-300);">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">Dispensa 22/2026 · MG</div>
+            <div style="font-size: 17px; font-weight: 700; margin: 6px 0 8px; line-height: 1.25;">Serviços continuados de manutenção predial</div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--color-neutral-700);"><span>Universidade Federal de Minas Gerais</span><span style="font-weight: 700; color: var(--color-text);">R$ 386.500</span></div>
+          </div>
+          <div data-pulse="1" style="padding: 14px 16px; background: var(--color-accent); color: #fff; font-size: 13px; font-weight: 700;">+ 1.284 outras publicações nas últimas 24h</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 2px solid var(--color-text);">
+        <div data-anim="up" data-anim-delay="0" style="padding: 32px 24px 32px 0; border-right: 1px solid var(--color-divider);">
+          <div data-count="1480" data-count-suffix="+" style="font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;">1.480+</div>
+          <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 6px;">diários oficiais indexados</div>
+        </div>
+        <div data-anim="up" data-anim-delay="70" style="padding: 32px 24px; border-right: 1px solid var(--color-divider);">
+          <div data-count="92" data-count-decimal="1" data-count-suffix=" mi" style="font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;">9,2 mi</div>
+          <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 6px;">licitações no histórico</div>
+        </div>
+        <div data-anim="up" data-anim-delay="140" style="padding: 32px 24px; border-right: 1px solid var(--color-divider);">
+          <div style="font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;">06h30</div>
+          <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 6px;">alerta diário na sua caixa</div>
+        </div>
+        <div data-anim="up" data-anim-delay="210" style="padding: 32px 0 32px 24px;">
+          <div style="font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 1;">2018</div>
+          <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 6px;">base contínua desde</div>
+        </div>
+      </div>
+
+      <div id="produto" style="padding: 72px 0 0;">
+        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 64px; padding-bottom: 56px;">
+          <div>
+            <div data-anim="up" style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Como funciona</div>
+            <h2 data-anim="up" data-anim-delay="40" style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.02; margin: 16px 0 0;">Três passos e o edital certo chega até você.</h2>
+          </div>
+          <div data-anim="up" data-anim-delay="80" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--color-text);">
+            <div style="padding: 28px 24px 28px 0; border-right: 1px solid var(--color-divider);">
+              <div style="font-size: 13px; font-weight: 900; color: var(--color-accent);">01</div>
+              <div style="font-size: 19px; font-weight: 800; margin: 10px 0 8px; line-height: 1.2;">Descreva o que você vende</div>
+              <p style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700); margin: 0;">CNAE, palavras-chave, regiões e faixa de valor. O perfil de captação leva dois minutos.</p>
+            </div>
+            <div style="padding: 28px 24px; border-right: 1px solid var(--color-divider);">
+              <div style="font-size: 13px; font-weight: 900; color: var(--color-accent);">02</div>
+              <div style="font-size: 19px; font-weight: 800; margin: 10px 0 8px; line-height: 1.2;">A base cruza tudo à noite</div>
+              <p style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700); margin: 0;">Cada publicação é lida, classificada por objeto e ligada ao órgão comprador.</p>
+            </div>
+            <div style="padding: 28px 0 28px 24px;">
+              <div style="font-size: 13px; font-weight: 900; color: var(--color-accent);">03</div>
+              <div style="font-size: 19px; font-weight: 800; margin: 10px 0 8px; line-height: 1.2;">Você recebe e decide</div>
+              <p style="font-size: 14px; line-height: 1.55; color: var(--color-neutral-700); margin: 0;">E-mail às 06h30, WhatsApp para urgências e o painel com prazos e favoritas.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top: 2px solid var(--color-text); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; padding: 56px 0;">
+          <div data-anim="up">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600);">Busca</div>
+            <h3 style="font-size: 32px; font-weight: 900; letter-spacing: -0.025em; margin: 12px 0 16px; line-height: 1.05;">Operadores de verdade, não uma caixinha de pesquisa.</h3>
+            <p style="font-size: 16px; line-height: 1.6; color: var(--color-neutral-800); margin: 0 0 20px;">Combine termos com E / OU / NÃO, restrinja por UF, órgão, modalidade, valor e situação, e salve a consulta como perfil monitorado.</p>
+            <div style="border: 2px solid var(--color-text); background: var(--color-neutral-100); padding: 16px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 14px; line-height: 1.7;">
+              <span style="color: var(--color-accent-700); font-weight: 700;">("uniforme" OU "vestuário")</span><br>
+              <span style="font-weight: 700;">E</span> uf:SP,MG <span style="font-weight: 700;">E</span> valor:&gt;100000<br>
+              <span style="font-weight: 700;">NÃO</span> "hospitalar"
+            </div>
+          </div>
+          <div data-anim="up" data-anim-delay="90">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600);">Alertas</div>
+            <h3 style="font-size: 32px; font-weight: 900; letter-spacing: -0.025em; margin: 12px 0 16px; line-height: 1.05;">O prazo não espera você abrir o sistema.</h3>
+            <p style="font-size: 16px; line-height: 1.6; color: var(--color-neutral-800); margin: 0 0 20px;">Cada perfil salvo vira um alerta com canal e frequência próprios.</p>
+            <div style="border-top: 1px solid var(--color-divider);">
+              <div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--color-divider); font-size: 15px;"><span style="font-weight: 700;">E-mail diário</span><span style="color: var(--color-neutral-700);">resumo das 06h30</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--color-divider); font-size: 15px;"><span style="font-weight: 700;">WhatsApp</span><span style="color: var(--color-neutral-700);">só o que abre em 48h</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--color-divider); font-size: 15px;"><span style="font-weight: 700;">No app</span><span style="color: var(--color-neutral-700);">tempo real</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cobertura" style="border-top: 2px solid var(--color-text); padding: 56px 0;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px;">
+          <h2 style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0;">Cobertura da base</h2>
+          <div style="font-size: 13px; color: var(--color-neutral-600);">atualizado em 30/07/2026</div>
+        </div>
+        <div data-anim="up" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 2px solid var(--color-text);">
+          <div style="padding: 24px 24px 24px 0; border-right: 1px solid var(--color-divider);"><div style="font-size: 15px; font-weight: 800;">Diário Oficial da União</div><div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 4px;">seções 1 e 3, desde 2018</div></div>
+          <div style="padding: 24px; border-right: 1px solid var(--color-divider);"><div style="font-size: 15px; font-weight: 800;">27 diários estaduais</div><div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 4px;">cobertura integral</div></div>
+          <div style="padding: 24px; border-right: 1px solid var(--color-divider);"><div style="font-size: 15px; font-weight: 800;">1.412 diários municipais</div><div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 4px;">capitais e regiões metropolitanas</div></div>
+          <div style="padding: 24px 0 24px 24px;"><div style="font-size: 15px; font-weight: 800;">Portais de compras</div><div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 4px;">conciliação de status e itens</div></div>
+        </div>
+      </div>
+
+      <div id="planos" style="border-top: 2px solid var(--color-text); padding: 56px 0;">
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px;">
+          <div>
+            <h2 style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 10px;">Planos</h2>
+            <p style="margin: 0; font-size: 16px; color: var(--color-neutral-700);">Preço por empresa, usuários ilimitados em todos os planos.</p>
+          </div>
+          <div style="display: flex; border: 2px solid var(--color-text);">
+            <button onClick="{{ setMensal }}" style="appearance: none; border: 0; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ bgMensal }}; color: {{ fgMensal }};">Mensal</button>
+            <button onClick="{{ setAnual }}" style="appearance: none; border: 0; border-left: 2px solid var(--color-text); padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; background: {{ bgAnual }}; color: {{ fgAnual }};">Anual −20%</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--color-text); border-bottom: 2px solid var(--color-text);">
+          <div data-anim="up" data-anim-delay="0" style="padding: 32px 28px 32px 0; border-right: 1px solid var(--color-divider); display: flex; flex-direction: column;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-600);">Pequena empresa</div>
+            <div style="font-size: 24px; font-weight: 900; margin: 12px 0 4px;">Essencial</div>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin: 12px 0 4px;"><span style="font-size: 20px; font-weight: 700;">R$</span><span style="font-size: 54px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;">{{ precoA }}</span><span style="font-size: 15px; color: var(--color-neutral-700);">/mês</span></div>
+            <div style="font-size: 13px; color: var(--color-neutral-600); margin-bottom: 24px;">{{ ciclo }}</div>
+            <div style="border-top: 1px solid var(--color-divider); font-size: 14px; line-height: 1.5;">
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">3 perfis de busca monitorados</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Histórico de 30 dias</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Alerta por e-mail diário</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Exportação CSV</div>
+              <div style="padding: 12px 0; color: var(--color-neutral-500);">Suporte por e-mail</div>
+            </div>
+            <button onClick="{{ irCheckout }}" style="margin-top: 28px; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 15px; font-weight: 700; padding: 14px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Assinar Essencial</button>
+          </div>
+
+          <div data-anim="up" data-anim-delay="90" style="padding: 32px 28px; border-right: 1px solid var(--color-divider); display: flex; flex-direction: column; background: var(--color-neutral-100); position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--color-accent);"></div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Média empresa · mais assinado</div>
+            <div style="font-size: 24px; font-weight: 900; margin: 12px 0 4px;">Profissional</div>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin: 12px 0 4px;"><span style="font-size: 20px; font-weight: 700;">R$</span><span style="font-size: 54px; font-weight: 900; letter-spacing: -0.04em; line-height: 1;">{{ precoB }}</span><span style="font-size: 15px; color: var(--color-neutral-700);">/mês</span></div>
+            <div style="font-size: 13px; color: var(--color-neutral-600); margin-bottom: 24px;">{{ ciclo }}</div>
+            <div style="border-top: 1px solid var(--color-divider); font-size: 14px; line-height: 1.5;">
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider); font-weight: 700;">25 perfis de busca monitorados</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider); font-weight: 700;">Histórico completo desde 2018</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">E-mail, WhatsApp e app</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Exportação CSV e Excel</div>
+              <div style="padding: 12px 0;">Suporte prioritário em 4h</div>
+            </div>
+            <button onClick="{{ irCheckout }}" style="margin-top: 28px; appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 14px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Assinar Profissional →</button>
+          </div>
+
+          <div data-anim="up" data-anim-delay="180" style="padding: 32px 0 32px 28px; display: flex; flex-direction: column;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-neutral-600);">Grande fornecedor</div>
+            <div style="font-size: 24px; font-weight: 900; margin: 12px 0 4px;">Enterprise</div>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin: 12px 0 4px;"><span style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.35;">Sob consulta</span></div>
+            <div style="font-size: 13px; color: var(--color-neutral-600); margin-bottom: 24px;">contrato anual · nota fiscal e empenho</div>
+            <div style="border-top: 1px solid var(--color-divider); font-size: 14px; line-height: 1.5;">
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Perfis ilimitados</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">API e webhooks</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">SSO e gestão de equipes</div>
+              <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">Gerente de conta dedicado</div>
+              <div style="padding: 12px 0;">SLA contratual</div>
+            </div>
+            <button style="margin-top: 28px; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 15px; font-weight: 700; padding: 14px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Falar com vendas</button>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ mostrarProva }}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 48px 0; border-bottom: 2px solid var(--color-text);">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 24px;">Usado por equipes de captação em</div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; align-items: center;">
+          <div style="height: 56px; border: 1px solid var(--color-neutral-400); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-500); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;">LOGO</div>
+          <div style="height: 56px; border: 1px solid var(--color-neutral-400); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-500); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;">LOGO</div>
+          <div style="height: 56px; border: 1px solid var(--color-neutral-400); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-500); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;">LOGO</div>
+          <div style="height: 56px; border: 1px solid var(--color-neutral-400); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-500); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;">LOGO</div>
+          <div style="height: 56px; border: 1px solid var(--color-neutral-400); display: flex; align-items: center; justify-content: center; color: var(--color-neutral-500); font-size: 13px; font-weight: 700; letter-spacing: 0.1em;">LOGO</div>
+        </div>
+      </div>
+      </sc-if>
+
+      <div style="padding: 56px 0; display: grid; grid-template-columns: 320px 1fr; gap: 64px;">
+        <h2 style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0; line-height: 1.02;">Perguntas frequentes</h2>
+        <div style="border-top: 2px solid var(--color-text);">
+          <div style="padding: 22px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">De onde vêm os dados?</div><p style="margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-neutral-700);">Exclusivamente de publicações oficiais: DOU, diários estaduais e municipais, conciliados com os portais de compras públicos.</p></div>
+          <div style="padding: 22px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">Preciso de cartão para testar?</div><p style="margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-neutral-700);">Não. São 7 dias com acesso completo ao plano Profissional; a cobrança só começa se você confirmar.</p></div>
+          <div style="padding: 22px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">Emitem nota fiscal e aceitam empenho?</div><p style="margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-neutral-700);">Sim. Nota fiscal em todos os planos; empenho e faturamento por contrato no Enterprise.</p></div>
+          <div style="padding: 22px 0;"><div style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">Posso trocar de plano depois?</div><p style="margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-neutral-700);">A qualquer momento, com valor proporcional no ciclo seguinte.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--color-accent); color: #fff;">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 80px 40px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end;">
+        <h2 data-anim="up" style="font-size: 64px; font-weight: 900; letter-spacing: -0.035em; line-height: 0.98; margin: 0; text-wrap: pretty;">O edital que você não leu foi vendido por outro.</h2>
+        <div data-anim="up" data-anim-delay="100">
+          <p style="font-size: 17px; line-height: 1.5; margin: 0 0 24px; color: #ffe0d9;">Comece a monitorar hoje. Configuração em dois minutos, sem instalação.</p>
+          <button onClick="{{ irCheckout }}" style="appearance: none; background: #fff; border: 2px solid #fff; color: var(--color-accent-700); font-size: 16px; font-weight: 800; padding: 16px 28px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-900); border-color: var(--color-accent-900); color: #fff;">Criar minha conta →</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--color-text); color: var(--color-neutral-400);">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 48px 40px; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; font-size: 14px;">
+        <div>
+          <div style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -0.03em;">EDITALIS</div>
+          <p style="margin: 12px 0 0; line-height: 1.6; max-width: 300px;">Consulta e monitoramento de licitações a partir dos diários oficiais brasileiros.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;"><div style="color: #fff; font-weight: 700;">Produto</div><a href="#produto" style="color: var(--color-neutral-400);">Busca</a><a href="#produto" style="color: var(--color-neutral-400);">Alertas</a><a href="#planos" style="color: var(--color-neutral-400);">Planos</a></div>
+        <div style="display: flex; flex-direction: column; gap: 10px;"><div style="color: #fff; font-weight: 700;">Empresa</div><a href="#cobertura" style="color: var(--color-neutral-400);">Cobertura</a><a href="#produto" style="color: var(--color-neutral-400);">Contato</a></div>
+        <div style="display: flex; flex-direction: column; gap: 10px;"><div style="color: #fff; font-weight: 700;">Legal</div><a href="#produto" style="color: var(--color-neutral-400);">Termos</a><a href="#produto" style="color: var(--color-neutral-400);">Privacidade · LGPD</a></div>
+      </div>
+      <div style="max-width: 1280px; margin: 0 auto; padding: 20px 40px 40px; border-top: 1px solid var(--color-neutral-800); font-size: 12px;">© 2026 Editalis Tecnologia Ltda · CNPJ 00.000.000/0001-00</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= ENTRAR / CADASTRO ================= -->
+  <sc-if value="{{ isEntrar }}" hint-placeholder-val="{{ true }}">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 41px);">
+    <div style="background: var(--color-accent); color: #fff; padding: 64px 56px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.03em;">EDITALIS</div>
+      <div>
+        <h2 style="font-size: 52px; font-weight: 900; letter-spacing: -0.035em; line-height: 1; margin: 0 0 20px;">1.284 novas licitações desde ontem.</h2>
+        <p style="font-size: 17px; line-height: 1.55; color: #ffe0d9; max-width: 420px; margin: 0;">Entre para ver as que casam com o seu perfil de captação, os prazos que fecham esta semana e suas favoritas.</p>
+      </div>
+      <div style="font-size: 13px; color: #ffc4b8;">Ambiente seguro · dados públicos oficiais</div>
+    </div>
+    <div style="padding: 64px 56px; display: flex; align-items: center;">
+      <div style="width: 100%; max-width: 420px;">
+        <div style="display: flex; border: 2px solid var(--color-text); margin-bottom: 32px;">
+          <button onClick="{{ setLogin }}" style="flex: 1; appearance: none; border: 0; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: {{ bgLogin }}; color: {{ fgLogin }};">Entrar</button>
+          <button onClick="{{ setCadastro }}" style="flex: 1; appearance: none; border: 0; border-left: 2px solid var(--color-text); padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: {{ bgCadastro }}; color: {{ fgCadastro }};">Criar conta</button>
+        </div>
+
+        <sc-if value="{{ isLoginTab }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <h1 style="font-size: 34px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 8px;">Acessar a plataforma</h1>
+          <p style="font-size: 15px; color: var(--color-neutral-700); margin: 0 0 32px;">A busca é exclusiva para assinantes.</p>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">E-mail corporativo</label><input type="email" placeholder="voce@empresa.com.br" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px; outline-offset: 2px;"></div>
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Senha</label><input type="password" placeholder="••••••••" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 14px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" checked style="width: 16px; height: 16px; accent-color: var(--color-accent);"> Manter conectado</label>
+              <a href="#recuperar">Esqueci a senha</a>
+            </div>
+            <button onClick="{{ irPainel }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Entrar →</button>
+            <div style="display: flex; align-items: center; gap: 16px; color: var(--color-neutral-500); font-size: 12px;"><div style="flex: 1; height: 1px; background: var(--color-divider);"></div>OU<div style="flex: 1; height: 1px; background: var(--color-divider);"></div></div>
+            <button onClick="{{ irPainel }}" style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 15px; font-weight: 700; padding: 14px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Entrar com Gov.br</button>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isCadastroTab }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <h1 style="font-size: 34px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 8px;">Criar conta</h1>
+          <p style="font-size: 15px; color: var(--color-neutral-700); margin: 0 0 32px;">7 dias de plano Profissional, sem cartão.</p>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Nome</label><input placeholder="Ana Ribeiro" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">CNPJ</label><input placeholder="00.000.000/0001-00" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            </div>
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">E-mail corporativo</label><input type="email" placeholder="voce@empresa.com.br" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Senha</label><input type="password" placeholder="mínimo 8 caracteres" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--color-neutral-700); cursor: pointer;"><input type="checkbox" style="width: 16px; height: 16px; margin-top: 2px; accent-color: var(--color-accent);"> Li e aceito os termos de uso e a política de privacidade (LGPD).</label>
+            <button onClick="{{ irCheckout }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Criar conta e escolher plano →</button>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= CHECKOUT ================= -->
+  <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <div style="border-bottom: 2px solid var(--color-text); background: var(--color-bg);">
+      <div style="max-width: 1080px; margin: 0 auto; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 20px; font-weight: 900; letter-spacing: -0.03em;">EDITALIS</div>
+        <div style="font-size: 13px; color: var(--color-neutral-600);">Pagamento seguro · ambiente criptografado</div>
+      </div>
+    </div>
+    <div style="max-width: 1080px; margin: 0 auto; padding: 48px 40px 80px;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--color-text); margin-bottom: 48px;">
+        <div style="padding: 16px 20px; border-right: 2px solid var(--color-text); background: {{ p1bg }}; color: {{ p1fg }};"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em;">PASSO 1</div><div style="font-size: 15px; font-weight: 800; margin-top: 4px;">Plano</div></div>
+        <div style="padding: 16px 20px; border-right: 2px solid var(--color-text); background: {{ p2bg }}; color: {{ p2fg }};"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em;">PASSO 2</div><div style="font-size: 15px; font-weight: 800; margin-top: 4px;">Pagamento</div></div>
+        <div style="padding: 16px 20px; background: {{ p3bg }}; color: {{ p3fg }};"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em;">PASSO 3</div><div style="font-size: 15px; font-weight: 800; margin-top: 4px;">Confirmação</div></div>
+      </div>
+
+      <sc-if value="{{ step1 }}" hint-placeholder-val="{{ true }}">
+      <div style="display: grid; grid-template-columns: 1fr 360px; gap: 48px;">
+        <div>
+          <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 24px;">Escolha o plano</h1>
+          <div style="border-top: 2px solid var(--color-text);">
+            <sc-for list="{{ planos }}" as="p" hint-placeholder-count="2">
+              <div onClick="{{ p.escolher }}" style="display: flex; gap: 20px; padding: 24px 20px; border-bottom: 1px solid var(--color-divider); cursor: pointer; background: {{ p.bg }};" style-hover="background: var(--color-neutral-200);">
+                <div style="width: 20px; height: 20px; border: 2px solid var(--color-text); flex: 0 0 auto; margin-top: 3px; display: flex; align-items: center; justify-content: center;"><div style="width: 10px; height: 10px; background: {{ p.dot }};"></div></div>
+                <div style="flex: 1;">
+                  <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div style="font-size: 20px; font-weight: 800;">{{ p.nome }}</div>
+                    <div style="font-size: 20px; font-weight: 900;">{{ p.preco }}</div>
+                  </div>
+                  <div style="font-size: 14px; color: var(--color-neutral-700); margin-top: 6px;">{{ p.desc }}</div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="padding: 20px; font-size: 14px; color: var(--color-neutral-700); border-bottom: 2px solid var(--color-text);">Precisa de API, SSO ou faturamento por empenho? <a href="#vendas">Fale com vendas sobre o Enterprise</a>.</div>
+          </div>
+        </div>
+        <div>
+          <div style="border: 2px solid var(--color-text); background: var(--color-neutral-100);">
+            <div style="background: var(--color-text); color: #fff; padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em;">RESUMO</div>
+            <div style="padding: 20px 16px; font-size: 14px;">
+              <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--color-divider);"><span>{{ planoNome }}</span><span style="font-weight: 700;">{{ planoPreco }}</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-divider); color: var(--color-neutral-700);"><span>Teste 7 dias</span><span>R$ 0,00</span></div>
+              <div style="display: flex; justify-content: space-between; padding-top: 16px; font-size: 18px; font-weight: 900;"><span>Hoje</span><span>R$ 0,00</span></div>
+              <div style="font-size: 12px; color: var(--color-neutral-600); margin-top: 8px;">Primeira cobrança em 06/08/2026. Cancele antes e nada é cobrado.</div>
+            </div>
+          </div>
+          <button onClick="{{ irStep2 }}" style="margin-top: 16px; appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Ir para pagamento →</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; grid-template-columns: 1fr 360px; gap: 48px;">
+        <div>
+          <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 24px;">Forma de pagamento</h1>
+          <div style="display: flex; border: 2px solid var(--color-text); margin-bottom: 28px;">
+            <button onClick="{{ setCartao }}" style="flex: 1; appearance: none; border: 0; padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; background: {{ bgCartao }}; color: {{ fgCartao }};">Cartão de crédito</button>
+            <button onClick="{{ setPix }}" style="flex: 1; appearance: none; border: 0; border-left: 2px solid var(--color-text); padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; background: {{ bgPix }}; color: {{ fgPix }};">Pix</button>
+            <button onClick="{{ setBoleto }}" style="flex: 1; appearance: none; border: 0; border-left: 2px solid var(--color-text); padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; background: {{ bgBoleto }}; color: {{ fgBoleto }};">Boleto</button>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Número do cartão</label><input placeholder="0000 0000 0000 0000" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Validade</label><input placeholder="MM/AA" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">CVV</label><input placeholder="123" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">CPF do titular</label><input placeholder="000.000.000-00" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            </div>
+            <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Nome impresso no cartão</label><input placeholder="ANA C RIBEIRO" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            <div style="border-top: 2px solid var(--color-text); padding-top: 20px;">
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;">Dados de faturamento</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <input placeholder="Razão social" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;">
+                <input placeholder="CNPJ" style="width: 100%; padding: 14px 16px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="border: 2px solid var(--color-text); background: var(--color-neutral-100);">
+            <div style="background: var(--color-text); color: #fff; padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em;">RESUMO</div>
+            <div style="padding: 20px 16px; font-size: 14px;">
+              <div style="display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--color-divider);"><span>{{ planoNome }}</span><span style="font-weight: 700;">{{ planoPreco }}</span></div>
+              <div style="display: flex; justify-content: space-between; padding-top: 16px; font-size: 18px; font-weight: 900;"><span>Hoje</span><span>R$ 0,00</span></div>
+            </div>
+          </div>
+          <button onClick="{{ irStep3 }}" style="margin-top: 16px; appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 20px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Confirmar assinatura →</button>
+          <button onClick="{{ irStep1 }}" style="margin-top: 12px; appearance: none; background: transparent; border: 0; color: var(--color-neutral-700); font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px 0;">← Voltar para planos</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width: 640px;">
+        <div style="width: 64px; height: 64px; background: var(--color-accent); display: flex; align-items: center; justify-content: center; margin-bottom: 28px;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="square"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h1 style="font-size: 44px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.02; margin: 0 0 16px;">Assinatura ativa. Bem-vinda, Ana.</h1>
+        <p style="font-size: 17px; line-height: 1.55; color: var(--color-neutral-800); margin: 0 0 32px;">Seu teste do plano {{ planoNome }} vai até 06/08/2026. Enviamos o recibo para ana@construtoraorion.com.br.</p>
+        <div style="border-top: 2px solid var(--color-text); border-bottom: 2px solid var(--color-text); margin-bottom: 32px;">
+          <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--color-divider); font-size: 15px;"><span style="color: var(--color-neutral-700);">Plano</span><span style="font-weight: 700;">{{ planoNome }}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--color-divider); font-size: 15px;"><span style="color: var(--color-neutral-700);">Primeira cobrança</span><span style="font-weight: 700;">06/08/2026 · {{ planoPreco }}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 16px 0; font-size: 15px;"><span style="color: var(--color-neutral-700);">Nota fiscal</span><span style="font-weight: 700;">emitida a cada ciclo</span></div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <button onClick="{{ irPainel }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; padding: 16px 28px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Criar meu primeiro perfil de busca →</button>
+          <button onClick="{{ irPainel }}" style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 16px; font-weight: 700; padding: 16px 28px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Ir para o painel</button>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= APP (painel / busca / detalhe / alertas) ================= -->
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+  <div style="display: grid; grid-template-columns: 232px 1fr; min-height: calc(100vh - 41px);">
+    <div style="background: var(--color-text); color: var(--color-neutral-400); display: flex; flex-direction: column; padding: 24px 0;">
+      <div style="padding: 0 20px 24px; border-bottom: 1px solid var(--color-neutral-800); margin-bottom: 20px;">
+        <div style="font-size: 19px; font-weight: 900; color: #fff; letter-spacing: -0.03em;">EDITALIS</div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px;">Construtora Órion</div>
+      </div>
+      <sc-for list="{{ menu }}" as="m" hint-placeholder-count="5">
+        <button onClick="{{ m.go }}" style="appearance: none; border: 0; background: {{ m.bg }}; color: {{ m.fg }}; text-align: left; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" style-hover="background: var(--color-neutral-800); color: #fff;">
+          <span>{{ m.nome }}</span><span style="font-size: 11px; font-weight: 700; opacity: 0.8;">{{ m.badge }}</span>
+        </button>
+      </sc-for>
+      <div style="margin-top: auto; padding: 20px; border-top: 1px solid var(--color-neutral-800);">
+        <div style="font-size: 12px; color: var(--color-neutral-500);">Plano Profissional</div>
+        <div style="font-size: 13px; color: #fff; font-weight: 700; margin-top: 2px;">Ana Ribeiro</div>
+        <button onClick="{{ irLanding }}" style="appearance: none; border: 0; background: transparent; color: var(--color-neutral-500); font-size: 12px; padding: 8px 0 0; cursor: pointer;">Sair</button>
+      </div>
+    </div>
+
+    <div style="background: var(--color-bg); min-width: 0;">
+
+      <!-- PAINEL -->
+      <sc-if value="{{ isPainel }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="padding: 28px 40px; border-bottom: 2px solid var(--color-text); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h1 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 0;">Painel</h1>
+            <div style="font-size: 13px; color: var(--color-neutral-600); margin-top: 4px;">Quinta-feira, 30 de julho de 2026 · última varredura às 06h30</div>
+          </div>
+          <button onClick="{{ irBusca }}" style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Nova busca</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 2px solid var(--color-text);">
+          <div style="padding: 28px 40px; border-right: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Licitações na base</div><div style="font-size: 38px; font-weight: 900; letter-spacing: -0.03em; margin-top: 8px;">9.243.118</div></div>
+          <div style="padding: 28px 24px; border-right: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Compatíveis hoje</div><div style="font-size: 38px; font-weight: 900; letter-spacing: -0.03em; margin-top: 8px; color: var(--color-accent);">37</div></div>
+          <div style="padding: 28px 24px; border-right: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Favoritas</div><div style="font-size: 38px; font-weight: 900; letter-spacing: -0.03em; margin-top: 8px;">14</div></div>
+          <div style="padding: 28px 24px; "><div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Fecham em 7 dias</div><div style="font-size: 38px; font-weight: 900; letter-spacing: -0.03em; margin-top: 8px;">5</div></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 340px;">
+          <div style="border-right: 2px solid var(--color-text); min-width: 0;">
+            <div style="padding: 24px 40px 16px; display: flex; align-items: baseline; justify-content: space-between;">
+              <h2 style="font-size: 20px; font-weight: 900; letter-spacing: -0.02em; margin: 0;">Novas para o seu perfil</h2>
+              <a href="#todas" onClick="{{ irBusca }}" style="font-size: 13px; font-weight: 700;">Ver todas as 37 →</a>
+            </div>
+            <div style="padding: 0 40px 40px;">
+              <div style="border-top: 2px solid var(--color-text);">
+                <sc-for list="{{ destaques }}" as="l" hint-placeholder-count="5">
+                  <div onClick="{{ l.abrir }}" style="padding: 18px 0; border-bottom: 1px solid var(--color-divider); cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start;" style-hover="background: var(--color-neutral-200);">
+                    <div style="min-width: 0;">
+                      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent-200); color: var(--color-accent-800); padding: 3px 7px;">{{ l.modalidade }}</span>
+                        <span style="font-size: 12px; color: var(--color-neutral-600);">{{ l.orgao }} · {{ l.uf }}</span>
+                      </div>
+                      <div style="font-size: 16px; font-weight: 700; line-height: 1.3;">{{ l.objeto }}</div>
+                    </div>
+                    <div style="text-align: right; white-space: nowrap;">
+                      <div style="font-size: 16px; font-weight: 900;">{{ l.valor }}</div>
+                      <div style="font-size: 12px; color: var(--color-neutral-600); margin-top: 4px;">abre {{ l.abertura }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Prazos desta semana</div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="border-left: 4px solid var(--color-accent); padding-left: 12px;"><div style="font-size: 13px; font-weight: 800;">Pregão 114/2026 · Campinas</div><div style="font-size: 12px; color: var(--color-neutral-700);">abertura em 2 dias</div></div>
+                <div style="border-left: 4px solid var(--color-text); padding-left: 12px;"><div style="font-size: 13px; font-weight: 800;">Concorrência 07/2026 · DER-MG</div><div style="font-size: 12px; color: var(--color-neutral-700);">abertura em 4 dias</div></div>
+                <div style="border-left: 4px solid var(--color-neutral-400); padding-left: 12px;"><div style="font-size: 13px; font-weight: 800;">Dispensa 22/2026 · UFMG</div><div style="font-size: 12px; color: var(--color-neutral-700);">abertura em 6 dias</div></div>
+              </div>
+            </div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Perfis monitorados</div>
+              <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between;"><span style="font-weight: 700;">Obras civis SP/MG</span><span style="color: var(--color-accent); font-weight: 700;">+18</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="font-weight: 700;">Manutenção predial</span><span style="color: var(--color-accent); font-weight: 700;">+11</span></div>
+                <div style="display: flex; justify-content: space-between;"><span style="font-weight: 700;">Reformas escolares</span><span style="color: var(--color-accent); font-weight: 700;">+8</span></div>
+              </div>
+              <button onClick="{{ irAlertas }}" style="margin-top: 16px; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 13px; font-weight: 700; padding: 10px 16px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Gerenciar alertas</button>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Volume por dia</div>
+              <div style="display: flex; align-items: flex-end; gap: 6px; height: 88px;">
+                <div style="flex: 1; height: 46%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 62%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 38%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 74%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 58%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 88%; background: var(--color-neutral-400);"></div>
+                <div style="flex: 1; height: 100%; background: var(--color-accent);"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-neutral-600); margin-top: 8px;"><span>24/07</span><span>hoje</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- BUSCA -->
+      <sc-if value="{{ isBusca }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="padding: 24px 40px; border-bottom: 2px solid var(--color-text);">
+          <div style="display: flex; gap: 0; border: 2px solid var(--color-text); background: var(--color-neutral-100);">
+            <div style="display: flex; align-items: center; padding: 0 14px; color: var(--color-neutral-600);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </div>
+            <input value="(&quot;reforma&quot; OU &quot;manutenção predial&quot;) NÃO &quot;hospitalar&quot;" style="flex: 1; border: 0; background: transparent; padding: 16px 0; font-size: 16px; outline: none;">
+            <button style="appearance: none; border: 0; border-left: 2px solid var(--color-text); background: var(--color-text); color: #fff; font-size: 14px; font-weight: 700; padding: 0 24px; cursor: pointer;">Buscar</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+            <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">Perfis salvos</span>
+            <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 5px 10px;">Obras civis SP/MG</span>
+            <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 6px 10px;">Manutenção predial</span>
+            <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 6px 10px;">Reformas escolares</span>
+            <span style="font-size: 13px; font-weight: 600; border: 1px dashed var(--color-neutral-500); color: var(--color-neutral-600); padding: 6px 10px;">+ salvar busca atual</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 268px 1fr; min-height: 600px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 24px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px;"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;">Filtros</span><a href="#limpar" style="font-size: 12px;">limpar</a></div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">UF / município</div>
+              <select style="width: 100%; padding: 10px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 13px;"><option>SP, MG (2 selecionados)</option></select>
+              <input placeholder="Município" style="width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;">
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Modalidade</div>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" checked style="accent-color: var(--color-accent);"> Pregão eletrônico</label>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" checked style="accent-color: var(--color-accent);"> Concorrência</label>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" style="accent-color: var(--color-accent);"> Dispensa</label>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" style="accent-color: var(--color-accent);"> Inexigibilidade</label>
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Órgão comprador</div>
+              <input placeholder="Prefeitura, autarquia…" style="width: 100%; padding: 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;">
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Valor estimado</div>
+              <div style="display: flex; gap: 8px;"><input placeholder="mín." style="width: 100%; padding: 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;"><input placeholder="máx." style="width: 100%; padding: 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;"></div>
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Data de abertura</div>
+              <select style="width: 100%; padding: 10px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 13px;"><option>Próximos 30 dias</option></select>
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">CNAE / objeto</div>
+              <input placeholder="41.20-4 · Construção" style="width: 100%; padding: 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;">
+            </div>
+            <div style="border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider); padding: 16px 0;">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 10px;">Situação</div>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" checked style="accent-color: var(--color-accent);"> Aberta</label>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" style="accent-color: var(--color-accent);"> Suspensa</label>
+              <label style="display: flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 0; cursor: pointer;"><input type="checkbox" style="accent-color: var(--color-accent);"> Homologada</label>
+            </div>
+          </div>
+
+          <div style="min-width: 0;">
+            <div style="padding: 18px 40px; border-bottom: 1px solid var(--color-divider); display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 14px;"><strong style="font-weight: 900;">2.418</strong> resultados · <span style="color: var(--color-neutral-600);">0,42 s</span></div>
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <select style="padding: 8px 10px; border: 1px solid var(--color-neutral-400); background: var(--color-neutral-100); font-size: 13px;"><option>Mais recentes</option><option>Maior valor</option><option>Abertura mais próxima</option></select>
+                <button style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer;" style-hover="background: var(--color-text); color: var(--color-bg);">Exportar CSV</button>
+              </div>
+            </div>
+            <sc-for list="{{ resultados }}" as="l" hint-placeholder-count="6">
+              <div style="padding: 22px 40px; border-bottom: 1px solid var(--color-divider); display: grid; grid-template-columns: 1fr auto; gap: 28px;" style-hover="background: var(--color-neutral-200);">
+                <div style="min-width: 0;">
+                  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent-200); color: var(--color-accent-800); padding: 3px 7px;">{{ l.modalidade }}</span>
+                    <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 2px 7px;">{{ l.situacao }}</span>
+                    <span style="font-size: 12px; color: var(--color-neutral-600);">{{ l.numero }} · publicado {{ l.publicado }}</span>
+                  </div>
+                  <div onClick="{{ l.abrir }}" style="font-size: 18px; font-weight: 800; line-height: 1.3; cursor: pointer; margin-bottom: 8px;" style-hover="color: var(--color-accent);">{{ l.objeto }}</div>
+                  <div style="font-size: 13px; color: var(--color-neutral-700);">{{ l.orgao }} · {{ l.municipio }}/{{ l.uf }}</div>
+                </div>
+                <div style="text-align: right; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                  <div style="font-size: 18px; font-weight: 900;">{{ l.valor }}</div>
+                  <div style="font-size: 12px; color: var(--color-neutral-600);">abertura {{ l.abertura }}</div>
+                  <button onClick="{{ l.favoritar }}" style="appearance: none; border: 2px solid var(--color-text); background: {{ l.favBg }}; color: {{ l.favFg }}; font-size: 12px; font-weight: 700; padding: 7px 12px; cursor: pointer;">{{ l.favLabel }}</button>
+                </div>
+              </div>
+            </sc-for>
+            <div style="padding: 24px 40px; display: flex; gap: 8px; align-items: center;">
+              <button style="appearance: none; border: 2px solid var(--color-text); background: var(--color-text); color: #fff; font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer;">1</button>
+              <button style="appearance: none; border: 2px solid var(--color-text); background: transparent; color: var(--color-text); font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer;">2</button>
+              <button style="appearance: none; border: 2px solid var(--color-text); background: transparent; color: var(--color-text); font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer;">3</button>
+              <span style="color: var(--color-neutral-600); font-size: 13px; margin: 0 8px;">…</span>
+              <button style="appearance: none; border: 2px solid var(--color-text); background: transparent; color: var(--color-text); font-size: 13px; font-weight: 700; padding: 8px 14px; cursor: pointer;">Próxima →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- DETALHE -->
+      <sc-if value="{{ isDetalhe }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="padding: 16px 40px; border-bottom: 1px solid var(--color-divider);">
+          <button onClick="{{ irBusca }}" style="appearance: none; border: 0; background: transparent; color: var(--color-neutral-700); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0;">← Voltar aos resultados</button>
+        </div>
+        <div style="padding: 32px 40px; border-bottom: 2px solid var(--color-text); display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start;">
+          <div>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent); color: #fff; padding: 4px 8px;">Pregão eletrônico</span>
+              <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 3px 8px;">Aberta</span>
+              <span style="font-size: 13px; color: var(--color-neutral-600);">nº 114/2026 · processo 2026.0091.443</span>
+            </div>
+            <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.06; margin: 0 0 12px; max-width: 800px;">Contratação de empresa para reforma e ampliação de quatro unidades escolares da rede municipal</h1>
+            <div style="font-size: 15px; color: var(--color-neutral-700);">Prefeitura Municipal de Campinas · Secretaria de Educação · Campinas/SP</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px; min-width: 200px;">
+            <button onClick="{{ favDetalhe }}" style="appearance: none; border: 2px solid var(--color-text); background: {{ detFavBg }}; color: {{ detFavFg }}; font-size: 14px; font-weight: 700; padding: 12px 16px; cursor: pointer; text-align: left;">{{ detFavLabel }}</button>
+            <button style="appearance: none; border: 2px solid var(--color-text); background: transparent; color: var(--color-text); font-size: 14px; font-weight: 700; padding: 12px 16px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Criar alerta deste órgão</button>
+            <button style="appearance: none; border: 2px solid var(--color-text); background: transparent; color: var(--color-text); font-size: 14px; font-weight: 700; padding: 12px 16px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Baixar edital (PDF)</button>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 340px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 32px 40px; min-width: 0;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Objeto</div>
+            <p style="font-size: 16px; line-height: 1.6; margin: 0 0 32px; color: var(--color-neutral-900);">Reforma geral com substituição de cobertura, instalações elétricas e hidráulicas, adequação de acessibilidade e ampliação de blocos de salas de aula em quatro unidades escolares, conforme projeto básico e memorial descritivo anexos ao edital.</p>
+
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Itens e lotes</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 32px;">
+              <thead><tr style="border-top: 2px solid var(--color-text); border-bottom: 2px solid var(--color-text); text-align: left;"><th style="padding: 10px 0; font-weight: 800;">Lote</th><th style="padding: 10px 0; font-weight: 800;">Descrição</th><th style="padding: 10px 0; font-weight: 800; text-align: right;">Valor estimado</th></tr></thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--color-divider);"><td style="padding: 12px 0;">01</td><td style="padding: 12px 0;">EMEF Vila União — reforma e cobertura</td><td style="padding: 12px 0; text-align: right; font-weight: 700;">R$ 812.400,00</td></tr>
+                <tr style="border-bottom: 1px solid var(--color-divider);"><td style="padding: 12px 0;">02</td><td style="padding: 12px 0;">EMEF Jardim Paulista — ampliação de 4 salas</td><td style="padding: 12px 0; text-align: right; font-weight: 700;">R$ 968.100,00</td></tr>
+                <tr style="border-bottom: 1px solid var(--color-divider);"><td style="padding: 12px 0;">03</td><td style="padding: 12px 0;">CEI Novo Horizonte — acessibilidade</td><td style="padding: 12px 0; text-align: right; font-weight: 700;">R$ 421.900,00</td></tr>
+                <tr style="border-bottom: 2px solid var(--color-text);"><td style="padding: 12px 0;">04</td><td style="padding: 12px 0;">EMEF Campo Belo — instalações elétricas</td><td style="padding: 12px 0; text-align: right; font-weight: 700;">R$ 277.600,00</td></tr>
+              </tbody>
+            </table>
+
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Publicação original</div>
+            <div style="border: 2px solid var(--color-text); background: var(--color-neutral-100); padding: 20px; font-size: 14px; line-height: 1.7; color: var(--color-neutral-800);">
+              <div style="font-weight: 800; color: var(--color-text); margin-bottom: 8px;">Diário Oficial do Município de Campinas · 28/07/2026 · pág. 14</div>
+              “AVISO DE LICITAÇÃO — PREGÃO ELETRÔNICO Nº 114/2026. Objeto: contratação de empresa especializada para execução de reforma e ampliação de unidades escolares. Sessão pública em 01/08/2026 às 09h00, no portal de compras. Edital disponível no sítio oficial…”
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 6px;">Valor total estimado</div>
+              <div style="font-size: 32px; font-weight: 900; letter-spacing: -0.03em;">R$ 2.480.000</div>
+            </div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text); font-size: 14px;">
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--color-divider);"><span style="color: var(--color-neutral-700);">Publicação</span><span style="font-weight: 700;">28/07/2026</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--color-divider);"><span style="color: var(--color-neutral-700);">Abertura</span><span style="font-weight: 700; color: var(--color-accent);">01/08/2026 09h00</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--color-divider);"><span style="color: var(--color-neutral-700);">Impugnação até</span><span style="font-weight: 700;">29/07/2026</span></div>
+              <div style="display: flex; justify-content: space-between; padding: 10px 0;"><span style="color: var(--color-neutral-700);">Regime</span><span style="font-weight: 700;">Empreitada global</span></div>
+            </div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Andamento</div>
+              <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+                <div style="display: flex; gap: 12px;"><div style="width: 10px; height: 10px; background: var(--color-text); margin-top: 4px; flex: 0 0 auto;"></div><div><div style="font-weight: 800;">Aviso publicado</div><div style="color: var(--color-neutral-600);">28/07/2026</div></div></div>
+                <div style="display: flex; gap: 12px;"><div style="width: 10px; height: 10px; background: var(--color-accent); margin-top: 4px; flex: 0 0 auto;"></div><div><div style="font-weight: 800;">Sessão pública</div><div style="color: var(--color-neutral-600);">01/08/2026 · em 2 dias</div></div></div>
+                <div style="display: flex; gap: 12px;"><div style="width: 10px; height: 10px; border: 2px solid var(--color-neutral-400); margin-top: 4px; flex: 0 0 auto;"></div><div><div style="font-weight: 800; color: var(--color-neutral-600);">Homologação</div><div style="color: var(--color-neutral-600);">prevista</div></div></div>
+              </div>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 10px;">Histórico do órgão</div>
+              <div style="font-size: 14px; line-height: 1.6; color: var(--color-neutral-800);">142 licitações de obras nos últimos 24 meses · valor médio homologado <strong>R$ 1,7 mi</strong> · 68% adjudicadas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ALERTAS E FAVORITAS -->
+      <sc-if value="{{ isAlertas }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="padding: 28px 40px; border-bottom: 2px solid var(--color-text); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h1 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 0;">Alertas e favoritas</h1>
+            <div style="font-size: 13px; color: var(--color-neutral-600); margin-top: 4px;">3 de 25 perfis usados no plano Profissional</div>
+          </div>
+          <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Novo perfil de alerta</button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 400px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 28px 40px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 16px;">Perfis monitorados</div>
+            <div style="border-top: 2px solid var(--color-text);">
+              <sc-for list="{{ alertas }}" as="a" hint-placeholder-count="3">
+                <div style="padding: 22px 0; border-bottom: 1px solid var(--color-divider);">
+                  <div style="display: flex; justify-content: space-between; align-items: start; gap: 24px;">
+                    <div style="min-width: 0;">
+                      <div style="font-size: 18px; font-weight: 800;">{{ a.nome }}</div>
+                      <div style="font-family: ui-monospace, monospace; font-size: 13px; color: var(--color-neutral-700); margin-top: 6px;">{{ a.query }}</div>
+                      <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                        <span style="font-size: 12px; font-weight: 700; border: 1px solid var(--color-neutral-400); padding: 4px 8px; color: var(--color-neutral-700);">{{ a.canais }}</span>
+                        <span style="font-size: 12px; font-weight: 700; border: 1px solid var(--color-neutral-400); padding: 4px 8px; color: var(--color-neutral-700);">{{ a.frequencia }}</span>
+                        <span style="font-size: 12px; font-weight: 700; background: var(--color-accent-200); color: var(--color-accent-800); padding: 4px 8px;">{{ a.novas }} novas</span>
+                      </div>
+                    </div>
+                    <button onClick="{{ a.toggle }}" style="appearance: none; border: 2px solid var(--color-text); background: {{ a.bg }}; color: {{ a.fg }}; font-size: 12px; font-weight: 700; padding: 8px 14px; cursor: pointer; white-space: nowrap;">{{ a.label }}</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top: 32px; border: 2px solid var(--color-text); padding: 24px; background: var(--color-neutral-100);">
+              <div style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">Preferências de envio</div>
+              <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>Resumo diário por e-mail às 06h30</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>WhatsApp para aberturas em até 48h</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>Notificação no app em tempo real</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>Não enviar aos fins de semana</span><input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+              </div>
+            </div>
+          </div>
+          <div style="padding: 28px 24px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 16px;">Favoritas · 14</div>
+            <div style="border-top: 2px solid var(--color-text);">
+              <sc-for list="{{ favoritas }}" as="f" hint-placeholder-count="4">
+                <div onClick="{{ f.abrir }}" style="padding: 16px 0; border-bottom: 1px solid var(--color-divider); cursor: pointer;" style-hover="background: var(--color-neutral-200);">
+                  <div style="font-size: 15px; font-weight: 700; line-height: 1.3;">{{ f.objeto }}</div>
+                  <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--color-neutral-600);"><span>{{ f.orgao }}</span><span style="font-weight: 700; color: {{ f.prazoCor }};">{{ f.prazo }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= MOBILE ================= -->
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+  <div style="padding: 56px 40px 80px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 8px;">Mobile</h1>
+      <p style="font-size: 16px; color: var(--color-neutral-700); margin: 0 0 40px;">As mesmas telas em 390 px: painel, busca e detalhe. Alvos de toque com 44 px mínimos, filtros em folha inferior.</p>
+      <div style="display: flex; gap: 48px; flex-wrap: wrap;">
+
+        <div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 12px;">Painel</div>
+          <div style="width: 390px; height: 780px; border: 10px solid var(--color-text); border-radius: 40px; overflow: hidden; background: var(--color-bg); display: flex; flex-direction: column;">
+            <div style="background: var(--color-text); color: #fff; padding: 14px 20px 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 17px; font-weight: 900; letter-spacing: -0.02em;">EDITALIS</div>
+              <div style="width: 36px; height: 36px; border: 2px solid var(--color-neutral-600); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">AR</div>
+            </div>
+            <div style="flex: 1; overflow: hidden;">
+              <div style="padding: 20px; border-bottom: 2px solid var(--color-text);">
+                <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Compatíveis hoje</div>
+                <div style="font-size: 52px; font-weight: 900; letter-spacing: -0.04em; color: var(--color-accent); line-height: 1.05;">37</div>
+                <div style="display: flex; gap: 20px; margin-top: 12px;">
+                  <div><div style="font-size: 20px; font-weight: 900;">14</div><div style="font-size: 11px; color: var(--color-neutral-600);">favoritas</div></div>
+                  <div><div style="font-size: 20px; font-weight: 900;">5</div><div style="font-size: 11px; color: var(--color-neutral-600);">fecham em 7d</div></div>
+                  <div><div style="font-size: 20px; font-weight: 900;">3</div><div style="font-size: 11px; color: var(--color-neutral-600);">perfis</div></div>
+                </div>
+              </div>
+              <div style="padding: 16px 20px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Novas para você</div>
+              <div style="padding: 0 20px;">
+                <div style="padding: 14px 0; border-top: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; color: var(--color-accent-700); text-transform: uppercase; letter-spacing: 0.08em;">Pregão · SP</div><div style="font-size: 15px; font-weight: 700; line-height: 1.3; margin: 4px 0 6px;">Reforma e ampliação de quatro unidades escolares</div><div style="font-size: 13px; color: var(--color-neutral-700);">R$ 2.480.000 · abre 01/08</div></div>
+                <div style="padding: 14px 0; border-top: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; color: var(--color-accent-700); text-transform: uppercase; letter-spacing: 0.08em;">Concorrência · MG</div><div style="font-size: 15px; font-weight: 700; line-height: 1.3; margin: 4px 0 6px;">Recuperação de pavimento em rodovia estadual</div><div style="font-size: 13px; color: var(--color-neutral-700);">R$ 14.900.000 · abre 03/08</div></div>
+                <div style="padding: 14px 0; border-top: 1px solid var(--color-divider);"><div style="font-size: 11px; font-weight: 700; color: var(--color-accent-700); text-transform: uppercase; letter-spacing: 0.08em;">Dispensa · MG</div><div style="font-size: 15px; font-weight: 700; line-height: 1.3; margin: 4px 0 6px;">Manutenção predial continuada</div><div style="font-size: 13px; color: var(--color-neutral-700);">R$ 386.500 · abre 05/08</div></div>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); border-top: 2px solid var(--color-text); background: var(--color-neutral-100);">
+              <div style="padding: 14px 0 18px; text-align: center; font-size: 11px; font-weight: 700; color: var(--color-accent); border-top: 3px solid var(--color-accent); margin-top: -2px;">Painel</div>
+              <div style="padding: 14px 0 18px; text-align: center; font-size: 11px; font-weight: 700; color: var(--color-neutral-600);">Buscar</div>
+              <div style="padding: 14px 0 18px; text-align: center; font-size: 11px; font-weight: 700; color: var(--color-neutral-600);">Favoritas</div>
+              <div style="padding: 14px 0 18px; text-align: center; font-size: 11px; font-weight: 700; color: var(--color-neutral-600);">Alertas</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 12px;">Busca com filtros</div>
+          <div style="width: 390px; height: 780px; border: 10px solid var(--color-text); border-radius: 40px; overflow: hidden; background: var(--color-bg); display: flex; flex-direction: column; position: relative;">
+            <div style="padding: 16px 20px; border-bottom: 2px solid var(--color-text);">
+              <div style="display: flex; border: 2px solid var(--color-text); background: var(--color-neutral-100);">
+                <input value="reforma escolar" style="flex: 1; border: 0; background: transparent; padding: 12px 14px; font-size: 15px; outline: none;">
+                <button style="appearance: none; border: 0; background: var(--color-text); color: #fff; font-size: 13px; font-weight: 700; padding: 0 16px; cursor: pointer;">Ir</button>
+              </div>
+            </div>
+            <div style="padding: 12px 20px; font-size: 13px; border-bottom: 1px solid var(--color-divider);"><strong>2.418</strong> resultados</div>
+            <div style="flex: 1; opacity: 0.35; padding: 0 20px;">
+              <div style="padding: 16px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 15px; font-weight: 700;">Reforma e ampliação de quatro unidades escolares</div></div>
+              <div style="padding: 16px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 15px; font-weight: 700;">Recuperação de pavimento em rodovia estadual</div></div>
+            </div>
+            <div style="position: absolute; left: 0; right: 0; bottom: 0; background: var(--color-bg); border-top: 3px solid var(--color-text); box-shadow: var(--shadow-lg); padding: 20px;">
+              <div style="width: 44px; height: 4px; background: var(--color-neutral-400); margin: 0 auto 18px;"></div>
+              <div style="font-size: 18px; font-weight: 900; margin-bottom: 16px;">Filtros</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
+                <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 9px 12px;">SP</span>
+                <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 9px 12px;">MG</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 10px 12px;">RJ</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 10px 12px;">+ UF</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+                <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 9px 12px;">Pregão</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 10px 12px;">Concorrência</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 10px 12px;">Dispensa</span>
+              </div>
+              <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 15px 20px; cursor: pointer; text-align: left; width: 100%;">Aplicar filtros</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 12px;">Detalhe</div>
+          <div style="width: 390px; height: 780px; border: 10px solid var(--color-text); border-radius: 40px; overflow: hidden; background: var(--color-bg); display: flex; flex-direction: column;">
+            <div style="padding: 14px 20px; border-bottom: 1px solid var(--color-divider); font-size: 13px; color: var(--color-neutral-700);">← Resultados</div>
+            <div style="flex: 1; overflow: hidden;">
+              <div style="padding: 20px; border-bottom: 2px solid var(--color-text);">
+                <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent); color: #fff; padding: 4px 8px;">Pregão eletrônico</span>
+                <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -0.025em; line-height: 1.12; margin: 14px 0 10px;">Reforma e ampliação de quatro unidades escolares</h2>
+                <div style="font-size: 13px; color: var(--color-neutral-700);">Prefeitura de Campinas · Campinas/SP</div>
+              </div>
+              <div style="padding: 20px; border-bottom: 2px solid var(--color-text);">
+                <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Valor estimado</div>
+                <div style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin-top: 4px;">R$ 2.480.000</div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; padding: 12px 0 0; border-top: 1px solid var(--color-divider); margin-top: 14px;"><span style="color: var(--color-neutral-700);">Abertura</span><span style="font-weight: 800; color: var(--color-accent);">01/08 09h00</span></div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; padding: 10px 0;"><span style="color: var(--color-neutral-700);">Impugnação</span><span style="font-weight: 700;">até 29/07</span></div>
+              </div>
+              <div style="padding: 20px; font-size: 14px; line-height: 1.6; color: var(--color-neutral-800);">Reforma geral com substituição de cobertura, instalações elétricas e hidráulicas, adequação de acessibilidade e ampliação de blocos de salas…</div>
+            </div>
+            <div style="display: flex; gap: 10px; padding: 16px 20px 22px; border-top: 2px solid var(--color-text); background: var(--color-neutral-100);">
+              <button style="flex: 1; appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 14px; cursor: pointer;">Favoritar</button>
+              <button style="flex: 1; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 15px; font-weight: 700; padding: 14px; cursor: pointer;">Edital</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mostrarProvaSocial&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Landing&quot;},&quot;animacoes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Landing&quot;}}">
+const LICITACOES = [
+  { id: 1, modalidade: "Pregão eletrônico", situacao: "Aberta", numero: "nº 114/2026", publicado: "28/07", objeto: "Contratação de empresa para reforma e ampliação de quatro unidades escolares da rede municipal", orgao: "Prefeitura Municipal de Campinas", municipio: "Campinas", uf: "SP", valor: "R$ 2.480.000", abertura: "01/08", fav: true },
+  { id: 2, modalidade: "Concorrência", situacao: "Aberta", numero: "nº 07/2026", publicado: "28/07", objeto: "Recuperação de pavimento e drenagem em 42 km de rodovia estadual", orgao: "DER-MG", municipio: "Belo Horizonte", uf: "MG", valor: "R$ 14.900.000", abertura: "03/08", fav: false },
+  { id: 3, modalidade: "Dispensa", situacao: "Aberta", numero: "nº 22/2026", publicado: "27/07", objeto: "Serviços continuados de manutenção predial em campus universitário", orgao: "Universidade Federal de Minas Gerais", municipio: "Belo Horizonte", uf: "MG", valor: "R$ 386.500", abertura: "05/08", fav: true },
+  { id: 4, modalidade: "Pregão eletrônico", situacao: "Aberta", numero: "nº 201/2026", publicado: "27/07", objeto: "Execução de reforma da sede administrativa e adequação de acessibilidade", orgao: "Tribunal de Justiça de São Paulo", municipio: "São Paulo", uf: "SP", valor: "R$ 1.120.000", abertura: "07/08", fav: false },
+  { id: 5, modalidade: "Concorrência", situacao: "Aberta", numero: "nº 15/2026", publicado: "26/07", objeto: "Construção de unidade básica de saúde no distrito de Sousas", orgao: "Secretaria Municipal de Saúde", municipio: "Campinas", uf: "SP", valor: "R$ 5.740.000", abertura: "11/08", fav: false },
+  { id: 6, modalidade: "Pregão eletrônico", situacao: "Suspensa", numero: "nº 88/2026", publicado: "25/07", objeto: "Serviços de engenharia para modernização de iluminação pública", orgao: "Prefeitura de Ribeirão Preto", municipio: "Ribeirão Preto", uf: "SP", valor: "R$ 3.260.000", abertura: "14/08", fav: false }
+];
+
+class Component extends DCLogic {
+  state = {
+    tela: "landing",
+    navKey: "landing",
+    authTab: "login",
+    step: 1,
+    pagamento: "cartao",
+    ciclo: "mensal",
+    plano: "profissional",
+    favs: { 1: true, 3: true },
+    detFav: true,
+    alertasAtivos: { 1: true, 2: true, 3: false }
+  };
+
+  componentDidMount() { this.agendarAnim(); }
+  componentDidUpdate() { this.agendarAnim(); }
+
+  agendarAnim() {
+    if (this._animQueued) return;
+    this._animQueued = true;
+    setTimeout(() => {
+      this._animQueued = false;
+      this.setupAnim();
+    }, 30);
+  }
+
+  setupAnim() {
+    const ligado = this.props.animacoes ?? true;
+    if (!ligado) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!this._io) {
+      this._io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          this._io.unobserve(el);
+          const delay = parseInt(el.dataset.animDelay || "0", 10);
+          setTimeout(() => { el.style.opacity = "1"; el.style.transform = "none"; }, delay);
+          el.querySelectorAll("[data-count]").forEach((n) => this.contar(n));
+          if (el.dataset.count) this.contar(el);
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+    }
+    setTimeout(() => {
+      document.querySelectorAll("[data-anim]").forEach((el) => {
+        if (el.dataset.animInit) return;
+        el.dataset.animInit = "1";
+        el.style.opacity = "0";
+        el.style.transform = "translateY(16px)";
+        el.style.transition = "opacity 620ms cubic-bezier(.2,.7,.2,1), transform 620ms cubic-bezier(.2,.7,.2,1)";
+        this._io.observe(el);
+      });
+      document.querySelectorAll("[data-pulse]").forEach((el) => {
+        if (el.dataset.pulseInit) return;
+        el.dataset.pulseInit = "1";
+        el.style.animation = "ed-pulse 2.4s ease-in-out 900ms 3";
+      });
+      clearTimeout(this._animSafety);
+      this._animSafety = setTimeout(() => {
+        document.querySelectorAll("[data-anim]").forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) { el.style.opacity = "1"; el.style.transform = "none"; }
+        });
+      }, 1400);
+    }, 0);
+  }
+
+  contar(el) {
+    if (el.dataset.countDone) return;
+    el.dataset.countDone = "1";
+    const alvo = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.countDecimal || "0", 10);
+    const suf = el.dataset.countSuffix || "";
+    const dur = 1100, t0 = Date.now();
+    const fmt = (v) => dec
+      ? (v / Math.pow(10, dec)).toFixed(dec).replace(".", ",")
+      : Math.round(v).toLocaleString("pt-BR");
+    const passo = () => {
+      const p = Math.min(1, (Date.now() - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(alvo * eased) + suf;
+      if (p < 1) setTimeout(passo, 32);
+    };
+    passo();
+  }
+
+  go = (tela, navKey) => () => { this.setState({ tela: tela, navKey: navKey || tela }); window.scrollTo(0, 0); };
+
+  renderVals() {
+    const s = this.state;
+    this.agendarAnim();
+    const INK = "var(--color-text)", BG = "var(--color-bg)", RED = "var(--color-accent)";
+    const seg = (on) => ({ bg: on ? INK : "transparent", fg: on ? BG : INK });
+
+    const telas = [
+      ["landing", "Landing"], ["entrar", "Entrar"], ["checkout", "Checkout"],
+      ["painel", "Painel"], ["busca", "Busca"], ["detalhe", "Detalhe"],
+      ["alertas", "Alertas"], ["mobile", "Mobile"]
+    ].map(([k, nome]) => ({
+      nome, go: this.go(k),
+      bg: s.tela === k ? RED : "transparent",
+      fg: s.tela === k ? "#fff" : "var(--color-neutral-400)"
+    }));
+
+    const menu = [
+      ["painel", "painel", "Painel", ""], ["busca", "busca", "Busca", ""],
+      ["alertas", "favoritas", "Favoritas", "14"], ["alertas", "alertas", "Alertas", "3"],
+      ["detalhe", "ultima", "Última consultada", ""]
+    ].map(([tela, k, nome, badge]) => ({
+      nome, badge, go: this.go(tela, k),
+      bg: s.navKey === k ? RED : "transparent",
+      fg: s.navKey === k ? "#fff" : "var(--color-neutral-400)"
+    }));
+
+    const precos = s.ciclo === "anual" ? { a: "39", b: "159" } : { a: "49", b: "199" };
+    const planoNome = s.plano === "essencial" ? "Essencial" : "Profissional";
+    const planoPreco = "R$ " + (s.plano === "essencial" ? precos.a : precos.b) + "/mês";
+
+    const planos = [
+      { key: "essencial", nome: "Essencial", preco: "R$ " + precos.a + "/mês", desc: "3 perfis · histórico 30 dias · e-mail diário · CSV" },
+      { key: "profissional", nome: "Profissional", preco: "R$ " + precos.b + "/mês", desc: "25 perfis · histórico completo · WhatsApp · Excel · suporte 4h" }
+    ].map((p) => ({
+      ...p,
+      bg: s.plano === p.key ? "var(--color-neutral-100)" : "transparent",
+      dot: s.plano === p.key ? RED : "transparent",
+      escolher: () => this.setState({ plano: p.key })
+    }));
+
+    const decorar = (l) => ({
+      ...l,
+      abrir: this.go("detalhe"),
+      favoritar: () => this.setState((st) => ({ favs: { ...st.favs, [l.id]: !st.favs[l.id] } })),
+      favBg: s.favs[l.id] ? INK : "transparent",
+      favFg: s.favs[l.id] ? BG : INK,
+      favLabel: s.favs[l.id] ? "★ Favorita" : "☆ Favoritar"
+    });
+
+    const alertasBase = [
+      { id: 1, nome: "Obras civis SP/MG", query: '("reforma" OU "ampliação") E uf:SP,MG E valor:>500000', canais: "E-mail + WhatsApp", frequencia: "Diário 06h30", novas: 18 },
+      { id: 2, nome: "Manutenção predial", query: '"manutenção predial" NÃO "hospitalar"', canais: "E-mail", frequencia: "Diário 06h30", novas: 11 },
+      { id: 3, nome: "Reformas escolares", query: '"escola" E ("reforma" OU "cobertura") E uf:SP', canais: "App", frequencia: "Tempo real", novas: 8 }
+    ].map((a) => ({
+      ...a,
+      toggle: () => this.setState((st) => ({ alertasAtivos: { ...st.alertasAtivos, [a.id]: !st.alertasAtivos[a.id] } })),
+      bg: s.alertasAtivos[a.id] ? INK : "transparent",
+      fg: s.alertasAtivos[a.id] ? BG : INK,
+      label: s.alertasAtivos[a.id] ? "Ativo" : "Pausado"
+    }));
+
+    const favoritas = LICITACOES.filter((l) => s.favs[l.id]).concat(LICITACOES.slice(3, 5)).map((l, i) => ({
+      objeto: l.objeto,
+      orgao: l.orgao,
+      prazo: ["abre em 2 dias", "abre em 6 dias", "abre em 8 dias", "abre em 12 dias"][i] || "abre em 15 dias",
+      prazoCor: i === 0 ? RED : "var(--color-neutral-700)",
+      abrir: this.go("detalhe")
+    }));
+
+    return {
+      telas, menu, planos, alertas: alertasBase, favoritas,
+      resultados: LICITACOES.map(decorar),
+      destaques: LICITACOES.slice(0, 5).map(decorar),
+
+      isLanding: s.tela === "landing",
+      isEntrar: s.tela === "entrar",
+      isCheckout: s.tela === "checkout",
+      isMobile: s.tela === "mobile",
+      isApp: ["painel", "busca", "detalhe", "alertas"].includes(s.tela),
+      isPainel: s.tela === "painel",
+      isBusca: s.tela === "busca",
+      isDetalhe: s.tela === "detalhe",
+      isAlertas: s.tela === "alertas",
+
+      irLanding: this.go("landing"), irEntrar: this.go("entrar"), irCheckout: this.go("checkout"),
+      irPainel: this.go("painel"), irBusca: this.go("busca"), irAlertas: this.go("alertas"),
+
+      mostrarProva: this.props.mostrarProvaSocial ?? true,
+
+      precoA: precos.a, precoB: precos.b,
+      ciclo: s.ciclo === "anual" ? "cobrado anualmente" : "cobrado mensalmente",
+      bgMensal: seg(s.ciclo === "mensal").bg, fgMensal: seg(s.ciclo === "mensal").fg,
+      bgAnual: seg(s.ciclo === "anual").bg, fgAnual: seg(s.ciclo === "anual").fg,
+      setMensal: () => this.setState({ ciclo: "mensal" }),
+      setAnual: () => this.setState({ ciclo: "anual" }),
+
+      isLoginTab: s.authTab === "login", isCadastroTab: s.authTab === "cadastro",
+      bgLogin: seg(s.authTab === "login").bg, fgLogin: seg(s.authTab === "login").fg,
+      bgCadastro: seg(s.authTab === "cadastro").bg, fgCadastro: seg(s.authTab === "cadastro").fg,
+      setLogin: () => this.setState({ authTab: "login" }),
+      setCadastro: () => this.setState({ authTab: "cadastro" }),
+
+      step1: s.step === 1, step2: s.step === 2, step3: s.step === 3,
+      irStep1: () => this.setState({ step: 1 }),
+      irStep2: () => { this.setState({ step: 2 }); window.scrollTo(0, 0); },
+      irStep3: () => { this.setState({ step: 3 }); window.scrollTo(0, 0); },
+      p1bg: s.step >= 1 ? INK : "transparent", p1fg: s.step >= 1 ? BG : INK,
+      p2bg: s.step >= 2 ? INK : "transparent", p2fg: s.step >= 2 ? BG : INK,
+      p3bg: s.step >= 3 ? INK : "transparent", p3fg: s.step >= 3 ? BG : INK,
+      planoNome, planoPreco,
+
+      bgCartao: seg(s.pagamento === "cartao").bg, fgCartao: seg(s.pagamento === "cartao").fg,
+      bgPix: seg(s.pagamento === "pix").bg, fgPix: seg(s.pagamento === "pix").fg,
+      bgBoleto: seg(s.pagamento === "boleto").bg, fgBoleto: seg(s.pagamento === "boleto").fg,
+      setCartao: () => this.setState({ pagamento: "cartao" }),
+      setPix: () => this.setState({ pagamento: "pix" }),
+      setBoleto: () => this.setState({ pagamento: "boleto" }),
+
+      favDetalhe: () => this.setState((st) => ({ detFav: !st.detFav })),
+      detFavBg: s.detFav ? INK : "transparent",
+      detFavFg: s.detFav ? BG : INK,
+      detFavLabel: s.detFav ? "★ Nas favoritas" : "☆ Favoritar"
+    };
+  }
+}
+</script>
+</body>
+</html>

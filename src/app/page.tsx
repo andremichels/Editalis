@@ -30,37 +30,55 @@ export default function HomePage() {
 
   return (
     <PageLayout>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Busca no Diário Oficial da União
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        {/* Hero — flush left, no centering */}
+        <div className="mb-12" style={{ borderBottom: '2px solid var(--color-divider)', paddingBottom: '2rem' }}>
+          <h1
+            className="text-4xl sm:text-5xl leading-none mb-3 tracking-tight"
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, color: 'var(--color-text)' }}
+          >
+            Diário Oficial
+            <br />
+            <span style={{ color: 'var(--color-accent)' }}>da União</span>
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p
+            className="text-sm max-w-xl"
+            style={{ color: 'var(--color-neutral-600)' }}
+          >
             Pesquise portarias, licitações, nomeações e outros atos oficiais
+            publicados no DOU.
           </p>
         </div>
 
         {/* Search */}
-        <div className="mx-auto max-w-2xl mb-8">
+        <div className="mb-12">
           <SearchBar onSearch={handleSearch} loading={loading} />
         </div>
 
-        {/* Results */}
+        {/* Error */}
         {error && (
-          <div className="text-center py-8">
-            <p className="text-red-500 text-sm">{error}</p>
+          <div
+            className="p-4 mb-8 text-sm"
+            style={{
+              background: 'var(--color-accent-100)',
+              color: 'var(--color-accent-700)',
+              borderLeft: '4px solid var(--color-accent)',
+            }}
+          >
+            {error}
           </div>
         )}
 
+        {/* Empty state before search */}
         {!searched && !loading && (
-          <div className="text-center py-16">
-            <p className="text-gray-400 text-sm">
-              Digite um termo com pelo menos 3 caracteres para buscar
+          <div className="py-16">
+            <p style={{ color: 'var(--color-neutral-500)' }} className="text-sm">
+              Digite um termo com pelo menos 3 caracteres para buscar.
             </p>
           </div>
         )}
 
+        {/* Results */}
         <ArticleList articles={articles} loading={loading} />
       </div>
     </PageLayout>
