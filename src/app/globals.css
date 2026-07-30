@@ -5,8 +5,6 @@
    Flat, architectural, Archivo-only, zero radius, strong 2px rules.
    ════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
-
 :root {
   --color-bg: #f3f2f2;
   --color-surface: #eae9e9;
@@ -69,12 +67,12 @@
   --color-accent-900: var(--color-accent-900);
 
   /* Typography */
-  --font-heading: 'Archivo', system-ui, sans-serif;
-  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-heading: var(--font-archivo), system-ui, sans-serif;
+  --font-body: var(--font-archivo), system-ui, sans-serif;
   --font-heading-weight: 800;
 
   /* Override default fonts */
-  --font-sans: 'Archivo', system-ui, sans-serif;
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
 
   /* Zero radius everywhere */
   --radius-sm: 0px;
@@ -87,7 +85,7 @@
 body {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-body, 'Archivo', system-ui, sans-serif);
+  font-family: var(--font-body, var(--font-archivo), system-ui, sans-serif);
 }
 
 h1, h2, h3, h4 {
