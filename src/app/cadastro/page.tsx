@@ -49,10 +49,19 @@ export default function CadastroPage() {
 
           {success ? (
             <div className="text-center">
-              <p className="text-sm mb-4" style={{ color: "#155724" }}>{success}</p>
-              <Link href="/login" style={{ color: "var(--color-accent)", fontWeight: 800, fontSize: "0.875rem" }}>
-                Ir para o login
-              </Link>
+              <div className="text-3xl mb-3">📧</div>
+              <p className="text-sm mb-2" style={{ color: "#155724", fontFamily: "var(--font-heading)", fontWeight: 800 }}>
+                Verifique seu email
+              </p>
+              <p className="text-xs mb-4" style={{ color: "#155724" }}>
+                Enviamos um link de confirmação para <strong>{email}</strong>. Clique no link para ativar sua conta.
+              </p>
+              <p className="text-xs" style={{ color: "var(--color-neutral-500)" }}>
+                Não recebeu? Verifique o spam ou{" "}
+                <button onClick={() => { setSuccess(""); setError(""); }} style={{ color: "var(--color-accent)", fontWeight: 800 }}>
+                  tente novamente
+                </button>
+              </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
