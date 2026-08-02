@@ -1,6 +1,6 @@
 import { Article, Organ, SearchResponse } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://dou-scrapper-api.vercel.app';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 export async function searchArticles(params: {
   q: string;
