@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Editalis
 
-## Getting Started
+Busca no Diário Oficial da União (DOU) — pesquisa de portarias, licitações, nomeações e outros atos oficiais por palavra-chave, órgão, data ou CNPJ.
 
-First, run the development server:
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.local.example .env.local   # se existir; senão veja as variáveis abaixo
+npm run dev                        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Variáveis de ambiente (`.env.local`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variável | Uso |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase (auth) |
+| `NEXT_PUBLIC_SUPABASE_KEY` | Chave pública (anon) do Supabase |
+| `NEXT_PUBLIC_API_URL` | Base da DOU Scrapper API (opcional — tem default) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+```bash
+npm run dev      # servidor de desenvolvimento
+npm run build    # build de produção
+npm run start    # roda o build de produção
+npm run lint     # eslint
+```
 
-To learn more about Next.js, take a look at the following resources:
+Não há suíte de testes configurada.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estado do projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A área logada (`/dashboard`, `/busca`, `/alertas`, `/licitacao/[id]`) roda inteiramente sobre dados mock (`src/lib/bids.ts`, `src/lib/alertProfiles.ts`) — ainda não está conectada a um backend real de licitações. Já a landing (`/`) e a leitura de artigo (`/artigo/[slug]`) usam dados reais do DOU via API externa.
 
-## Deploy on Vercel
+## Documentação
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [CLAUDE.md](CLAUDE.md) — arquitetura, layouts, fontes de dados, convenções.
+- [DESIGN.md](DESIGN.md) — sistema de design (tokens, tipografia, componentes).
+- `design-handoff/` — protótipo interativo original de onde o design foi extraído.
