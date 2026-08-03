@@ -1,6 +1,7 @@
 'use client';
 
 import { MarketingLayout } from '@/components/layout/PageLayout';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { ArrowRight, Check } from 'lucide-react';
 import { useState } from 'react';
 
@@ -210,12 +211,15 @@ export default function LandingPage() {
               <h2 className={`${sectionTitle} text-[32px] sm:text-[40px] mb-2.5`} style={sectionTitleStyle}>Planos</h2>
               <p className="text-base" style={{ color: 'var(--color-neutral-700)' }}>Preço por empresa, usuários ilimitados em todos os planos.</p>
             </div>
-            <div className="inline-flex self-start" style={{ border: '2px solid var(--color-text)' }}>
-              <button onClick={() => setAnnual(false)} className="px-[18px] py-2.5 text-[13px] font-bold cursor-pointer" style={{ background: !annual ? 'var(--color-text)' : 'transparent', color: !annual ? 'var(--color-bg)' : 'var(--color-text)' }}>Mensal</button>
-              <button onClick={() => setAnnual(true)} className="px-[18px] py-2.5 text-[13px] font-bold cursor-pointer" style={{ background: annual ? 'var(--color-text)' : 'transparent', color: annual ? 'var(--color-bg)' : 'var(--color-text)', borderLeft: '2px solid var(--color-text)' }}>
-                Anual −20%
-              </button>
-            </div>
+            <SegmentedControl
+              className="self-start"
+              options={[
+                { value: 'monthly', label: 'Mensal' },
+                { value: 'annual', label: 'Anual −20%' },
+              ]}
+              value={annual ? 'annual' : 'monthly'}
+              onChange={(v) => setAnnual(v === 'annual')}
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3" style={{ borderTop: '2px solid var(--color-text)', borderBottom: '2px solid var(--color-text)' }}>
