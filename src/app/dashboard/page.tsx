@@ -5,15 +5,12 @@ import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { MetricsBar } from '@/components/dashboard/MetricsBar';
-import { BidList } from '@/components/dashboard/BidList';
 import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
 import { ProfilesCard } from '@/components/dashboard/ProfilesCard';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
-import { bids } from '@/lib/bids';
 import { getStats, getRecentArticles, type PublicStats } from '@/lib/api';
 import type { Article } from '@/lib/types';
-
-const destaques = bids.slice(0, 5);
+import { parseSectionNumber } from '@/lib/utils';
 
 const prazos = [
   { title: 'Pregão 114/2026 · Campinas', days: 'abertura em 2 dias', tone: 'urgent' as const },
@@ -89,25 +86,29 @@ export default function DashboardPage() {
                     Carregando...
                   </div>
                 )}
-                {recent.map((article) => (
-                  <a
-                    key={article.id}
-                    href={`/artigo/${article.slug}`}
-                    className="block py-4 cursor-pointer hover:opacity-80 transition-opacity"
-                    style={{ borderBottom: '1px solid var(--color-divider)', textDecoration: 'none' }}
-                  >
-                    <div className="text-[11px] font-bold mb-1" style={{ color: 'var(--color-accent)' }}>
-                      {article.organ_level_1 || article.organ || 'DOU'}
-                    </div>
-                    <h3 className="text-[15px] font-bold leading-snug mb-1" style={{ color: 'var(--color-text)' }}>
-                      {article.title_marker || article.title}
-                    </h3>
-                    <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>
-                      {new Date(article.published_date).toLocaleDateString('pt-BR')}
-                      {article.section ? ` · ${article.section.replace('Seção:', 'Seção ').replace('|Página:', 'p.')}` : ''}
-                    </div>
-                  </a>
-                ))}
+                {recent.map((article) => {
+                  const sectionNumber = parseSectionNumber(article.section);
+                  return (
+                    <a
+                      key={article.id}
+                      href={`/artigo/${article.slug}`}
+                      className="block py-4 cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{ borderBottom: '1px solid var(--color-divider)', textDecoration: 'none' }}
+                    >
+                      <div className="text-[11px] font-bold mb-1" style={{ color: 'var(--color-accent)' }}>
+                        {article.organ_level_1 || article.organ || 'DOU'}
+                      </div>
+                      <h3 className="text-[15px] font-bold leading-snug mb-1" style={{ color: 'var(--color-text)' }}>
+                        {article.title_marker || article.title}
+                      </h3>
+                      <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>
+                        {new Date(article.published_date).toLocaleDateString('pt-BR')}
+                        {sectionNumber ? ` · Seção ${sectionNumber}` : ''}
+                        {article.page ? ` · p. ${article.page}` : ''}
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
