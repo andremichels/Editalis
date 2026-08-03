@@ -17,3 +17,10 @@ export function formatDate(dateStr: string): string {
 export function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '');
 }
+
+// DOU API returns section as a combined label like "Seção: 3|Página:226" — pull just the number out.
+export function parseSectionNumber(section?: string): string | undefined {
+  if (!section) return undefined;
+  const match = section.match(/Seção:\s*([^|]+)/);
+  return match ? match[1].trim() : undefined;
+}
