@@ -2,6 +2,23 @@ import { Article, Organ, SearchResponse } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
+// ── Stats ──
+
+export interface PublicStats {
+  total_articles: number;
+  articles_today: number;
+  articles_this_week: number;
+  last_sync_at: string | null;
+}
+
+export async function getStats(): Promise<PublicStats> {
+  const res = await fetch(`${API_BASE}/api/v1/stats`);
+  if (!res.ok) throw new Error(`Stats failed: ${res.status}`);
+  return res.json();
+}
+
+// ── Search ──
+
 export async function searchArticles(params: {
   q: string;
   organ?: string;
@@ -29,6 +46,15 @@ export async function searchArticles(params: {
 export async function getArticle(slug: string): Promise<Article> {
   const res = await fetch(`${API_BASE}/api/v1/article/${encodeURIComponent(slug)}`);
   if (!res.ok) throw new Error(`Article not found: ${res.status}`);
+  return res.json();
+}
+
+export async function getRecentArticles(limit = 10, since?: string): Promise<Article[]> {
+  const params = new URLSearchParams();
+  params.set('limit', String(limit));
+  if (since) params.set('since', since);
+  const res = await fetch(`${API_BASE}/api/v1/recent?${params}`);
+  if (!res.ok) throw new Error(`Recent failed: ${res.status}`);
   return res.json();
 }
 
