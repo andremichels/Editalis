@@ -34,11 +34,18 @@ export default function DashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState<PublicStats | null>(null);
   const [recent, setRecent] = useState<Article[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getStats().then(setStats).catch(console.error);
+  const loadData = () => {
+    setError(null);
+    getStats().then(setStats).catch((e) => {
+      setError('Não foi possível carregar os dados. Verifique sua conexão.');
+      console.error(e);
+    });
     getRecentArticles(5).then(setRecent).catch(console.error);
-  }, []);
+  };
+
+  useEffect(() => { loadData(); }, []);
 
   const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const lastSync = stats?.last_sync_at
@@ -68,6 +75,19 @@ export default function DashboardPage() {
             Nova busca
           </button>
         </div>
+
+        {error && (
+          <div className="mx-10 mt-4 p-4 flex items-center justify-between" style={{ background: '#f8d7da', border: '2px solid #f5c6cb' }}>
+            <span className="text-sm font-bold" style={{ color: '#721c24' }}>{error}</span>
+            <button
+              onClick={loadData}
+              className="px-4 py-1.5 text-sm font-bold"
+              style={{ background: '#721c24', color: '#fff', border: 'none' }}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
 
         <MetricsBar metrics={metrics} />
 
