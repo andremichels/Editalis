@@ -25,12 +25,24 @@ interface AlertProfile {
   created_at: string;
 }
 
+interface Article {
+  id: number;
+  slug: string;
+  title: string;
+  title_marker?: string;
+  published_date: string;
+  organ_level_1?: string;
+}
+
 export default function AlertasPage() {
   const [alerts, setAlerts] = useState<AlertProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", keywords: "", organs: "", ufs: "", modalities: "", value_min: "", value_max: "" });
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [matches, setMatches] = useState<Article[]>([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -98,6 +110,21 @@ export default function AlertasPage() {
     await fetch(`${API_BASE}/api/v1/alerts/${alert.id}`, { method: "DELETE" });
     toast("Alerta removido", "success");
     load();
+  };
+
+  const toggleMatches = async (alertId: number) => {
+    if (expanded === alertId) {
+      setExpanded(null);
+      return;
+    }
+    setExpanded(alertId);
+    setMatchesLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/alerts/${alertId}/matches?limit=10`);
+      const data = await res.json();
+      setMatches(Array.isArray(data) ? data : []);
+    } catch {}
+    setMatchesLoading(false);
   };
 
   return (
@@ -207,6 +234,9 @@ export default function AlertasPage() {
                     </div>
                   </div>
                   <div className="flex gap-2 shrink-0 ml-4">
+                    <Button variant="ghost" size="sm" onClick={() => toggleMatches(alert.id)}>
+                      {expanded === alert.id ? "Fechar" : "Ver matches"}
+                    </Button>
                     <Button variant="ghost" size="sm" onClick={() => handleToggle(alert)}>
                       {alert.enabled ? "Pausar" : "Ativar"}
                     </Button>
@@ -214,6 +244,34 @@ export default function AlertasPage() {
                       ✕
                     </Button>
                   </div>
+                  {expanded === alert.id && (
+                    <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--color-divider)" }}>
+                      {matchesLoading ? (
+                        <div className="space-y-2">
+                          {Array.from({ length: 3 }).map((_, i) => (<div key={i} className="h-10 skeleton" />))}
+                        </div>
+                      ) : matches.length === 0 ? (
+                        <p className="text-xs" style={{ color: "var(--color-neutral-500)" }}>Nenhum artigo encontrado com esses critérios.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {matches.map((a) => (
+                            <a key={a.id} href={`/artigo/${a.slug}`} className="block p-3 hover:opacity-80 transition-opacity"
+                              style={{ background: "var(--color-surface)", border: "1px solid var(--color-divider)", textDecoration: "none" }}>
+                              <div className="text-[11px] font-bold mb-0.5" style={{ color: "var(--color-accent)" }}>
+                                {a.organ_level_1 || "DOU"}
+                              </div>
+                              <div className="text-[13px] font-bold leading-snug" style={{ color: "var(--color-text)" }}>
+                                {a.title_marker || a.title}
+                              </div>
+                              <div className="text-[11px] mt-1" style={{ color: "var(--color-neutral-500)" }}>
+                                {new Date(a.published_date).toLocaleDateString("pt-BR")}
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/auth';
+import { useFavorites } from '@/lib/useFavorites';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 interface NavItem {
   label: string;
@@ -11,25 +14,23 @@ interface NavItem {
   count?: number;
 }
 
-// "Favoritas" and "Última consultada" have no dedicated screen in the design —
-// favorites live inside /alertas, and "Última consultada" wasn't designed, so
-// both render as inert (non-navigable) items instead of pointing at dead links.
-const navItems: NavItem[] = [
-  { label: 'Painel', href: '/dashboard' },
-  { label: 'Busca', href: '/busca' },
-  { label: 'Favoritas', count: 14 },
-  { label: 'Alertas', href: '/alertas', count: 3 },
-  { label: 'Última consultada' },
-];
-
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [name, setName] = useState('');
+  const [alertCount, setAlertCount] = useState(0);
+  const { favorites } = useFavorites();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setName(data.user?.user_metadata?.nome || data.user?.email || '');
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user;
+      setName(user?.user_metadata?.nome || user?.email?.split('@')[0] || '');
+      if (user) {
+        fetch(`${API_BASE}/api/v1/alerts?user_id=${user.id}`)
+          .then(r => r.json())
+          .then((alerts: any[]) => setAlertCount(alerts.length))
+          .catch(() => {});
+      }
     });
   }, []);
 
@@ -38,13 +39,22 @@ export function Sidebar() {
     router.push('/login');
   };
 
+  const favCount = favorites.size;
+
+  const navItems: NavItem[] = [
+    { label: 'Painel', href: '/dashboard' },
+    { label: 'Busca', href: '/busca' },
+    { label: 'Favoritas', href: '/favoritos', count: favCount },
+    { label: 'Alertas', href: '/alertas', count: alertCount },
+  ];
+
   return (
     <div className="flex flex-col py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-400)' }}>
       <div className="px-5 pb-6 mb-5" style={{ borderBottom: '1px solid var(--color-neutral-800)' }}>
         <div className="text-[19px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: '#fff' }}>
           EDITALIS
         </div>
-        <div className="text-[11px] uppercase mt-1" style={{ letterSpacing: '0.12em' }}>Construtora Órion</div>
+        <div className="text-[11px] uppercase mt-1" style={{ letterSpacing: '0.12em' }}>{name}</div>
       </div>
 
       <nav className="flex flex-col">
