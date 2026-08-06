@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { supabase } from "@/lib/auth";
 
 const STORAGE_KEY = "editalis_favorites";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -13,12 +13,8 @@ export function useFavorites() {
 
   // Get userId from Supabase session
   useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_KEY!
-    );
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUserId(data.user.id);
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setUserId(data.session.user.id);
     });
   }, []);
 

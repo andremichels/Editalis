@@ -6,7 +6,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/Toast";
-import { createBrowserClient } from "@supabase/ssr";
+import { supabase } from "@/lib/auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const MODALITIES = ["pregao", "pregao_eletronico", "concorrencia", "dispensa", "inexigibilidade", "tomada_precos", "concurso", "leilao", "rdc"];
@@ -35,12 +35,8 @@ export default function AlertasPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_KEY!
-    );
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUserId(data.user.id);
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setUserId(data.session.user.id);
     });
   }, []);
 
