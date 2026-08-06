@@ -57,6 +57,10 @@ export default function AlertasPage() {
 
   const handleCreate = async () => {
     if (!form.name) return;
+    if (!userId) {
+      toast("Erro: usuário não autenticado", "error");
+      return;
+    }
     const body = {
       name: form.name,
       keywords: form.keywords.split(",").map((s) => s.trim()).filter(Boolean),
@@ -78,7 +82,8 @@ export default function AlertasPage() {
       setForm({ name: "", keywords: "", organs: "", ufs: "", modalities: "", value_min: "", value_max: "" });
       load();
     } else {
-      toast("Erro ao criar alerta", "error");
+      const err = await res.text();
+      toast("Erro ao criar alerta: " + err, "error");
     }
   };
 
