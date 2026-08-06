@@ -67,9 +67,6 @@ export function ArticleMeta({ article }: { article: Article }) {
     if (n.contract_number) {
       rows.push(['Contrato', n.contract_number]);
     }
-    if (n.value) {
-      rows.push(['Valor', formatMoney(n.value)]);
-    }
     if (n.opening_date) {
       rows.push(['Abertura', formatDate(n.opening_date)]);
     }
@@ -77,6 +74,15 @@ export function ArticleMeta({ article }: { article: Article }) {
 
   return (
     <div>
+      {n?.value !== undefined && (
+        <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
+          <div className={sectionLabel} style={{ ...sectionLabelStyle, marginBottom: 6 }}>Valor</div>
+          <div className="text-[32px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)' }}>
+            {formatMoney(n.value)}
+          </div>
+        </div>
+      )}
+
       <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
         <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>Detalhes da publicação</div>
         <div className="text-sm">
@@ -87,7 +93,7 @@ export function ArticleMeta({ article }: { article: Article }) {
               style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
             >
               <span style={{ color: 'var(--color-neutral-700)' }}>{label}</span>
-              <span className="font-bold text-right">{value}</span>
+              <span className="font-bold text-right" style={label === 'Abertura' ? { color: 'var(--color-accent)' } : undefined}>{value}</span>
             </div>
           ))}
         </div>
