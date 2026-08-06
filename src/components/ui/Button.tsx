@@ -11,6 +11,8 @@ const variants = {
     'text-[var(--color-text)] hover:bg-[var(--color-accent-100)] active:bg-[var(--color-accent-200)]',
   outline:
     'border-2 border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-neutral-100)]',
+  danger:
+    'bg-[#dc3545] text-white hover:bg-[#c82333] active:bg-[#bd2130]',
 } as const;
 
 const sizes = {
