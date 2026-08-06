@@ -1,6 +1,5 @@
 import type { Article } from '@/lib/types';
 import { formatDate, parseSectionNumber } from '@/lib/utils';
-import { FavoriteButton } from '@/components/ui/FavoriteButton';
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
 const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
@@ -78,11 +77,6 @@ export function ArticleMeta({ article }: { article: Article }) {
 
   return (
     <div>
-      {/* Favorite */}
-      <div className="px-6 pt-5 flex justify-end">
-        <FavoriteButton articleId={article.id} size="md" />
-      </div>
-
       <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
         <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>Detalhes da publicação</div>
         <div className="text-sm">
