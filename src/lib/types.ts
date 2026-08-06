@@ -15,6 +15,7 @@ export interface Article {
   organ_level_3?: string;
   created_at?: string;
   excerpt?: string;
+  normalized_data?: NormalizedData;
 }
 
 export interface SearchResponse {
@@ -25,4 +26,18 @@ export interface SearchResponse {
 export interface Organ {
   organ: string;
   count: number;
+}
+
+export interface NormalizedData {
+  doc_type?: string;
+  modality?: string;
+  process_number?: string;
+  object_summary?: string;
+  value?: number;
+  opening_date?: string;
+  cnpjs?: string[];
+  ufs?: string[];
+  keywords?: string[];
+  organ_normalized?: string;
+  contract_number?: string;
 }
