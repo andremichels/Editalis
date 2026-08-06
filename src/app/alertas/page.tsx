@@ -56,6 +56,7 @@ export default function AlertasPage() {
   useEffect(() => { if (userId) load(); }, [userId]);
 
   const handleCreate = async () => {
+    console.log("handleCreate called", { name: form.name, userId });
     if (!form.name) return;
     if (!userId) {
       toast("Erro: usuário não autenticado", "error");
@@ -160,7 +161,13 @@ export default function AlertasPage() {
                     className="w-full px-3 py-2 text-sm" style={{ border: "2px solid var(--color-divider)", background: "var(--color-bg)" }} />
                 </div>
               </div>
-              <Button onClick={handleCreate}>Criar alerta</Button>
+              <button
+                onClick={handleCreate}
+                className="inline-flex items-center gap-2 font-semibold px-4 py-2 text-sm"
+                style={{ background: "var(--color-accent)", color: "#fff", border: "none", fontFamily: "var(--font-body)" }}
+              >
+                Criar alerta
+              </button>
             </div>
           )}
 
