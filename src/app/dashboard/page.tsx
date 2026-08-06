@@ -11,6 +11,7 @@ import { VolumeChart } from '@/components/dashboard/VolumeChart';
 import { getStats, getRecentArticles, type PublicStats } from '@/lib/api';
 import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
+import { FavoriteButton } from '@/components/ui/FavoriteButton';
 
 const prazos = [
   { title: 'Pregão 114/2026 · Campinas', days: 'abertura em 2 dias', tone: 'urgent' as const },
@@ -112,9 +113,12 @@ export default function DashboardPage() {
                     <a
                       key={article.id}
                       href={`/artigo/${article.slug}`}
-                      className="block py-4 cursor-pointer hover:opacity-80 transition-opacity"
+                      className="block py-4 cursor-pointer hover:opacity-80 transition-opacity relative"
                       style={{ borderBottom: '1px solid var(--color-divider)', textDecoration: 'none' }}
                     >
+                      <div className="absolute top-4 right-0">
+                        <FavoriteButton articleId={article.id} />
+                      </div>
                       <div className="text-[11px] font-bold mb-1" style={{ color: 'var(--color-accent)' }}>
                         {article.organ_level_1 || article.organ || 'DOU'}
                       </div>
