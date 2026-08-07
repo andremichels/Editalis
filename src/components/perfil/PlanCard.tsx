@@ -2,25 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/auth';
+import { useToast } from '@/components/Toast';
+import { getSubscription, getSubscriptionPortalUrl, type Subscription } from '@/lib/api';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
-
-interface Subscription {
-  plan: string;
-  plan_label: string;
-  status: string;
-  billing_cycle: string;
-  price_cents: number | null;
-  current_period_end: string;
-  cancel_at_period_end: boolean;
-  trial_ends_at: string | null;
-  usage: {
-    alert_profiles_used: number;
-    alert_profiles_limit: number | null;
-  };
-}
-
-const STATUS_LABELS: Record<string, string> = {
+const STATUS_LABELS: Record<Subscription['status'], string> = {
   trialing: 'Trial',
   active: 'Ativo',
   past_due: 'Pagamento pendente',
@@ -47,13 +32,14 @@ function formatCycle(cycle: string): string {
 export function PlanCard() {
   const [sub, setSub] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openingPortal, setOpeningPortal] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       const uid = data.session?.user?.id;
       if (!uid) { setLoading(false); return; }
-      fetch(`${API_BASE}/api/v1/account/subscription?user_id=${uid}`)
-        .then((r) => r.json())
+      getSubscription(uid)
         .then(setSub)
         .catch(() => {})
         .finally(() => setLoading(false));
@@ -64,10 +50,15 @@ export function PlanCard() {
     const { data } = await supabase.auth.getSession();
     const uid = data.session?.user?.id;
     if (!uid) return;
-    const res = await fetch(`${API_BASE}/api/v1/account/subscription/portal?user_id=${uid}`, { method: 'POST' });
-    if (res.ok) {
-      const { url } = await res.json();
-      if (url) window.open(url, '_blank');
+    setOpeningPortal(true);
+    try {
+      const url = await getSubscriptionPortalUrl(uid);
+      if (!url) throw new Error('no url');
+      window.location.href = url;
+    } catch {
+      toast('Portal de cobrança ainda não disponível — fale com o suporte pra alterar seu plano.', 'info');
+    } finally {
+      setOpeningPortal(false);
     }
   };
 
@@ -85,11 +76,14 @@ export function PlanCard() {
             <div>
               <div className="flex items-center gap-2">
                 <div className="text-lg font-black">{sub.plan_label}</div>
-                <span className="text-[10px] px-2 py-0.5 font-bold uppercase"
-                  style={{
-                    background: sub.status === 'active' ? '#d4edda' : sub.status === 'past_due' ? '#f8d7da' : '#e2e3e5',
-                    color: sub.status === 'active' ? '#155724' : sub.status === 'past_due' ? '#721c24' : '#383d41',
-                  }}>
+                <span
+                  className="text-[10px] px-2 py-0.5 font-bold uppercase"
+                  style={sub.status === 'active'
+                    ? { background: 'var(--color-text)', color: 'var(--color-bg)' }
+                    : sub.status === 'past_due'
+                    ? { background: 'var(--color-accent)', color: '#fff' }
+                    : { border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-700)' }}
+                >
                   {STATUS_LABELS[sub.status] || sub.status}
                 </span>
               </div>
@@ -113,10 +107,11 @@ export function PlanCard() {
             </div>
             <button
               onClick={handleManage}
-              className="text-sm font-bold py-2.5 px-4 cursor-pointer whitespace-nowrap"
+              disabled={openingPortal}
+              className="text-sm font-bold py-2.5 px-4 cursor-pointer whitespace-nowrap disabled:opacity-60"
               style={{ border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
             >
-              Gerenciar assinatura
+              {openingPortal ? 'Abrindo...' : 'Gerenciar assinatura'}
             </button>
           </div>
         </div>

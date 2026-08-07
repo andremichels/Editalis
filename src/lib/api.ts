@@ -73,3 +73,35 @@ export async function searchByCNPJ(cnpj: string): Promise<SearchResponse> {
   const articles: Article[] = await res.json();
   return { articles };
 }
+
+// ── Account / subscription ──
+// See ACCOUNT_API.md — `portal`/`checkout` aren't implemented backend-side yet
+// (404 until a payment provider is chosen), everything else is live.
+
+export interface Subscription {
+  plan: 'essencial' | 'profissional' | 'enterprise';
+  plan_label: string;
+  status: 'trialing' | 'active' | 'past_due' | 'canceled';
+  billing_cycle: 'monthly' | 'annual';
+  price_cents: number | null;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+  trial_ends_at: string | null;
+  usage: {
+    alert_profiles_used: number;
+    alert_profiles_limit: number | null;
+  };
+}
+
+export async function getSubscription(userId: string): Promise<Subscription> {
+  const res = await fetch(`${API_BASE}/api/v1/account/subscription?user_id=${userId}`);
+  if (!res.ok) throw new Error(`Subscription failed: ${res.status}`);
+  return res.json();
+}
+
+export async function getSubscriptionPortalUrl(userId: string): Promise<string> {
+  const res = await fetch(`${API_BASE}/api/v1/account/subscription/portal?user_id=${userId}`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Portal failed: ${res.status}`);
+  const body = await res.json();
+  return body.url;
+}

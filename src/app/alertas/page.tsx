@@ -7,6 +7,7 @@ import { AlertForm, type AlertFormState } from '@/components/alertas/AlertForm';
 import { AlertCard, type AlertProfile } from '@/components/alertas/AlertCard';
 import { useToast } from '@/components/Toast';
 import { supabase } from '@/lib/auth';
+import { getSubscription, type Subscription } from '@/lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
@@ -31,14 +32,21 @@ export default function AlertasPage() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [matches, setMatches] = useState<MatchArticle[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const { toast } = useToast();
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setUserId(data.session.user.id);
+      if (data.session) {
+        setUserId(data.session.user.id);
+        getSubscription(data.session.user.id).then(setSubscription).catch(() => {});
+      }
     });
   }, []);
+
+  const limit = subscription?.usage.alert_profiles_limit ?? null;
+  const atLimit = limit !== null && alerts.length >= limit;
 
   const load = () => {
     if (!userId) return;
@@ -55,6 +63,10 @@ export default function AlertasPage() {
     if (!form.name) return;
     if (!userId) {
       toast('Erro: usuário não autenticado', 'error');
+      return;
+    }
+    if (editingId === null && atLimit) {
+      toast(`Limite de ${limit} perfis do plano ${subscription?.plan_label} atingido. Fale com o suporte pra fazer upgrade.`, 'error');
       return;
     }
     const body = {
@@ -151,11 +163,24 @@ export default function AlertasPage() {
               Alertas
             </h1>
             <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-600)' }}>
-              {alerts.length} perfil{alerts.length !== 1 ? 's' : ''} configurado{alerts.length !== 1 ? 's' : ''}
+              {subscription ? (
+                limit !== null
+                  ? `${alerts.length} de ${limit} perfis usados no plano ${subscription.plan_label}`
+                  : `${alerts.length} perfil${alerts.length !== 1 ? 's' : ''} · perfis ilimitados no plano ${subscription.plan_label}`
+              ) : (
+                `${alerts.length} perfil${alerts.length !== 1 ? 's' : ''} configurado${alerts.length !== 1 ? 's' : ''}`
+              )}
             </div>
           </div>
           <button
-            onClick={() => { cancelForm(); setShowForm(!showForm); }}
+            onClick={() => {
+              if (!showForm && atLimit) {
+                toast(`Limite de ${limit} perfis do plano ${subscription?.plan_label} atingido. Fale com o suporte pra fazer upgrade.`, 'error');
+                return;
+              }
+              cancelForm();
+              setShowForm(!showForm);
+            }}
             className="text-left py-3 px-5 text-sm font-bold cursor-pointer"
             style={{ background: 'var(--color-accent)', border: '2px solid var(--color-accent)', color: '#fff' }}
           >
