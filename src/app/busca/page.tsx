@@ -45,10 +45,12 @@ export default function BuscaPage() {
         const offset = (p - 1) * PAGE_SIZE;
         const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}`;
         const res = await fetch(url);
-        const data: Article[] = await res.json();
+        const body = await res.json();
+        const all: Article[] = body.results || [];
+        const apiTotal: number = body.count || 0;
 
-        // Client-side filtering for modalities, UFs, value
-        let filtered = data || [];
+        // Client-side filtering for modalities, UFs, value (filters current page only)
+        let filtered = all;
         if (organs.length > 0) {
           filtered = filtered.filter(
             (a) => a.organ && organs.some((o) => a.organ!.toLowerCase().includes(o.toLowerCase()))
@@ -71,13 +73,13 @@ export default function BuscaPage() {
         if (vMin > 0 || vMax < Infinity) {
           filtered = filtered.filter((a) => {
             const v = a.normalized_data?.value;
-            if (v == null) return vMin === 0; // include if no value filter min
+            if (v == null) return vMin === 0;
             return v >= vMin && v <= vMax;
           });
         }
 
         setResults(filtered);
-        setTotal(filtered.length);
+        setTotal(apiTotal);
       } catch {
         setResults([]);
         setTotal(0);
