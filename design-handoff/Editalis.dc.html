@@ -29,10 +29,10 @@
 
 <div style="font-family: 'Archivo', system-ui, sans-serif; background: var(--color-bg); color: var(--color-text); min-height: 100vh;">
 
-  <div style="position: sticky; top: 0; z-index: 60; display: flex; align-items: stretch; gap: 0; background: var(--color-text); color: var(--color-neutral-100); border-bottom: 2px solid var(--color-accent);">
-    <div style="display: flex; align-items: center; padding: 0 20px; font-weight: 900; letter-spacing: -0.02em; font-size: 13px; text-transform: uppercase; border-right: 1px solid var(--color-neutral-700);">Editalis <span style="color: var(--color-accent-400); margin-left: 8px; font-weight: 500;">protótipo</span></div>
+  <div style="position: sticky; top: 0; z-index: 60; display: flex; align-items: stretch; gap: 0; overflow-x: auto; min-width: 0; background: var(--color-text); color: var(--color-neutral-100); border-bottom: 2px solid var(--color-accent);">
+    <div style="display: flex; align-items: center; white-space: nowrap; flex: 0 0 auto; padding: 0 20px; font-weight: 900; letter-spacing: -0.02em; font-size: 13px; text-transform: uppercase; border-right: 1px solid var(--color-neutral-700);">Editalis <span style="color: var(--color-accent-400); margin-left: 8px; font-weight: 500;">protótipo</span></div>
     <sc-for list="{{ telas }}" as="t" hint-placeholder-count="8">
-      <button onClick="{{ t.go }}" style="appearance: none; border: 0; border-right: 1px solid var(--color-neutral-700); background: {{ t.bg }}; color: {{ t.fg }}; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 12px 18px; cursor: pointer;" style-hover="background: var(--color-neutral-800);">{{ t.nome }}</button>
+      <button onClick="{{ t.go }}" style="appearance: none; border: 0; border-right: 1px solid var(--color-neutral-700); flex: 0 0 auto; white-space: nowrap; background: {{ t.bg }}; color: {{ t.fg }}; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 12px 18px; cursor: pointer;" style-hover="background: var(--color-neutral-800);">{{ t.nome }}</button>
     </sc-for>
   </div>
 
@@ -56,7 +56,7 @@
     </div>
 
     <div style="max-width: 1280px; margin: 0 auto; padding: 0 40px;">
-      <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 64px; padding: 88px 0 64px; border-bottom: 2px solid var(--color-text);">
+      <div style="display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 64px; padding: 88px 0 64px; border-bottom: 2px solid var(--color-text);">
         <div>
           <div data-anim="up" data-anim-delay="0" style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700); margin-bottom: 28px;">Diários oficiais · União, 27 estados, 1.400+ municípios</div>
           <h1 data-anim="up" data-anim-delay="70" style="font-family: var(--font-heading); font-weight: 900; font-size: 76px; line-height: 0.94; letter-spacing: -0.035em; margin: 0 0 28px; text-wrap: pretty;">Lemos todos os diários oficiais. Você recebe só o que a sua empresa vende.</h1>
@@ -103,7 +103,7 @@
       </div>
 
       <div id="produto" style="padding: 72px 0 0;">
-        <div style="display: grid; grid-template-columns: 320px 1fr; gap: 64px; padding-bottom: 56px;">
+        <div style="display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 64px; padding-bottom: 56px;">
           <div>
             <div data-anim="up" style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Como funciona</div>
             <h2 data-anim="up" data-anim-delay="40" style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.02; margin: 16px 0 0;">Três passos e o edital certo chega até você.</h2>
@@ -238,7 +238,7 @@
       </div>
       </sc-if>
 
-      <div style="padding: 56px 0; display: grid; grid-template-columns: 320px 1fr; gap: 64px;">
+      <div style="padding: 56px 0; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 64px;">
         <h2 style="font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 0; line-height: 1.02;">Perguntas frequentes</h2>
         <div style="border-top: 2px solid var(--color-text);">
           <div style="padding: 22px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-size: 17px; font-weight: 800; margin-bottom: 6px;">De onde vêm os dados?</div><p style="margin: 0; font-size: 15px; line-height: 1.55; color: var(--color-neutral-700);">Exclusivamente de publicações oficiais: DOU, diários estaduais e municipais, conciliados com os portais de compras públicos.</p></div>
@@ -348,7 +348,7 @@
       </div>
 
       <sc-if value="{{ step1 }}" hint-placeholder-val="{{ true }}">
-      <div style="display: grid; grid-template-columns: 1fr 360px; gap: 48px;">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px;">
         <div>
           <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 24px;">Escolha o plano</h1>
           <div style="border-top: 2px solid var(--color-text);">
@@ -383,7 +383,7 @@
       </sc-if>
 
       <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
-      <div style="display: grid; grid-template-columns: 1fr 360px; gap: 48px;">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px;">
         <div>
           <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 24px;">Forma de pagamento</h1>
           <div style="display: flex; border: 2px solid var(--color-text); margin-bottom: 28px;">
@@ -446,7 +446,7 @@
 
   <!-- ================= APP (painel / busca / detalhe / alertas) ================= -->
   <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
-  <div style="display: grid; grid-template-columns: 232px 1fr; min-height: calc(100vh - 41px);">
+  <div style="display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: calc(100vh - 41px);">
     <div style="background: var(--color-text); color: var(--color-neutral-400); display: flex; flex-direction: column; padding: 24px 0;">
       <div style="padding: 0 20px 24px; border-bottom: 1px solid var(--color-neutral-800); margin-bottom: 20px;">
         <div style="font-size: 19px; font-weight: 900; color: #fff; letter-spacing: -0.03em;">EDITALIS</div>
@@ -459,7 +459,7 @@
       </sc-for>
       <div style="margin-top: auto; padding: 20px; border-top: 1px solid var(--color-neutral-800);">
         <div style="font-size: 12px; color: var(--color-neutral-500);">Plano Profissional</div>
-        <div style="font-size: 13px; color: #fff; font-weight: 700; margin-top: 2px;">Ana Ribeiro</div>
+        <button onClick="{{ irPerfil }}" style="appearance: none; border: 0; background: transparent; color: #fff; font-size: 13px; font-weight: 700; margin-top: 2px; padding: 0; cursor: pointer; text-align: left;" style-hover="color: var(--color-accent-400);">Ana Ribeiro →</button>
         <button onClick="{{ irLanding }}" style="appearance: none; border: 0; background: transparent; color: var(--color-neutral-500); font-size: 12px; padding: 8px 0 0; cursor: pointer;">Sair</button>
       </div>
     </div>
@@ -492,7 +492,7 @@
             <div style="padding: 0 40px 40px;">
               <div style="border-top: 2px solid var(--color-text);">
                 <sc-for list="{{ destaques }}" as="l" hint-placeholder-count="5">
-                  <div onClick="{{ l.abrir }}" style="padding: 18px 0; border-bottom: 1px solid var(--color-divider); cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start;" style-hover="background: var(--color-neutral-200);">
+                  <div onClick="{{ l.abrir }}" style="padding: 18px 0; border-bottom: 1px solid var(--color-divider); cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start;" style-hover="background: var(--color-neutral-200);">
                     <div style="min-width: 0;">
                       <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent-200); color: var(--color-accent-800); padding: 3px 7px;">{{ l.modalidade }}</span>
@@ -565,7 +565,7 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 268px 1fr; min-height: 600px;">
+        <div style="display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: 600px;">
           <div style="border-right: 2px solid var(--color-text); padding: 24px 20px;">
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px;"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;">Filtros</span><a href="#limpar" style="font-size: 12px;">limpar</a></div>
             <div style="border-top: 1px solid var(--color-divider); padding: 16px 0;">
@@ -613,7 +613,7 @@
               </div>
             </div>
             <sc-for list="{{ resultados }}" as="l" hint-placeholder-count="6">
-              <div style="padding: 22px 40px; border-bottom: 1px solid var(--color-divider); display: grid; grid-template-columns: 1fr auto; gap: 28px;" style-hover="background: var(--color-neutral-200);">
+              <div style="padding: 22px 40px; border-bottom: 1px solid var(--color-divider); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;" style-hover="background: var(--color-neutral-200);">
                 <div style="min-width: 0;">
                   <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
                     <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent-200); color: var(--color-accent-800); padding: 3px 7px;">{{ l.modalidade }}</span>
@@ -648,7 +648,7 @@
         <div style="padding: 16px 40px; border-bottom: 1px solid var(--color-divider);">
           <button onClick="{{ irBusca }}" style="appearance: none; border: 0; background: transparent; color: var(--color-neutral-700); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0;">← Voltar aos resultados</button>
         </div>
-        <div style="padding: 32px 40px; border-bottom: 2px solid var(--color-text); display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start;">
+        <div style="padding: 32px 40px; border-bottom: 2px solid var(--color-text); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: start;">
           <div>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
               <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--color-accent); color: #fff; padding: 4px 8px;">Pregão eletrônico</span>
@@ -724,7 +724,7 @@
           </div>
           <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Novo perfil de alerta</button>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 400px;">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 400px;">
           <div style="border-right: 2px solid var(--color-text); padding: 28px 40px;">
             <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 16px;">Perfis monitorados</div>
             <div style="border-top: 2px solid var(--color-text);">
@@ -770,6 +770,484 @@
       </div>
       </sc-if>
 
+      <!-- PERFIL -->
+      <sc-if value="{{ isPerfil }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="padding: 28px 40px 0; border-bottom: 2px solid var(--color-text);">
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="width: 68px; height: 68px; background: var(--color-text); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; letter-spacing: -0.02em; flex: 0 0 auto;">AR</div>
+            <div style="flex: 1; min-width: 0;">
+              <h1 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 0;">Ana Ribeiro</h1>
+              <div style="font-size: 14px; color: var(--color-neutral-700); margin-top: 4px;">Administradora · Construtora Órion Ltda · desde março de 2025</div>
+            </div>
+            <div style="display: flex; gap: 24px; text-align: right;">
+              <div><div style="font-size: 24px; font-weight: 900;">3/25</div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">perfis</div></div>
+              <div><div style="font-size: 24px; font-weight: 900;">14</div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">favoritas</div></div>
+              <div><div style="font-size: 24px; font-weight: 900;">3</div><div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600);">usuários</div></div>
+            </div>
+          </div>
+          <div style="display: flex; margin-top: 24px;">
+            <sc-for list="{{ abas }}" as="ab" hint-placeholder-count="4">
+              <button onClick="{{ ab.ir }}" style="appearance: none; border: 2px solid var(--color-text); border-bottom: 0; border-right: 0; background: {{ ab.bg }}; color: {{ ab.fg }}; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; padding: 12px 20px; cursor: pointer;" style-hover="background: var(--color-neutral-200);">{{ ab.nome }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ abaConta }}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 32px 40px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 20px;">Dados pessoais</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 640px;">
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Nome completo</label><input value="Ana Cristina Ribeiro" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Cargo</label><input value="Gerente de captação" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">E-mail de acesso</label><input value="ana@construtoraorion.com.br" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Celular (WhatsApp)</label><input value="(19) 99812-4400" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            </div>
+
+            <div style="border-top: 2px solid var(--color-text); margin-top: 32px; padding-top: 28px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 20px;">Preferências de busca</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 640px;">
+                <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">UFs padrão</label><select style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"><option>SP, MG (2 selecionados)</option></select></div>
+                <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Valor mínimo de interesse</label><input value="R$ 100.000" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px; max-width: 640px; font-size: 14px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><span>Abrir o painel já filtrado pelas UFs padrão</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0 0 12px; border-bottom: 1px solid var(--color-divider);"><span>Ocultar licitações já homologadas nos resultados</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>Marcar automaticamente como favorita ao baixar o edital</span><input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+              <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 14px 24px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Salvar alterações</button>
+              <button style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 15px; font-weight: 700; padding: 14px 24px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Descartar</button>
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Canais de notificação</div>
+              <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>E-mail diário 06h30</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>WhatsApp para 48h</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;"><span>Notificação no app</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+              </div>
+              <button onClick="{{ irAlertas }}" style="margin-top: 16px; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 13px; font-weight: 700; padding: 10px 16px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Configurar por perfil</button>
+            </div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Atividade recente</div>
+              <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+                <div><div style="font-weight: 800;">Exportou 2.418 resultados em CSV</div><div style="color: var(--color-neutral-600);">hoje, 08h12</div></div>
+                <div><div style="font-weight: 800;">Criou o perfil “Reformas escolares”</div><div style="color: var(--color-neutral-600);">28/07, 15h40</div></div>
+                <div><div style="font-weight: 800;">Favoritou o Pregão 114/2026</div><div style="color: var(--color-neutral-600);">28/07, 09h05</div></div>
+              </div>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 10px;">Uso no ciclo</div>
+              <div style="font-size: 14px; color: var(--color-neutral-800); line-height: 1.6;">312 buscas · 9 exportações · 41 editais abertos. Sem limite no plano Profissional.</div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ abaEmpresa }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 32px 40px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 20px;">Dados cadastrais</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 640px;">
+              <div style="grid-column: span 2;"><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Razão social</label><input value="Construtora Órion Empreendimentos Ltda" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">CNPJ</label><input value="18.402.771/0001-63" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Inscrição municipal</label><input value="447.201-9" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">CEP</label><input value="13024-110" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Cidade / UF</label><input value="Campinas / SP" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              <div style="grid-column: span 2;"><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">E-mail para nota fiscal</label><input value="financeiro@construtoraorion.com.br" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+            </div>
+
+            <div style="border-top: 2px solid var(--color-text); margin-top: 32px; padding-top: 28px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 16px;">CNAEs de atuação</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; max-width: 640px;">
+                <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 8px 12px;">41.20-4 · Construção de edifícios</span>
+                <span style="font-size: 13px; font-weight: 700; border: 2px solid var(--color-accent); color: var(--color-accent-700); padding: 8px 12px;">43.30-4 · Obras de acabamento</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px solid var(--color-neutral-400); color: var(--color-neutral-700); padding: 9px 12px;">42.11-1 · Pavimentação</span>
+                <span style="font-size: 13px; font-weight: 600; border: 1px dashed var(--color-neutral-500); color: var(--color-neutral-600); padding: 9px 12px;">+ adicionar CNAE</span>
+              </div>
+              <p style="font-size: 13px; color: var(--color-neutral-700); margin: 14px 0 0; max-width: 560px; line-height: 1.55;">Os CNAEs alimentam a sugestão automática de licitações compatíveis no painel.</p>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+              <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 14px 24px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Salvar dados da empresa</button>
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 12px;">Situação cadastral</div>
+              <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 10px; height: 10px; background: var(--color-accent);"></div><span style="font-size: 15px; font-weight: 800;">Ativa na Receita Federal</span></div>
+              <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 8px;">Consultada em 30/07/2026</div>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Documentos de habilitação</div>
+              <div style="font-size: 14px;">
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><span>CND Federal</span><span style="font-weight: 700;">vence 12/09</span></div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><span>CRF / FGTS</span><span style="font-weight: 700; color: var(--color-accent);">vence 06/08</span></div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0;"><span>Certidão trabalhista</span><span style="font-weight: 700;">vence 30/10</span></div>
+              </div>
+              <p style="font-size: 12px; color: var(--color-neutral-600); margin: 14px 0 0; line-height: 1.5;">Avisamos por e-mail 15 dias antes de cada vencimento.</p>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ abaAssinatura }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 32px 40px;">
+            <div style="border: 2px solid var(--color-text); background: var(--color-neutral-100); padding: 28px; max-width: 640px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; gap: 24px;">
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-accent-700);">Plano atual</div>
+                  <div style="font-size: 32px; font-weight: 900; letter-spacing: -0.03em; margin: 8px 0 4px;">Profissional</div>
+                  <div style="font-size: 14px; color: var(--color-neutral-700);">25 perfis · histórico completo · WhatsApp · suporte em 4h</div>
+                </div>
+                <div style="text-align: right; white-space: nowrap;"><div style="font-size: 28px; font-weight: 900; letter-spacing: -0.03em;">R$ 199</div><div style="font-size: 13px; color: var(--color-neutral-700);">/mês</div></div>
+              </div>
+              <div style="border-top: 1px solid var(--color-divider); margin-top: 24px; padding-top: 16px; display: flex; justify-content: space-between; font-size: 14px;"><span style="color: var(--color-neutral-700);">Próxima cobrança</span><span style="font-weight: 700;">01/09/2026</span></div>
+              <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Trocar para anual e economizar 20%</button>
+                <button style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="background: var(--color-text); color: var(--color-bg);">Falar com vendas</button>
+              </div>
+            </div>
+
+            <div style="margin-top: 36px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 16px;">Histórico de faturas</div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <thead><tr style="border-top: 2px solid var(--color-text); border-bottom: 2px solid var(--color-text); text-align: left;"><th style="padding: 10px 0; font-weight: 800;">Data</th><th style="padding: 10px 0; font-weight: 800;">Documento</th><th style="padding: 10px 0; font-weight: 800;">Situação</th><th style="padding: 10px 0; font-weight: 800; text-align: right;">Valor</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ faturas }}" as="f" hint-placeholder-count="3">
+                    <tr style="border-bottom: 1px solid var(--color-divider);">
+                      <td style="padding: 14px 0;">{{ f.data }}</td>
+                      <td style="padding: 14px 0;"><a href="#nf">{{ f.nf }}</a></td>
+                      <td style="padding: 14px 0;">{{ f.situacao }}</td>
+                      <td style="padding: 14px 0; text-align: right; font-weight: 700;">{{ f.valor }}</td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="border-top: 2px solid var(--color-text); margin-top: 36px; padding-top: 24px;">
+              <div style="font-size: 15px; font-weight: 800; margin-bottom: 6px;">Cancelar assinatura</div>
+              <p style="font-size: 14px; color: var(--color-neutral-700); margin: 0 0 16px; max-width: 520px; line-height: 1.55;">O acesso continua até o fim do ciclo pago e seus perfis ficam guardados por 90 dias.</p>
+              <button style="appearance: none; background: transparent; border: 2px solid var(--color-neutral-500); color: var(--color-neutral-700); font-size: 14px; font-weight: 700; padding: 12px 20px; cursor: pointer; text-align: left;" style-hover="border-color: var(--color-accent); color: var(--color-accent-700);">Cancelar assinatura</button>
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Forma de pagamento</div>
+              <div style="border: 2px solid var(--color-text); padding: 16px; background: var(--color-neutral-100);">
+                <div style="font-size: 15px; font-weight: 800;">Visa •••• 4471</div>
+                <div style="font-size: 13px; color: var(--color-neutral-700); margin-top: 4px;">titular ANA C RIBEIRO · validade 09/29</div>
+              </div>
+              <button style="margin-top: 14px; appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 13px; font-weight: 700; padding: 10px 16px; cursor: pointer; text-align: left; width: 100%;" style-hover="background: var(--color-text); color: var(--color-bg);">Trocar cartão</button>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Limites do plano</div>
+              <div style="font-size: 14px;">
+                <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Perfis monitorados</span><span style="font-weight: 700;">3 de 25</span></div>
+                  <div style="height: 6px; background: var(--color-neutral-300);"><div style="width: 12%; height: 100%; background: var(--color-accent);"></div></div>
+                </div>
+                <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Usuários</span><span style="font-weight: 700;">3 · ilimitado</span></div>
+                  <div style="height: 6px; background: var(--color-neutral-300);"><div style="width: 22%; height: 100%; background: var(--color-text);"></div></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0;"><span>Histórico</span><span style="font-weight: 700;">completo desde 2018</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ abaEquipe }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px;">
+          <div style="border-right: 2px solid var(--color-text); padding: 32px 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600);">Usuários · 3</div>
+              <button style="appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 13px; font-weight: 700; padding: 10px 16px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Convidar usuário</button>
+            </div>
+            <div style="border-top: 2px solid var(--color-text);">
+              <sc-for list="{{ equipe }}" as="u" hint-placeholder-count="3">
+                <div style="padding: 18px 0; border-bottom: 1px solid var(--color-divider); display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 16px; align-items: center;">
+                  <div style="width: 40px; height: 40px; background: var(--color-neutral-300); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;">{{ u.inicial }}</div>
+                  <div style="min-width: 0;">
+                    <div style="font-size: 15px; font-weight: 800;">{{ u.nome }}</div>
+                    <div style="font-size: 13px; color: var(--color-neutral-700);">{{ u.email }}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 13px; font-weight: 700;">{{ u.papel }}</div>
+                    <div style="font-size: 12px; color: var(--color-neutral-600);">{{ u.acesso }}</div>
+                  </div>
+                  <button style="appearance: none; background: transparent; border: 2px solid var(--color-text); color: var(--color-text); font-size: 12px; font-weight: 700; padding: 8px 12px; cursor: pointer;" style-hover="background: var(--color-text); color: var(--color-bg);">Editar</button>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="border-top: 2px solid var(--color-text); margin-top: 36px; padding-top: 28px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 20px;">Segurança</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 640px;">
+                <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Senha atual</label><input type="password" value="••••••••••" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+                <div><label style="display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Nova senha</label><input type="password" placeholder="mínimo 8 caracteres" style="width: 100%; padding: 13px 15px; border: 2px solid var(--color-text); background: var(--color-neutral-100); font-size: 15px;"></div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0; margin-top: 20px; max-width: 640px; font-size: 14px;">
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 14px 0; border-bottom: 1px solid var(--color-divider);"><span>Verificação em duas etapas por SMS</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0 0 14px; border-bottom: 1px solid var(--color-divider);"><span>Encerrar sessões inativas em 30 dias</span><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+                <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 14px 0 0;"><span>Exigir Gov.br para novos usuários</span><input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--color-accent);"></label>
+              </div>
+              <button style="margin-top: 24px; appearance: none; background: var(--color-accent); border: 2px solid var(--color-accent); color: #fff; font-size: 15px; font-weight: 700; padding: 14px 24px; cursor: pointer; text-align: left;" style-hover="background: var(--color-accent-600); border-color: var(--color-accent-600);">Atualizar segurança</button>
+            </div>
+          </div>
+          <div>
+            <div style="padding: 24px; border-bottom: 2px solid var(--color-text);">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Papéis</div>
+              <div style="font-size: 14px; line-height: 1.55;">
+                <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-weight: 800;">Administrador</div><div style="color: var(--color-neutral-700);">Cobrança, usuários e todos os perfis.</div></div>
+                <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-weight: 800;">Editor</div><div style="color: var(--color-neutral-700);">Cria perfis e alertas nos temas liberados.</div></div>
+                <div style="padding: 12px 0;"><div style="font-weight: 800;">Leitor</div><div style="color: var(--color-neutral-700);">Consulta e favorita, sem editar alertas.</div></div>
+              </div>
+            </div>
+            <div style="padding: 24px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-neutral-600); margin-bottom: 14px;">Sessões ativas</div>
+              <div style="font-size: 14px;">
+                <div style="padding: 12px 0; border-bottom: 1px solid var(--color-divider);"><div style="font-weight: 800;">Chrome · Windows</div><div style="font-size: 12px; color: var(--color-neutral-600);">Campinas/SP · esta sessão</div></div>
+                <div style="padding: 12px 0;"><div style="font-weight: 800;">App iOS · iPhone 15</div><div style="font-size: 12px; color: var(--color-neutral-600);">Campinas/SP · há 3 horas</div></div>
+              </div>
+              <button style="margin-top: 16px; appearance: none; background: transparent; border: 2px solid var(--color-neutral-500); color: var(--color-neutral-700); font-size: 13px; font-weight: 700; padding: 10px 16px; cursor: pointer; text-align: left; width: 100%;" style-hover="border-color: var(--color-accent); color: var(--color-accent-700);">Encerrar outras sessões</button>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ================= LOGO ================= -->
+  <sc-if value="{{ isLogo }}" hint-placeholder-val="{{ false }}">
+  <div style="padding: 56px 40px 96px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+      <h1 style="font-size: 36px; font-weight: 900; letter-spacing: -0.03em; margin: 0 0 8px;">Quatro direções de marca</h1>
+      <p style="font-size: 16px; color: var(--color-neutral-700); margin: 0 0 56px; max-width: 640px;">Todas em Archivo, sem raio de canto, construídas na grade. C e D são as mais ousadas — o vermelho deixa de acompanhar a marca e passa a ser a marca.</p>
+
+      <div style="border-top: 2px solid var(--color-text); padding: 32px 0 56px;">
+        <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 56px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Direção C · mais ousada</div>
+            <h2 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 12px 0 12px; line-height: 1.05;">Tarja</h2>
+            <p style="font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); margin: 0;">A tarja de censura do documento público, invertida: o vermelho não esconde, revela. A marca é o próprio gesto de destacar a linha do edital — e o bloco vermelho vira o símbolo, sem precisar de ícone.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: flex-end; gap: 56px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--color-divider);">
+              <div>
+                <div style="display: flex; align-items: stretch; font-size: 56px; font-weight: 900; letter-spacing: -0.06em; line-height: 0.9;">
+                  <span style="padding: 8px 4px 8px 0;">EDITAL</span><span style="background: var(--color-accent); color: #fff; padding: 8px 10px 8px 8px;">IS</span>
+                </div>
+                <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-neutral-600); margin-top: 12px;">Consulta de licitações</div>
+              </div>
+              <div style="display: flex; align-items: stretch; font-size: 28px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.9;">
+                <span style="padding: 5px 3px 5px 0;">EDITAL</span><span style="background: var(--color-accent); color: #fff; padding: 5px 6px 5px 5px;">IS</span>
+              </div>
+              <div style="width: 56px; height: 56px; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; letter-spacing: -0.06em;">IS</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); border-bottom: 1px solid var(--color-divider);">
+              <div style="background: var(--color-text); padding: 32px 24px; display: flex; align-items: center;">
+                <div style="display: flex; align-items: stretch; font-size: 24px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.9; color: #fff;"><span style="padding: 4px 3px 4px 0;">EDITAL</span><span style="background: var(--color-accent); padding: 4px 6px 4px 5px;">IS</span></div>
+              </div>
+              <div style="background: var(--color-accent); padding: 32px 24px; display: flex; align-items: center;">
+                <div style="display: flex; align-items: stretch; font-size: 24px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.9; color: #fff;"><span style="padding: 4px 3px 4px 0;">EDITAL</span><span style="background: #fff; color: var(--color-accent); padding: 4px 6px 4px 5px;">IS</span></div>
+              </div>
+              <div style="background: var(--color-neutral-100); padding: 32px 24px; display: flex; align-items: center; border-left: 1px solid var(--color-divider);">
+                <div style="display: flex; align-items: stretch; font-size: 24px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.9;"><span style="padding: 4px 3px 4px 0;">EDITAL</span><span style="background: var(--color-text); color: var(--color-neutral-100); padding: 4px 6px 4px 5px;">IS</span></div>
+              </div>
+              <div style="padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <div style="width: 20px; height: 20px; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; letter-spacing: -0.05em;">IS</div>
+                <div style="font-size: 12px; color: var(--color-neutral-600);">favicon 20 px</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 2px solid var(--color-text); padding: 32px 0 56px;">
+        <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 56px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-accent-700);">Direção D · mais ousada</div>
+            <h2 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 12px 0 12px; line-height: 1.05;">Chanfro</h2>
+            <p style="font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); margin: 0;">A letra E como monólito: haste cheia, três braços e o canto superior cortado — a dobra do documento em escala de placa de obra pública. É a única direção sem contêiner: o vermelho é a própria forma, e ela ocupa o quadrado inteiro.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: flex-end; gap: 56px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--color-divider);">
+              <div style="display: flex; align-items: center; gap: 20px;">
+                <svg width="88" height="88" viewBox="0 0 72 72" aria-label="Símbolo Editalis D">
+                  <path d="M0 0 H72 V44 L44 72 H0 Z" fill="var(--color-accent)"></path>
+                  <rect x="14" y="14" width="42" height="9" fill="#fff"></rect>
+                  <rect x="14" y="31" width="30" height="9" fill="#fff"></rect>
+                  <rect x="14" y="48" width="18" height="9" fill="#fff"></rect>
+                </svg>
+                <div>
+                  <div style="font-size: 46px; font-weight: 900; letter-spacing: -0.06em; line-height: 0.92;">EDITALIS</div>
+                  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-neutral-600); margin-top: 10px;">Consulta de licitações</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <svg width="42" height="42" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-accent)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-accent)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-accent)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-accent)"></rect></svg>
+                <div style="font-size: 24px; font-weight: 900; letter-spacing: -0.055em;">EDITALIS</div>
+              </div>
+              <svg width="34" height="34" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-accent)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-accent)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-accent)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-accent)"></rect></svg>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); border-bottom: 1px solid var(--color-divider);">
+              <div style="background: var(--color-text); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="38" height="38" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-accent)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-accent)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-accent)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-accent)"></rect></svg>
+                <div style="font-size: 20px; font-weight: 900; letter-spacing: -0.055em; color: #fff;">EDITALIS</div>
+              </div>
+              <div style="background: var(--color-accent); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="38" height="38" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="#fff"></path><rect x="0" y="0" width="20" height="72" fill="#fff"></rect><rect x="0" y="28" width="52" height="16" fill="#fff"></rect><rect x="0" y="56" width="64" height="16" fill="#fff"></rect></svg>
+                <div style="font-size: 20px; font-weight: 900; letter-spacing: -0.055em; color: #fff;">EDITALIS</div>
+              </div>
+              <div style="background: var(--color-neutral-100); padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <svg width="38" height="38" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-text)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-text)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-text)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-text)"></rect></svg>
+                <div style="font-size: 20px; font-weight: 900; letter-spacing: -0.055em;">EDITALIS</div>
+              </div>
+              <div style="padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <svg width="20" height="20" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-accent)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-accent)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-accent)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-accent)"></rect></svg>
+                <div style="font-size: 12px; color: var(--color-neutral-600);">favicon 20 px</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 2px solid var(--color-text); padding: 32px 0 56px;">
+        <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 56px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600);">Direção A · primeira rodada</div>
+            <h2 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 12px 0 12px; line-height: 1.05;">Carimbo</h2>
+            <p style="font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); margin: 0;">O quadrado vermelho com o corte branco lê como um carimbo de publicação oficial — o gesto de despachar um edital. Mais institucional, funciona bem sozinho em favicon e app.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: flex-end; gap: 64px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--color-divider);">
+              <div style="display: flex; align-items: center; gap: 18px;">
+                <svg width="72" height="72" viewBox="0 0 72 72" aria-label="Símbolo Editalis A">
+                  <rect x="0" y="0" width="72" height="72" fill="var(--color-accent)"></rect>
+                  <rect x="14" y="20" width="44" height="8" fill="#fff"></rect>
+                  <rect x="14" y="36" width="44" height="8" fill="#fff"></rect>
+                  <rect x="14" y="52" width="26" height="8" fill="#fff"></rect>
+                </svg>
+                <div>
+                  <div style="font-size: 40px; font-weight: 900; letter-spacing: -0.045em; line-height: 1;">EDITALIS</div>
+                  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-neutral-600); margin-top: 8px;">Consulta de licitações</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <svg width="40" height="40" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-accent)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+                <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.04em;">EDITALIS</div>
+              </div>
+              <svg width="32" height="32" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-accent)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); border-bottom: 1px solid var(--color-divider);">
+              <div style="background: var(--color-text); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-accent)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: #fff;">EDITALIS</div>
+              </div>
+              <div style="background: var(--color-accent); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect width="72" height="72" fill="#fff"></rect><rect x="14" y="20" width="44" height="8" fill="var(--color-accent)"></rect><rect x="14" y="36" width="44" height="8" fill="var(--color-accent)"></rect><rect x="14" y="52" width="26" height="8" fill="var(--color-accent)"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: #fff;">EDITALIS</div>
+              </div>
+              <div style="background: var(--color-neutral-100); padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-text)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em;">EDITALIS</div>
+              </div>
+              <div style="padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <svg width="20" height="20" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-accent)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+                <div style="font-size: 12px; color: var(--color-neutral-600);">favicon 20 px</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 2px solid var(--color-text); padding: 32px 0 0;">
+        <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 56px;">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600);">Direção B · primeira rodada</div>
+            <h2 style="font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin: 12px 0 12px; line-height: 1.05;">Coluna</h2>
+            <p style="font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); margin: 0;">Barras verticais de alturas diferentes: a coluna do diário oficial sendo varrida, com a barra vermelha marcando o edital encontrado. Mais leve e mais “produto de dados”.</p>
+          </div>
+          <div>
+            <div style="display: flex; align-items: flex-end; gap: 64px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--color-divider);">
+              <div style="display: flex; align-items: center; gap: 18px;">
+                <svg width="72" height="72" viewBox="0 0 72 72" aria-label="Símbolo Editalis B">
+                  <rect x="0" y="24" width="12" height="48" fill="var(--color-text)"></rect>
+                  <rect x="20" y="10" width="12" height="62" fill="var(--color-text)"></rect>
+                  <rect x="40" y="0" width="12" height="72" fill="var(--color-accent)"></rect>
+                  <rect x="60" y="34" width="12" height="38" fill="var(--color-text)"></rect>
+                </svg>
+                <div>
+                  <div style="font-size: 40px; font-weight: 900; letter-spacing: -0.045em; line-height: 1;">Editalis</div>
+                  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-neutral-600); margin-top: 8px;">Consulta de licitações</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <svg width="40" height="40" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="var(--color-text)"></rect><rect x="20" y="10" width="12" height="62" fill="var(--color-text)"></rect><rect x="40" width="12" height="72" fill="var(--color-accent)"></rect><rect x="60" y="34" width="12" height="38" fill="var(--color-text)"></rect></svg>
+                <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.04em;">Editalis</div>
+              </div>
+              <svg width="32" height="32" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="var(--color-text)"></rect><rect x="20" y="10" width="12" height="62" fill="var(--color-text)"></rect><rect x="40" width="12" height="72" fill="var(--color-accent)"></rect><rect x="60" y="34" width="12" height="38" fill="var(--color-text)"></rect></svg>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); border-bottom: 1px solid var(--color-divider);">
+              <div style="background: var(--color-text); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="#fff"></rect><rect x="20" y="10" width="12" height="62" fill="#fff"></rect><rect x="40" width="12" height="72" fill="var(--color-accent)"></rect><rect x="60" y="34" width="12" height="38" fill="#fff"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: #fff;">Editalis</div>
+              </div>
+              <div style="background: var(--color-accent); padding: 32px 24px; display: flex; align-items: center; gap: 14px;">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="#fff"></rect><rect x="20" y="10" width="12" height="62" fill="#fff"></rect><rect x="40" width="12" height="72" fill="var(--color-accent-900)"></rect><rect x="60" y="34" width="12" height="38" fill="#fff"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em; color: #fff;">Editalis</div>
+              </div>
+              <div style="background: var(--color-neutral-100); padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <svg width="36" height="36" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="var(--color-text)"></rect><rect x="20" y="10" width="12" height="62" fill="var(--color-text)"></rect><rect x="40" width="12" height="72" fill="var(--color-text)"></rect><rect x="60" y="34" width="12" height="38" fill="var(--color-text)"></rect></svg>
+                <div style="font-size: 19px; font-weight: 900; letter-spacing: -0.04em;">Editalis</div>
+              </div>
+              <div style="padding: 32px 24px; display: flex; align-items: center; gap: 14px; border-left: 1px solid var(--color-divider);">
+                <div style="width: 20px; height: 20px; background: var(--color-accent); display: flex; align-items: center; justify-content: center;">
+                  <svg width="12" height="12" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="#fff"></rect><rect x="20" y="10" width="12" height="62" fill="#fff"></rect><rect x="40" width="12" height="72" fill="#fff"></rect><rect x="60" y="34" width="12" height="38" fill="#fff"></rect></svg>
+                </div>
+                <div style="font-size: 12px; color: var(--color-neutral-600);">favicon 20 px</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 2px solid var(--color-text); margin-top: 56px; padding-top: 32px; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 56px;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-neutral-600);">Aplicado no topo do app</div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 16px; background: var(--color-text); padding: 16px 24px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: stretch; font-size: 17px; font-weight: 900; letter-spacing: -0.055em; line-height: 0.9; color: #fff;"><span style="padding: 4px 3px 4px 0;">EDITAL</span><span style="background: var(--color-accent); padding: 4px 5px;">IS</span></div>
+            <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-500); border-left: 1px solid var(--color-neutral-700); padding-left: 16px;">Construtora Órion</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px; background: var(--color-text); padding: 16px 24px; margin-bottom: 12px;">
+            <svg width="28" height="28" viewBox="0 0 72 72"><path d="M0 0 H56 L72 16 H0 Z" fill="var(--color-accent)"></path><rect x="0" y="0" width="20" height="72" fill="var(--color-accent)"></rect><rect x="0" y="28" width="52" height="16" fill="var(--color-accent)"></rect><rect x="0" y="56" width="64" height="16" fill="var(--color-accent)"></rect></svg>
+            <div style="font-size: 17px; font-weight: 900; letter-spacing: -0.04em; color: #fff;">EDITALIS</div>
+            <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-500); border-left: 1px solid var(--color-neutral-700); padding-left: 16px;">Construtora Órion</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px; background: var(--color-text); padding: 16px 24px; margin-bottom: 12px;">
+            <svg width="28" height="28" viewBox="0 0 72 72"><rect width="72" height="72" fill="var(--color-accent)"></rect><rect x="14" y="20" width="44" height="8" fill="#fff"></rect><rect x="14" y="36" width="44" height="8" fill="#fff"></rect><rect x="14" y="52" width="26" height="8" fill="#fff"></rect></svg>
+            <div style="font-size: 17px; font-weight: 900; letter-spacing: -0.03em; color: #fff;">EDITALIS</div>
+            <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-500); border-left: 1px solid var(--color-neutral-700); padding-left: 16px;">Construtora Órion</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px; background: var(--color-text); padding: 16px 24px;">
+            <svg width="28" height="28" viewBox="0 0 72 72"><rect y="24" width="12" height="48" fill="#fff"></rect><rect x="20" y="10" width="12" height="62" fill="#fff"></rect><rect x="40" width="12" height="72" fill="var(--color-accent)"></rect><rect x="60" y="34" width="12" height="38" fill="#fff"></rect></svg>
+            <div style="font-size: 17px; font-weight: 900; letter-spacing: -0.03em; color: #fff;">Editalis</div>
+            <div style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-500); border-left: 1px solid var(--color-neutral-700); padding-left: 16px;">Construtora Órion</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   </sc-if>
@@ -900,6 +1378,7 @@ class Component extends DCLogic {
     pagamento: "cartao",
     ciclo: "mensal",
     plano: "profissional",
+    abaPerfil: "conta",
     favs: { 1: true, 3: true },
     detFav: true,
     alertasAtivos: { 1: true, 2: true, 3: false }
@@ -988,7 +1467,7 @@ class Component extends DCLogic {
     const telas = [
       ["landing", "Landing"], ["entrar", "Entrar"], ["checkout", "Checkout"],
       ["painel", "Painel"], ["busca", "Busca"], ["detalhe", "Detalhe"],
-      ["alertas", "Alertas"], ["mobile", "Mobile"]
+      ["alertas", "Alertas"], ["perfil", "Perfil"], ["mobile", "Mobile"], ["logo", "Logo"]
     ].map(([k, nome]) => ({
       nome, go: this.go(k),
       bg: s.tela === k ? RED : "transparent",
@@ -998,7 +1477,7 @@ class Component extends DCLogic {
     const menu = [
       ["painel", "painel", "Painel", ""], ["busca", "busca", "Busca", ""],
       ["alertas", "favoritas", "Favoritas", "14"], ["alertas", "alertas", "Alertas", "3"],
-      ["detalhe", "ultima", "Última consultada", ""]
+      ["detalhe", "ultima", "Última consultada", ""], ["perfil", "perfil", "Minha conta", ""]
     ].map(([tela, k, nome, badge]) => ({
       nome, badge, go: this.go(tela, k),
       bg: s.navKey === k ? RED : "transparent",
@@ -1057,14 +1536,36 @@ class Component extends DCLogic {
       isEntrar: s.tela === "entrar",
       isCheckout: s.tela === "checkout",
       isMobile: s.tela === "mobile",
-      isApp: ["painel", "busca", "detalhe", "alertas"].includes(s.tela),
+      isLogo: s.tela === "logo",
+      isApp: ["painel", "busca", "detalhe", "alertas", "perfil"].includes(s.tela),
+      isPerfil: s.tela === "perfil",
+      abaConta: s.abaPerfil === "conta",
+      abaEmpresa: s.abaPerfil === "empresa",
+      abaAssinatura: s.abaPerfil === "assinatura",
+      abaEquipe: s.abaPerfil === "equipe",
+      abas: [["conta", "Conta"], ["empresa", "Empresa e faturamento"], ["assinatura", "Assinatura"], ["equipe", "Equipe e segurança"]].map(([k, nome]) => ({
+        nome,
+        ir: () => this.setState({ abaPerfil: k }),
+        bg: s.abaPerfil === k ? INK : "transparent",
+        fg: s.abaPerfil === k ? BG : INK
+      })),
+      equipe: [
+        { nome: "Ana Ribeiro", email: "ana@construtoraorion.com.br", papel: "Administradora", acesso: "Todos os perfis", inicial: "AR" },
+        { nome: "Marcos Deloi", email: "marcos@construtoraorion.com.br", papel: "Editor", acesso: "Obras civis SP/MG", inicial: "MD" },
+        { nome: "Júlia Sant'Ana", email: "julia@construtoraorion.com.br", papel: "Leitor", acesso: "Somente leitura", inicial: "JS" }
+      ],
+      faturas: [
+        { data: "01/07/2026", valor: "R$ 199,00", nf: "NF-e 1042", situacao: "Paga" },
+        { data: "01/06/2026", valor: "R$ 199,00", nf: "NF-e 0987", situacao: "Paga" },
+        { data: "01/05/2026", valor: "R$ 199,00", nf: "NF-e 0931", situacao: "Paga" }
+      ],
       isPainel: s.tela === "painel",
       isBusca: s.tela === "busca",
       isDetalhe: s.tela === "detalhe",
       isAlertas: s.tela === "alertas",
 
       irLanding: this.go("landing"), irEntrar: this.go("entrar"), irCheckout: this.go("checkout"),
-      irPainel: this.go("painel"), irBusca: this.go("busca"), irAlertas: this.go("alertas"),
+      irPerfil: this.go("perfil"), irPainel: this.go("painel"), irBusca: this.go("busca"), irAlertas: this.go("alertas"),
 
       mostrarProva: this.props.mostrarProvaSocial ?? true,
 
