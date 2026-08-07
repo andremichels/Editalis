@@ -49,7 +49,7 @@ export function SearchResultItem({ article, favorita, onToggleFavorita }: Search
             {nd?.process_number && `nº ${nd.process_number} · `}publicado {formatDate(article.published_date)}
           </span>
         </div>
-        <Link href={`/artigo/${article.slug}`} className="block text-lg font-extrabold leading-[1.3] mb-2 cursor-pointer no-underline" style={{ color: 'var(--color-text)' }}>
+        <Link href={`/artigo/${article.slug}`} className="block text-[13px] font-extrabold leading-[1.4] mb-2 cursor-pointer no-underline uppercase tracking-[0.02em]" style={{ color: 'var(--color-text)' }}>
           {title}
         </Link>
         <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
