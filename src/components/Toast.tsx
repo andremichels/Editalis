@@ -31,16 +31,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{ toast }}>
       {children}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2" style={{ maxWidth: "360px" }}>
-        {toasts.map((t) => {
-          const bg = t.type === "success" ? "#d4edda" : t.type === "error" ? "#f8d7da" : "#d1ecf1";
-          const color = t.type === "success" ? "#155724" : t.type === "error" ? "#721c24" : "#0c5460";
-          const border = t.type === "success" ? "#c3e6cb" : t.type === "error" ? "#f5c6cb" : "#bee5eb";
-          return (
-            <div key={t.id} className="px-4 py-2.5 text-sm" style={{ background: bg, color, border: `1px solid ${border}`, fontFamily: "var(--font-heading)", fontWeight: 600 }}>
-              {t.message}
-            </div>
-          );
-        })}
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className="px-4 py-3 text-sm"
+            style={{
+              background: "var(--color-text)",
+              color: "var(--color-bg)",
+              borderLeft: `4px solid ${t.type === "error" ? "var(--color-accent)" : "#fff"}`,
+              fontFamily: "var(--font-heading)",
+              fontWeight: 600,
+            }}
+          >
+            {t.message}
+          </div>
+        ))}
       </div>
     </Ctx.Provider>
   );

@@ -1,5 +1,5 @@
 import type { Article } from '@/lib/types';
-import { formatDate, parseSectionNumber } from '@/lib/utils';
+import { formatDate, parseSectionNumber, formatMoney } from '@/lib/utils';
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
 const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
@@ -33,10 +33,6 @@ const MODALITY_LABELS: Record<string, string> = {
   leilao: 'Leilão',
   rdc: 'RDC',
 };
-
-function formatMoney(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-}
 
 export function ArticleMeta({ article }: { article: Article }) {
   const sectionNumber = parseSectionNumber(article.section);

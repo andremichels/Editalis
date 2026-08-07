@@ -21,7 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${archivo.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }

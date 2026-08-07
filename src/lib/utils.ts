@@ -24,3 +24,7 @@ export function parseSectionNumber(section?: string): string | undefined {
   const match = section.match(/Seção:\s*([^|]+)/);
   return match ? match[1].trim() : undefined;
 }
+
+export function formatMoney(value: number): string {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
