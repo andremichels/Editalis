@@ -100,8 +100,11 @@ export async function getSubscription(userId: string): Promise<Subscription> {
 }
 
 export async function getSubscriptionPortalUrl(userId: string): Promise<string> {
-  const res = await fetch(`${API_BASE}/api/v1/account/subscription/portal?user_id=${userId}`, { method: 'POST' });
-  if (!res.ok) throw new Error(`Portal failed: ${res.status}`);
-  const body = await res.json();
-  return body.url;
+  // No external portal yet — redirect to checkout page for plan changes
+  return `/checkout?plan=profissional&cycle=monthly`;
+}
+
+export async function cancelSubscription(userId: string): Promise<boolean> {
+  const res = await fetch(`${API_BASE}/api/v1/account/subscription/cancel?user_id=${userId}`, { method: 'POST' });
+  return res.ok;
 }
