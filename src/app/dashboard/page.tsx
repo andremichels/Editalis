@@ -12,22 +12,20 @@ import { getStats, getRecentArticles, type PublicStats } from '@/lib/api';
 import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { supabase } from '@/lib/auth';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
+
+interface ProfileItem {
+  name: string;
+  count: string;
+}
 
 const prazos = [
   { title: 'Pregão 114/2026 · Campinas', days: 'abertura em 2 dias', tone: 'urgent' as const },
   { title: 'Concorrência 07/2026 · DER-MG', days: 'abertura em 4 dias', tone: 'default' as const },
   { title: 'Dispensa 22/2026 · UFMG', days: 'abertura em 6 dias', tone: 'later' as const },
 ];
-
-const perfis = [
-  { name: 'Obras civis SP/MG', count: '+18' },
-  { name: 'Manutenção predial', count: '+11' },
-  { name: 'Reformas escolares', count: '+8' },
-];
-
-const volume = [46, 62, 38, 74, 58, 88, 100];
 
 function formatNumber(n: number): string {
   return new Intl.NumberFormat('pt-BR').format(n);
@@ -39,6 +37,20 @@ export default function DashboardPage() {
   const [recent, setRecent] = useState<Article[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [volume, setVolume] = useState<{date: string; count: number}[]>([]);
+  const [profiles, setProfiles] = useState<ProfileItem[]>([]);
+
+  const loadProfiles = (userId: string) => {
+    fetch(`${API_BASE}/api/v1/alerts?user_id=${userId}`)
+      .then((r) => r.json())
+      .then((alerts: any[]) => {
+        const items = alerts.map((a) => ({
+          name: a.name,
+          count: a.match_count > 0 ? `+${a.match_count}` : '0',
+        }));
+        setProfiles(items);
+      })
+      .catch(console.error);
+  };
 
   const loadData = () => {
     setError(null);
@@ -51,6 +63,9 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then(setVolume)
       .catch(console.error);
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) loadProfiles(data.session.user.id);
+    });
   };
 
   useEffect(() => { loadData(); }, []);
@@ -146,7 +161,7 @@ export default function DashboardPage() {
 
           <div>
             <DeadlinesCard items={prazos} />
-            <ProfilesCard items={perfis} onManage={() => router.push('/alertas')} />
+            <ProfilesCard items={profiles} onManage={() => router.push('/alertas')} />
             <VolumeChart data={volume} />
           </div>
         </div>
