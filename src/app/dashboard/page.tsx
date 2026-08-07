@@ -13,6 +13,8 @@ import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
+
 const prazos = [
   { title: 'Pregão 114/2026 · Campinas', days: 'abertura em 2 dias', tone: 'urgent' as const },
   { title: 'Concorrência 07/2026 · DER-MG', days: 'abertura em 4 dias', tone: 'default' as const },
@@ -36,6 +38,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<PublicStats | null>(null);
   const [recent, setRecent] = useState<Article[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [volume, setVolume] = useState<{date: string; count: number}[]>([]);
 
   const loadData = () => {
     setError(null);
@@ -44,6 +47,10 @@ export default function DashboardPage() {
       console.error(e);
     });
     getRecentArticles(5).then(setRecent).catch(console.error);
+    fetch(`${API_BASE}/api/v1/volume?days=7`)
+      .then((r) => r.json())
+      .then(setVolume)
+      .catch(console.error);
   };
 
   useEffect(() => { loadData(); }, []);
@@ -140,7 +147,7 @@ export default function DashboardPage() {
           <div>
             <DeadlinesCard items={prazos} />
             <ProfilesCard items={perfis} onManage={() => router.push('/alertas')} />
-            <VolumeChart values={volume} startLabel="24/07" endLabel="hoje" />
+            <VolumeChart data={volume} />
           </div>
         </div>
       </DashboardLayout>
