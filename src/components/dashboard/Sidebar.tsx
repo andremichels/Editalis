@@ -46,6 +46,8 @@ export function Sidebar() {
     { label: 'Busca', href: '/busca' },
     { label: 'Favoritas', href: '/favoritos', count: favCount },
     { label: 'Alertas', href: '/alertas', count: alertCount },
+    { label: 'Última consultada' },
+    { label: 'Minha conta', href: '/perfil' },
   ];
 
   return (
