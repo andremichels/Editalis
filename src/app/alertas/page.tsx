@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -9,7 +9,6 @@ import { useToast } from "@/components/Toast";
 import { supabase } from "@/lib/auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
-const MODALITIES = ["pregao", "pregao_eletronico", "concorrencia", "dispensa", "inexigibilidade", "tomada_precos", "concurso", "leilao", "rdc"];
 
 interface AlertProfile {
   id: number;
@@ -34,17 +33,21 @@ interface Article {
   organ_level_1?: string;
 }
 
+const emptyForm = { name: "", keywords: "", organs: "", ufs: "", modalities: "", value_min: "", value_max: "" };
+
 export default function AlertasPage() {
   const [alerts, setAlerts] = useState<AlertProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", keywords: "", organs: "", ufs: "", modalities: "", value_min: "", value_max: "" });
+  const [form, setForm] = useState(emptyForm);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [matches, setMatches] = useState<Article[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -63,8 +66,7 @@ export default function AlertasPage() {
 
   useEffect(() => { if (userId) load(); }, [userId]);
 
-  const handleCreate = async () => {
-    console.log("handleCreate called", { name: form.name, userId });
+  const submitForm = async () => {
     if (!form.name) return;
     if (!userId) {
       toast("Erro: usuário não autenticado", "error");
@@ -80,20 +82,46 @@ export default function AlertasPage() {
       value_max: form.value_max ? parseFloat(form.value_max) : null,
     };
 
-    const res = await fetch(`${API_BASE}/api/v1/alerts?user_id=${userId}`, {
-      method: "POST",
+    const isEdit = editingId !== null;
+    const url = isEdit ? `${API_BASE}/api/v1/alerts/${editingId}` : `${API_BASE}/api/v1/alerts?user_id=${userId}`;
+    const method = isEdit ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     if (res.ok) {
-      toast("Alerta criado", "success");
+      toast(isEdit ? "Alerta atualizado" : "Alerta criado", "success");
       setShowForm(false);
-      setForm({ name: "", keywords: "", organs: "", ufs: "", modalities: "", value_min: "", value_max: "" });
+      setEditingId(null);
+      setForm(emptyForm);
       load();
     } else {
       const err = await res.text();
-      toast("Erro ao criar alerta: " + err, "error");
+      toast(`Erro ao ${isEdit ? "atualizar" : "criar"} alerta: ${err}`, "error");
     }
+  };
+
+  const startEdit = (alert: AlertProfile) => {
+    setForm({
+      name: alert.name,
+      keywords: alert.keywords.join(", "),
+      organs: alert.organs.join(", "),
+      ufs: alert.ufs.join(", "),
+      modalities: alert.modalities.join(", "),
+      value_min: alert.value_min?.toString() || "",
+      value_max: alert.value_max?.toString() || "",
+    });
+    setEditingId(alert.id);
+    setShowForm(true);
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+  };
+
+  const cancelForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(emptyForm);
   };
 
   const handleToggle = async (alert: AlertProfile) => {
@@ -127,6 +155,8 @@ export default function AlertasPage() {
     setMatchesLoading(false);
   };
 
+  const isEditing = editingId !== null;
+
   return (
     <AuthGuard>
       <DashboardLayout>
@@ -139,21 +169,34 @@ export default function AlertasPage() {
               {alerts.length} perfil{alerts.length !== 1 ? "s" : ""} configurado{alerts.length !== 1 ? "s" : ""}
             </div>
           </div>
-          <Button onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancelar" : "+ Novo alerta"}
+          <Button onClick={() => { cancelForm(); setShowForm(!showForm); }}>
+            {showForm && !isEditing ? "Cancelar" : "+ Novo alerta"}
           </Button>
         </div>
 
         <div className="px-10 py-6">
           {showForm && (
-            <div className="mb-6 p-5" style={{ border: "2px solid var(--color-divider)", background: "var(--color-surface)" }}>
-              <h3 className="text-sm font-extrabold mb-4" style={{ fontFamily: "var(--font-heading)" }}>Novo perfil de alerta</h3>
+            <div ref={formRef} className="mb-6 p-5" style={{ border: isEditing ? "2px solid var(--color-accent)" : "2px solid var(--color-divider)", background: "var(--color-surface)" }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-extrabold" style={{ fontFamily: "var(--font-heading)" }}>
+                  {isEditing ? `Editando: ${form.name}` : "Novo perfil de alerta"}
+                </h3>
+                {isEditing && (
+                  <Button variant="ghost" size="sm" onClick={cancelForm}>Cancelar edição</Button>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-xs font-bold mb-1">Nome *</label>
                   <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className="w-full px-3 py-2 text-sm" style={{ border: "2px solid var(--color-divider)", background: "var(--color-bg)" }}
                     placeholder="Ex: Obras em SP" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1">Órgãos (vírgula)</label>
+                  <input value={form.organs} onChange={(e) => setForm({ ...form, organs: e.target.value })}
+                    className="w-full px-3 py-2 text-sm" style={{ border: "2px solid var(--color-divider)", background: "var(--color-bg)" }}
+                    placeholder="Ministério da Defesa" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold mb-1">Modalidades (vírgula)</label>
@@ -185,11 +228,11 @@ export default function AlertasPage() {
                 </div>
               </div>
               <button
-                onClick={handleCreate}
+                onClick={submitForm}
                 className="inline-flex items-center gap-2 font-semibold px-4 py-2 text-sm"
                 style={{ background: "var(--color-accent)", color: "#fff", border: "none", fontFamily: "var(--font-body)" }}
               >
-                Criar alerta
+                {isEditing ? "Salvar alterações" : "Criar alerta"}
               </button>
             </div>
           )}
@@ -209,9 +252,9 @@ export default function AlertasPage() {
           ) : (
             <div className="space-y-3">
               {alerts.map((alert) => (
-                <div key={alert.id} className="p-5 flex items-start justify-between"
+                <div key={alert.id} className="p-5 flex flex-wrap items-start justify-between"
                   style={{ border: "2px solid var(--color-divider)", background: alert.enabled ? "var(--color-bg)" : "var(--color-surface)", opacity: alert.enabled ? 1 : 0.6 }}>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-sm font-extrabold" style={{ fontFamily: "var(--font-heading)" }}>{alert.name}</h3>
                       <span className="text-[10px] px-2 py-0.5 font-bold"
@@ -223,6 +266,9 @@ export default function AlertasPage() {
                       {alert.keywords.length > 0 && alert.keywords.map((kw) => (
                         <span key={kw} className="px-1.5 py-0.5" style={{ background: "var(--color-neutral-200)" }}>{kw}</span>
                       ))}
+                      {alert.organs.length > 0 && alert.organs.map((o) => (
+                        <span key={o} className="px-1.5 py-0.5" style={{ border: "1px solid var(--color-divider)" }}>{o}</span>
+                      ))}
                       {alert.ufs.length > 0 && alert.ufs.map((uf) => (
                         <span key={uf} className="px-1.5 py-0.5 font-bold" style={{ background: "var(--color-accent)", color: "#fff" }}>{uf}</span>
                       ))}
@@ -233,9 +279,12 @@ export default function AlertasPage() {
                       {alert.value_max && <span className="px-1.5 py-0.5" style={{ border: "1px solid var(--color-divider)" }}>&le; R$ {alert.value_max}</span>}
                     </div>
                   </div>
-                  <div className="flex gap-2 shrink-0 ml-4">
+                  <div className="flex gap-2 shrink-0 ml-4 flex-wrap justify-end">
                     <Button variant="ghost" size="sm" onClick={() => toggleMatches(alert.id)}>
-                      {expanded === alert.id ? "Fechar" : "Ver matches"}
+                      {expanded === alert.id ? "Fechar" : "Matches"}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => startEdit(alert)}>
+                      Editar
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => handleToggle(alert)}>
                       {alert.enabled ? "Pausar" : "Ativar"}
@@ -245,7 +294,7 @@ export default function AlertasPage() {
                     </Button>
                   </div>
                   {expanded === alert.id && (
-                    <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--color-divider)" }}>
+                    <div className="w-full mt-3 pt-3" style={{ borderTop: "1px solid var(--color-divider)" }}>
                       {matchesLoading ? (
                         <div className="space-y-2">
                           {Array.from({ length: 3 }).map((_, i) => (<div key={i} className="h-10 skeleton" />))}
