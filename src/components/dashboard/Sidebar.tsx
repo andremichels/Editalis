@@ -14,7 +14,7 @@ interface NavItem {
   count?: number;
 }
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const [name, setName] = useState('');
@@ -82,7 +82,7 @@ export function Sidebar() {
           }
 
           return (
-            <Link key={item.href} href={item.href} className={className} style={style}>
+            <Link key={item.href} href={item.href} className={className} style={style} onClick={onNavigate}>
               {content}
             </Link>
           );
