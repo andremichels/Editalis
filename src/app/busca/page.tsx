@@ -49,9 +49,10 @@ export default function BuscaPage() {
       try {
         const offset = (p - 1) * PAGE_SIZE;
         const modeParam = booleanMode ? "&mode=boolean" : "";
+        const sortParam = "&sort_by=date";  // default: date (most recent first)
         const dateFromParam = dateFrom ? `&published_since=${dateFrom}` : "";
         const dateToParam = dateTo ? `&published_until=${dateTo}` : "";
-        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}`;
+        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}`;
         const res = await fetch(url);
         const body = await res.json();
         const all: Article[] = body.results || [];
