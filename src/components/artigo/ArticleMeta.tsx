@@ -138,11 +138,28 @@ export function ArticleMeta({ article }: { article: Article }) {
       )}
 
       {orgTrail && (
-        <div className="p-6">
+        <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div className={`${sectionLabel} mb-3`} style={sectionLabelStyle}>Órgão</div>
           <div className="text-sm leading-[1.6]">{orgTrail}</div>
         </div>
       )}
+
+      {/* DOU original link */}
+      <div className="p-6">
+        <div className={`${sectionLabel} mb-3`} style={sectionLabelStyle}>Fonte oficial</div>
+        <a
+          href={`https://www.in.gov.br/web/dou/-/${article.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-bold underline inline-flex items-center gap-1"
+          style={{ color: 'var(--color-accent)' }}
+        >
+          Ver no Diário Oficial ↗
+        </a>
+        <div className="text-xs mt-1" style={{ color: 'var(--color-neutral-500)' }}>
+          DOU · publicado em {article.published_date}
+        </div>
+      </div>
     </div>
   );
 }
