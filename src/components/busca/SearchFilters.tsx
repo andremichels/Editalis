@@ -13,6 +13,10 @@ interface SearchFiltersProps {
   setValueMin: (v: string) => void;
   valueMax: string;
   setValueMax: (v: string) => void;
+  dateFrom: string;
+  setDateFrom: (v: string) => void;
+  dateTo: string;
+  setDateTo: (v: string) => void;
   onApply: () => void;
   onClear: () => void;
 }
@@ -60,6 +64,8 @@ export function SearchFilters({
   ufs, setUfs,
   valueMin, setValueMin,
   valueMax, setValueMax,
+  dateFrom, setDateFrom,
+  dateTo, setDateTo,
   onApply, onClear,
 }: SearchFiltersProps) {
 
@@ -130,6 +136,15 @@ export function SearchFilters({
             className="w-full p-2 text-[13px]"
             style={inputStyle}
           />
+        </div>
+      </FilterGroup>
+
+      <FilterGroup title="Período">
+        <div className="flex gap-2">
+          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
+            className="w-full p-2 text-[13px]" style={inputStyle} />
+          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
+            className="w-full p-2 text-[13px]" style={inputStyle} />
         </div>
       </FilterGroup>
 

@@ -34,6 +34,8 @@ export default function BuscaPage() {
   const [ufs, setUfs] = useState<string[]>([]);
   const [valueMin, setValueMin] = useState("");
   const [valueMax, setValueMax] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const doSearch = useCallback(
     async (q: string, p: number = 1) => {
@@ -47,7 +49,9 @@ export default function BuscaPage() {
       try {
         const offset = (p - 1) * PAGE_SIZE;
         const modeParam = booleanMode ? "&mode=boolean" : "";
-        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}`;
+        const dateFromParam = dateFrom ? `&published_since=${dateFrom}` : "";
+        const dateToParam = dateTo ? `&published_until=${dateTo}` : "";
+        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}`;
         const res = await fetch(url);
         const body = await res.json();
         const all: Article[] = body.results || [];
@@ -100,6 +104,8 @@ export default function BuscaPage() {
     setUfs([]);
     setValueMin("");
     setValueMax("");
+    setDateFrom("");
+    setDateTo("");
   };
 
   const handleSaveAsAlert = () => {
@@ -131,6 +137,8 @@ export default function BuscaPage() {
             ufs={ufs} setUfs={setUfs}
             valueMin={valueMin} setValueMin={setValueMin}
             valueMax={valueMax} setValueMax={setValueMax}
+            dateFrom={dateFrom} setDateFrom={setDateFrom}
+            dateTo={dateTo} setDateTo={setDateTo}
             onApply={() => { if (query) doSearch(query); }}
             onClear={handleClearFilters}
           />
