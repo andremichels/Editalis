@@ -21,11 +21,51 @@ interface ProfileItem {
   count: string;
 }
 
-const prazos = [
-  { title: 'Pregão 114/2026 · Campinas', days: 'abertura em 2 dias', tone: 'urgent' as const },
-  { title: 'Concorrência 07/2026 · DER-MG', days: 'abertura em 4 dias', tone: 'default' as const },
-  { title: 'Dispensa 22/2026 · UFMG', days: 'abertura em 6 dias', tone: 'later' as const },
-];
+interface DeadlineItem {
+  id: number;
+  slug: string;
+  title: string;
+  organ: string;
+  days: string;
+  tone: 'urgent' | 'default' | 'later';
+}
+
+function computeDeadlines(articles: Article[]): DeadlineItem[] {
+  const now = new Date();
+  const deadlines: DeadlineItem[] = [];
+
+  for (const a of articles) {
+    const nd = a.normalized_data;
+    if (!nd || typeof nd === 'string') continue;
+    const openingDate = nd.opening_date;
+    if (!openingDate) continue;
+
+    const od = new Date(openingDate);
+    const diffDays = Math.ceil((od.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) continue; // já passou
+    if (diffDays > 30) continue; // muito longe
+
+    let tone: 'urgent' | 'default' | 'later';
+    if (diffDays <= 3) tone = 'urgent';
+    else if (diffDays <= 7) tone = 'default';
+    else tone = 'later';
+
+    deadlines.push({
+      id: a.id,
+      slug: a.slug,
+      title: a.title_marker || a.title,
+      organ: a.organ_level_1 || a.organ || '',
+      days: diffDays === 0 ? 'abertura hoje' : diffDays === 1 ? 'abertura amanhã' : `abertura em ${diffDays} dias`,
+      tone,
+    });
+  }
+
+  return deadlines.sort((a, b) => {
+    const urgency = { urgent: 0, default: 1, later: 2 };
+    return urgency[a.tone] - urgency[b.tone];
+  }).slice(0, 5);
+}
 
 function formatNumber(n: number): string {
   return new Intl.NumberFormat('pt-BR').format(n);
@@ -38,6 +78,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [volume, setVolume] = useState<{date: string; count: number}[]>([]);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
+  const [deadlines, setDeadlines] = useState<DeadlineItem[]>([]);
 
   const loadProfiles = (userId: string) => {
     authFetch(`${API_BASE}/api/v1/alerts`)
@@ -58,7 +99,10 @@ export default function DashboardPage() {
       setError('Não foi possível carregar os dados. Verifique sua conexão.');
       console.error(e);
     });
-    getRecentArticles(5).then(setRecent).catch(console.error);
+    getRecentArticles(50).then((articles) => {
+      setRecent(articles.slice(0, 5));
+      setDeadlines(computeDeadlines(articles));
+    }).catch(console.error);
     fetch(`${API_BASE}/api/v1/volume?days=7`)
       .then((r) => r.json())
       .then(setVolume)
@@ -160,7 +204,7 @@ export default function DashboardPage() {
           </div>
 
           <div>
-            <DeadlinesCard items={prazos} />
+            <DeadlinesCard items={deadlines} />
             <ProfilesCard items={profiles} onManage={() => router.push('/alertas')} />
             <VolumeChart data={volume} />
           </div>
