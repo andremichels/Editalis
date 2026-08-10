@@ -7,7 +7,7 @@ import { AlertForm, type AlertFormState } from '@/components/alertas/AlertForm';
 import { AlertCard, type AlertProfile } from '@/components/alertas/AlertCard';
 import { useToast } from '@/components/Toast';
 import { supabase } from '@/lib/auth';
-import { getSubscription, type Subscription } from '@/lib/api';
+import { getSubscription, authFetch, type Subscription } from '@/lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
@@ -50,7 +50,7 @@ export default function AlertasPage() {
 
   const load = () => {
     if (!userId) return;
-    fetch(`${API_BASE}/api/v1/alerts?user_id=${userId}`)
+    authFetch(`${API_BASE}/api/v1/alerts`)
       .then((r) => r.json())
       .then(setAlerts)
       .catch(() => {})
@@ -80,10 +80,9 @@ export default function AlertasPage() {
     };
 
     const isEdit = editingId !== null;
-    const url = isEdit ? `${API_BASE}/api/v1/alerts/${editingId}` : `${API_BASE}/api/v1/alerts?user_id=${userId}`;
+    const url = isEdit ? `${API_BASE}/api/v1/alerts/${editingId}` : `${API_BASE}/api/v1/alerts`;
     const method = isEdit ? 'PUT' : 'POST';
-
-    const res = await fetch(url, {
+    const res = await authFetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -122,7 +121,7 @@ export default function AlertasPage() {
   };
 
   const handleToggle = async (alert: AlertProfile) => {
-    await fetch(`${API_BASE}/api/v1/alerts/${alert.id}`, {
+    await authFetch(`${API_BASE}/api/v1/alerts/${alert.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled: !alert.enabled }),
@@ -132,7 +131,7 @@ export default function AlertasPage() {
 
   const handleDelete = async (alert: AlertProfile) => {
     if (!confirm(`Remover alerta "${alert.name}"?`)) return;
-    await fetch(`${API_BASE}/api/v1/alerts/${alert.id}`, { method: 'DELETE' });
+    await authFetch(`${API_BASE}/api/v1/alerts/${alert.id}`, { method: 'DELETE' });
     toast('Alerta removido', 'success');
     load();
   };
@@ -145,7 +144,7 @@ export default function AlertasPage() {
     setExpanded(alertId);
     setMatchesLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/v1/alerts/${alertId}/matches?limit=10`);
+      const res = await authFetch(`${API_BASE}/api/v1/alerts/${alertId}/matches?limit=10`);
       const data = await res.json();
       setMatches(Array.isArray(data) ? data : []);
     } catch {}

@@ -8,7 +8,7 @@ import { MetricsBar } from '@/components/dashboard/MetricsBar';
 import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
 import { ProfilesCard } from '@/components/dashboard/ProfilesCard';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
-import { getStats, getRecentArticles, type PublicStats } from '@/lib/api';
+import { getStats, getRecentArticles, authFetch, type PublicStats } from '@/lib/api';
 import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
@@ -40,7 +40,7 @@ export default function DashboardPage() {
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
 
   const loadProfiles = (userId: string) => {
-    fetch(`${API_BASE}/api/v1/alerts?user_id=${userId}`)
+    authFetch(`${API_BASE}/api/v1/alerts`)
       .then((r) => r.json())
       .then((alerts: any[]) => {
         const items = alerts.map((a) => ({

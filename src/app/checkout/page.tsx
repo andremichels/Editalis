@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { supabase } from "@/lib/auth";
+import { authFetch } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 
@@ -35,7 +36,7 @@ function CheckoutForm() {
     setError("");
 
     try {
-      const res = await fetch(`${API_BASE}/api/v1/account/subscription/checkout?user_id=${userId}`, {
+      const res = await authFetch(`${API_BASE}/api/v1/account/subscription/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan, billing_cycle: cycle, method: "credit_card" }),

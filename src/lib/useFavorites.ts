@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/auth";
+import { authFetch } from "@/lib/api";
 
 const STORAGE_KEY = "editalis_favorites";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -33,9 +34,9 @@ export function useFavorites() {
     setFavorites(ids);
     setLoaded(true);
 
-    // Then sync with API (async, merge)
+    // Then sync with API (async, merge) using Bearer token
     if (userId) {
-      fetch(`${API_BASE}/api/v1/favorites?user_id=${userId}`)
+      authFetch(`${API_BASE}/api/v1/favorites`)
         .then((r) => r.json())
         .then((articles: any[]) => {
           if (Array.isArray(articles)) {
@@ -57,12 +58,12 @@ export function useFavorites() {
       if (next.has(articleId)) {
         next.delete(articleId);
         if (userId) {
-          fetch(`${API_BASE}/api/v1/favorites/${articleId}?user_id=${userId}`, { method: "DELETE" }).catch(() => {});
+          authFetch(`${API_BASE}/api/v1/favorites/${articleId}`, { method: "DELETE" }).catch(() => {});
         }
       } else {
         next.add(articleId);
         if (userId) {
-          fetch(`${API_BASE}/api/v1/favorites/${articleId}?user_id=${userId}`, { method: "POST" }).catch(() => {});
+          authFetch(`${API_BASE}/api/v1/favorites/${articleId}`, { method: "POST" }).catch(() => {});
         }
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));

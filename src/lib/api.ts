@@ -1,6 +1,35 @@
 import { Article, Organ, SearchResponse } from './types';
+import { supabase } from './auth';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
+
+/**
+ * Fetch with Supabase JWT Bearer token.
+ * Automatically gets the current session token and adds it to the Authorization header.
+ * Falls back to ?user_id= for backward compat during migration.
+ */
+export async function authFetch(
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  const userId = data.session?.user?.id;
+
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string> || {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  } else if (userId) {
+    // Fallback: append user_id to URL (backend deprecation warning)
+    const sep = url.includes('?') ? '&' : '?';
+    url = `${url}${sep}user_id=${userId}`;
+  }
+
+  return fetch(url, { ...options, headers });
+}
 
 // ── Stats ──
 
@@ -94,17 +123,16 @@ export interface Subscription {
 }
 
 export async function getSubscription(userId: string): Promise<Subscription> {
-  const res = await fetch(`${API_BASE}/api/v1/account/subscription?user_id=${userId}`);
+  const res = await authFetch(`${API_BASE}/api/v1/account/subscription`);
   if (!res.ok) throw new Error(`Subscription failed: ${res.status}`);
   return res.json();
 }
 
 export async function getSubscriptionPortalUrl(userId: string): Promise<string> {
-  // No external portal yet — redirect to checkout page for plan changes
   return `/checkout?plan=profissional&cycle=monthly`;
 }
 
 export async function cancelSubscription(userId: string): Promise<boolean> {
-  const res = await fetch(`${API_BASE}/api/v1/account/subscription/cancel?user_id=${userId}`, { method: 'POST' });
+  const res = await authFetch(`${API_BASE}/api/v1/account/subscription/cancel`, { method: 'POST' });
   return res.ok;
 }

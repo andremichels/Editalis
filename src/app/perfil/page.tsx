@@ -9,6 +9,7 @@ import { EmpresaTab, type Cnae, type CompanyData } from '@/components/perfil/tab
 import { AssinaturaTab } from '@/components/perfil/tabs/AssinaturaTab';
 import { EquipeTab, type TeamMember } from '@/components/perfil/tabs/EquipeTab';
 import { supabase } from '@/lib/auth';
+import { authFetch } from '@/lib/api';
 import { getSubscription, getSubscriptionPortalUrl, type Subscription } from '@/lib/api';
 import { useFavorites } from '@/lib/useFavorites';
 import { useToast } from '@/components/Toast';
@@ -74,9 +75,9 @@ export default function PerfilPage() {
     try {
       await Promise.all([
         supabase.auth.updateUser({ email }),
-        fetch(`${API_BASE}/api/v1/account/profile?user_id=${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) }),
-        fetch(`${API_BASE}/api/v1/account/preferences?user_id=${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(preferences) }),
-        fetch(`${API_BASE}/api/v1/account/notification-defaults?user_id=${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(notifications) }),
+        authFetch(`${API_BASE}/api/v1/account/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(profile) }),
+        authFetch(`${API_BASE}/api/v1/account/preferences`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(preferences) }),
+        authFetch(`${API_BASE}/api/v1/account/notification-defaults`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(notifications) }),
       ]);
       toast('Alterações salvas', 'success');
     } catch {
@@ -132,7 +133,7 @@ export default function PerfilPage() {
     if (!userId) return;
     const prev = team;
     setTeam((t) => t.map((m) => (m.id === memberId ? { ...m, role } : m)));
-    const res = await fetch(`${API_BASE}/api/v1/account/team/${memberId}?user_id=${userId}&role=${role}`, { method: 'PUT' });
+    const res = await authFetch(`${API_BASE}/api/v1/account/team/${memberId}?role=${role}`, { method: 'PUT' });
     if (!res.ok) {
       setTeam(prev);
       const body = await res.json().catch(() => null);
@@ -143,7 +144,7 @@ export default function PerfilPage() {
   const inviteMember = async (inviteEmail: string, role: TeamMember['role']): Promise<boolean> => {
     if (!userId) return false;
     try {
-      const res = await fetch(`${API_BASE}/api/v1/account/team?user_id=${userId}`, {
+      authFetch(`${API_BASE}/api/v1/account/team`,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: inviteEmail, role }),
@@ -161,7 +162,7 @@ export default function PerfilPage() {
   const removeMember = async (memberId: number): Promise<boolean> => {
     if (!userId) return false;
     try {
-      const res = await fetch(`${API_BASE}/api/v1/account/team/${memberId}?user_id=${userId}`, { method: 'DELETE' });
+      const res = await authFetch(`${API_BASE}/api/v1/account/team/${memberId}`, { method: 'DELETE' });
       if (res.ok) {
         setTeam((t) => t.filter((m) => m.id !== memberId));
         return true;
