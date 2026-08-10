@@ -3,7 +3,8 @@
 import { MarketingLayout } from '@/components/layout/PageLayout';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { ArrowRight, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getStats, type PublicStats } from '@/lib/api';
 
 const steps = [
   { number: '01', title: 'Descreva o que você vende', description: 'CNAE, palavras-chave, regiões e faixa de valor. O perfil de captação leva dois minutos.' },
@@ -24,13 +25,6 @@ const coverage = [
   { label: 'Portais de compras', detail: 'conciliação de status e itens' },
 ];
 
-const stats: [string, string][] = [
-  ['1.480+', 'diários oficiais indexados'],
-  ['9,2 mi', 'licitações no histórico'],
-  ['06h30', 'alerta diário na sua caixa'],
-  ['2018', 'base contínua desde'],
-];
-
 const eyebrow = 'text-[11px] font-bold uppercase';
 const eyebrowStyle = { letterSpacing: '0.18em' };
 const sectionTitle = 'font-black leading-[1.02]';
@@ -38,6 +32,24 @@ const sectionTitleStyle = { fontFamily: 'var(--font-heading)', letterSpacing: '-
 
 export default function LandingPage() {
   const [annual, setAnnual] = useState(false);
+  const [stats, setStats] = useState<PublicStats | null>(null);
+
+  useEffect(() => {
+    getStats().then(setStats).catch(() => {});
+  }, []);
+
+  const todayCount = stats?.articles_today?.toLocaleString('pt-BR') ?? '1.284';
+  const totalCount = stats?.total_articles?.toLocaleString('pt-BR') ?? '30.850';
+  const lastSync = stats?.last_sync_at
+    ? new Date(stats.last_sync_at).toLocaleDateString('pt-BR')
+    : '10/08/2026';
+
+  const statsItems: [string, string][] = [
+    ['1.480+', 'diários oficiais indexados'],
+    [totalCount, 'licitações na base'],
+    ['06h30', 'alerta diário na sua caixa'],
+    ['2018', 'base contínua desde'],
+  ];
 
   const plans = [
     { name: 'Essencial', tag: 'Pequena empresa', price: annual ? 39 : 49, features: ['3 perfis de busca monitorados', 'Histórico de 30 dias', 'Alerta por e-mail diário', 'Exportação CSV', 'Suporte por e-mail'], cta: 'Assinar Essencial', highlight: false },
@@ -112,18 +124,18 @@ export default function LandingPage() {
               </div>
             ))}
             <div className="py-3.5 px-4 text-[13px] font-bold" style={{ background: 'var(--color-accent)', color: '#fff' }}>
-              + 1.284 outras publicações nas últimas 24h
+              + {todayCount} publicações nas últimas 24h
             </div>
           </div>
         </div>
 
         {/* ═══════════ STATS ═══════════ */}
         <div className="grid grid-cols-2 sm:grid-cols-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          {stats.map(([num, label], i) => (
+          {statsItems.map(([num, label], i) => (
             <div
               key={label}
-              className={`py-8 ${i === 0 ? 'pr-4 lg:pr-6 pl-0' : i === stats.length - 1 ? 'pl-4 lg:pl-6 pr-0' : 'px-4 lg:px-6'}`}
-              style={{ borderRight: i < stats.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
+              className={`py-8 ${i === 0 ? 'pr-4 lg:pr-6 pl-0' : i === statsItems.length - 1 ? 'pl-4 lg:pl-6 pr-0' : 'px-4 lg:px-6'}`}
+              style={{ borderRight: i < statsItems.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
             >
               <div className="text-[32px] sm:text-[44px] font-black leading-none tracking-[-0.03em]" style={{ color: 'var(--color-text)' }}>{num}</div>
               <div className="text-[13px] mt-1.5" style={{ color: 'var(--color-neutral-700)' }}>{label}</div>
@@ -192,7 +204,7 @@ export default function LandingPage() {
         <div id="cobertura" className="py-10 lg:py-14" style={{ borderTop: '2px solid var(--color-text)' }}>
           <div className="flex flex-wrap items-baseline justify-between gap-2 mb-7">
             <h2 className={`${sectionTitle} text-[32px] sm:text-[40px]`} style={sectionTitleStyle}>Cobertura da base</h2>
-            <span className="text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>atualizado em 30/07/2026</span>
+            <span className="text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>atualizado em {lastSync}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{ borderTop: '2px solid var(--color-text)' }}>
             {coverage.map((item, i) => (
