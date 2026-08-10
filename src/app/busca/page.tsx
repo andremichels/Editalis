@@ -9,6 +9,7 @@ import { SearchResultsHeader } from "@/components/busca/SearchResultsHeader";
 import { SearchResultItem } from "@/components/busca/SearchResultItem";
 import { Pagination } from "@/components/busca/Pagination";
 import { useFavorites } from "@/lib/useFavorites";
+import { useToast } from "@/components/Toast";
 import type { Article } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -16,6 +17,7 @@ const PAGE_SIZE = 10;
 
 export default function BuscaPage() {
   const { toggle, isFavorite } = useFavorites();
+  const { toast } = useToast();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Article[]>([]);
@@ -24,6 +26,7 @@ export default function BuscaPage() {
   const [elapsed, setElapsed] = useState("");
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [booleanMode, setBooleanMode] = useState(true);
 
   // Filters
   const [organs, setOrgans] = useState<string[]>([]);
@@ -43,13 +46,14 @@ export default function BuscaPage() {
 
       try {
         const offset = (p - 1) * PAGE_SIZE;
-        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}`;
+        const modeParam = booleanMode ? "&mode=boolean" : "";
+        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}`;
         const res = await fetch(url);
         const body = await res.json();
         const all: Article[] = body.results || [];
         const apiTotal: number = body.count || 0;
 
-        // Client-side filtering for modalities, UFs, value (filters current page only)
+        // Client-side filtering
         let filtered = all;
         if (organs.length > 0) {
           filtered = filtered.filter(
@@ -87,7 +91,7 @@ export default function BuscaPage() {
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
-    [organs, modalities, ufs, valueMin, valueMax]
+    [organs, modalities, ufs, valueMin, valueMax, booleanMode]
   );
 
   const handleClearFilters = () => {
@@ -98,10 +102,28 @@ export default function BuscaPage() {
     setValueMax("");
   };
 
+  const handleSaveAsAlert = () => {
+    if (!query) return;
+    const params = new URLSearchParams();
+    params.set("name", query.slice(0, 50));
+    params.set("keywords", query);
+    if (organs.length) params.set("organs", organs.join(","));
+    if (ufs.length) params.set("ufs", ufs.join(","));
+    if (modalities.length) params.set("modalities", modalities.join(","));
+    if (valueMin) params.set("value_min", valueMin);
+    if (valueMax) params.set("value_max", valueMax);
+    window.location.href = `/alertas?prefill=${encodeURIComponent(params.toString())}`;
+  };
+
   return (
     <AuthGuard>
       <DashboardLayout>
-        <SearchHeader onSearch={(q) => doSearch(q)} loading={loading} />
+        <SearchHeader
+          onSearch={(q) => doSearch(q)}
+          loading={loading}
+          booleanMode={booleanMode}
+          onToggleMode={setBooleanMode}
+        />
         <div className="grid grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
           <SearchFilters
             organs={organs} setOrgans={setOrgans}
@@ -117,6 +139,9 @@ export default function BuscaPage() {
               <div className="py-24 text-center">
                 <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
                   Use o campo de busca para pesquisar atos oficiais.
+                </p>
+                <p className="text-xs mt-2" style={{ color: "var(--color-neutral-400)" }}>
+                  Operadores booleanos ativos: AND, OR, NOT (-), "frase exata"
                 </p>
               </div>
             ) : loading ? (
@@ -148,6 +173,20 @@ export default function BuscaPage() {
                   current={page}
                   onPage={(p) => doSearch(query, p)}
                 />
+
+                {/* Save as alert */}
+                <div className="px-10 py-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
+                  <button
+                    onClick={handleSaveAsAlert}
+                    className="text-sm font-bold underline cursor-pointer"
+                    style={{ color: 'var(--color-accent)' }}
+                  >
+                    Salvar busca como alerta →
+                  </button>
+                  <span className="text-xs ml-2" style={{ color: 'var(--color-neutral-500)' }}>
+                    Receba novos resultados por e-mail
+                  </span>
+                </div>
               </>
             )}
           </div>
