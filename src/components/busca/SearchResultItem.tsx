@@ -27,6 +27,7 @@ export function SearchResultItem({ article, favorita, onToggleFavorita }: Search
   const value = nd?.value;
   const openingDate = nd?.opening_date ? formatDate(nd.opening_date) : '';
   const excerpt = (article as any).excerpt;
+  const summary = article.normalized_data?.summary as string | undefined;
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-7 py-[22px] px-10" style={{ borderBottom: '1px solid var(--color-divider)' }}>
@@ -56,11 +57,11 @@ export function SearchResultItem({ article, favorita, onToggleFavorita }: Search
         <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
           {organ}{uf ? ` · ${uf}` : ''}
         </div>
-        {excerpt && (
+        {(summary || excerpt) && (
           <div
             className="text-[13px] mt-2 leading-[1.5]"
             style={{ color: 'var(--color-neutral-600)' }}
-            dangerouslySetInnerHTML={{ __html: excerpt }}
+            dangerouslySetInnerHTML={{ __html: summary || excerpt }}
           />
         )}
       </div>

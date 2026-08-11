@@ -28,6 +28,8 @@ export default function BuscaPage() {
   const [searched, setSearched] = useState(false);
   const [booleanMode, setBooleanMode] = useState(true);
   const [semanticMode, setSemanticMode] = useState(false);
+  const [smartMode, setSmartMode] = useState(false);
+  const [smartFilters, setSmartFilters] = useState<Record<string, any> | null>(null);
 
   // Filters
   const [organs, setOrgans] = useState<string[]>([]);
@@ -102,6 +104,28 @@ export default function BuscaPage() {
     [organs, modalities, ufs, valueMin, valueMax, booleanMode, semanticMode]
   );
 
+  const handleSmartSearch = async (q: string) => {
+    if (!q || q.trim().length < 5) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/search/parse?q=${encodeURIComponent(q)}`, { method: "POST" });
+      const filters = await res.json();
+      setSmartFilters(filters);
+      // Apply parsed filters
+      if (filters.modalities?.length) setModalities(filters.modalities);
+      if (filters.ufs?.length) setUfs(filters.ufs);
+      if (filters.value_min) setValueMin(String(filters.value_min));
+      if (filters.value_max) setValueMax(String(filters.value_max));
+      if (filters.organ) setOrgans([filters.organ]);
+      // Use remaining keywords as search query
+      const searchQ = filters.keywords?.join(" ") || q;
+      doSearch(searchQ);
+    } catch {
+      doSearch(q);
+    }
+    setLoading(false);
+  };
+
   const handleClearFilters = () => {
     setOrgans([]);
     setModalities([]);
@@ -135,6 +159,9 @@ export default function BuscaPage() {
           onToggleMode={setBooleanMode}
           semanticMode={semanticMode}
           onToggleSemantic={setSemanticMode}
+          smartMode={smartMode}
+          onSmartSearch={handleSmartSearch}
+          onToggleSmart={setSmartMode}
         />
         <div className="grid grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
           <SearchFilters
@@ -152,7 +179,7 @@ export default function BuscaPage() {
             {!searched ? (
               <div className="py-24 text-center">
                 <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
-                  Use o campo de busca para pesquisar atos oficiais.
+                  Use o campo de busca para pesquisar atos oficiais. Ative 🧠 para busca em linguagem natural.
                 </p>
                 <p className="text-xs mt-2" style={{ color: "var(--color-neutral-400)" }}>
                   Operadores booleanos ativos: AND, OR, NOT (-), "frase exata"
@@ -173,7 +200,16 @@ export default function BuscaPage() {
               </div>
             ) : (
               <>
-                <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} />
+                {smartFilters && (
+                <div className="px-10 py-3 text-sm" style={{ background: "var(--color-neutral-100)", borderBottom: "1px solid var(--color-divider)" }}>
+                  <span style={{ color: "var(--color-neutral-600)" }}>Entendi: </span>
+                  {smartFilters.modalities?.length > 0 && <span className="font-bold">{smartFilters.modalities.join(", ")} </span>}
+                  {smartFilters.ufs?.length > 0 && <span className="font-bold">em {smartFilters.ufs.join(", ")} </span>}
+                  {smartFilters.value_min && <span className="font-bold">acima de R$ {smartFilters.value_min.toLocaleString("pt-BR")} </span>}
+                  {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-500)" }}>— {smartFilters.keywords.join(" ")}</span>}
+                </div>
+              )}
+              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} />
                 {results.map((a) => (
                   <SearchResultItem
                     key={a.id}

@@ -40,4 +40,5 @@ export interface NormalizedData {
   keywords?: string[];
   organ_normalized?: string;
   contract_number?: string;
+  summary?: string;
 }

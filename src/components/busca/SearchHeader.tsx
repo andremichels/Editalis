@@ -10,6 +10,9 @@ export function SearchHeader({
   onToggleMode,
   semanticMode,
   onToggleSemantic,
+  smartMode,
+  onSmartSearch,
+  onToggleSmart,
 }: {
   onSearch: (q: string) => void;
   loading: boolean;
@@ -17,6 +20,9 @@ export function SearchHeader({
   onToggleMode: (v: boolean) => void;
   semanticMode: boolean;
   onToggleSemantic: (v: boolean) => void;
+  smartMode: boolean;
+  onSmartSearch: (q: string) => void;
+  onToggleSmart: (v: boolean) => void;
 }
 ) {
   const [query, setQuery] = useState('');
@@ -24,7 +30,10 @@ export function SearchHeader({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim().length >= 3) onSearch(query.trim());
+    if (query.trim().length >= 3) {
+      if (smartMode) onSmartSearch(query.trim());
+      else onSearch(query.trim());
+    }
   };
 
   return (
@@ -37,7 +46,9 @@ export function SearchHeader({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1 border-0 bg-transparent py-4 text-base outline-none"
-          placeholder={booleanMode
+          placeholder={smartMode
+              ? 'Descreva o que procura: "pregão de software em SP acima de 100 mil"...'
+              : booleanMode
             ? 'pregão OR concorrência "são paulo" -dispensa'
             : 'Buscar por palavra-chave, órgão, modalidade...'}
           autoFocus
@@ -48,7 +59,7 @@ export function SearchHeader({
           className="text-sm font-bold text-white px-6 cursor-pointer disabled:opacity-50"
           style={{ borderLeft: '2px solid var(--color-text)', background: 'var(--color-text)' }}
         >
-          {loading ? 'Buscando...' : 'Buscar'}
+          {loading ? 'Buscando...' : smartMode ? '🧠 Entender' : 'Buscar'}
         </button>
       </form>
 
@@ -65,6 +76,10 @@ export function SearchHeader({
         </label>
 
         {/* Help toggle */}
+        <label className="flex items-center gap-1.5 text-xs cursor-pointer" style={{ color: smartMode ? "var(--color-accent)" : "var(--color-neutral-600)", fontWeight: smartMode ? 800 : 400 }}>
+          <input type="checkbox" checked={smartMode} onChange={(e) => onToggleSmart(e.target.checked)} className="cursor-pointer" />
+          🧠 Busca inteligente
+        </label>
         <label className="flex items-center gap-1.5 text-xs cursor-pointer" style={{ color: semanticMode ? "var(--color-accent)" : "var(--color-neutral-600)" }}>
           <input type="checkbox" checked={semanticMode} onChange={(e) => onToggleSemantic(e.target.checked)} className="cursor-pointer" />
           ✨ Busca semântica
