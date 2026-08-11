@@ -1,6 +1,7 @@
 'use client';
 
 import { Sidebar } from '@/components/dashboard/Sidebar';
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
 import { useState } from 'react';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -8,6 +9,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      <OnboardingModal />
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
