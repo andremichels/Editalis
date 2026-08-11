@@ -144,7 +144,7 @@ export default function PerfilPage() {
   const inviteMember = async (inviteEmail: string, role: TeamMember['role']): Promise<boolean> => {
     if (!userId) return false;
     try {
-      const res = await authFetch(`${API_BASE}/api/v1/account/team`, {
+      const res = await authFetch(`${API_BASE}/api/v1/account/team/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: inviteEmail, role }),
