@@ -34,6 +34,7 @@ function formatContent(raw: string): React.ReactNode[] {
 
 export function ArticleContent({ article }: { article: Article }) {
   const [copied, setCopied] = useState(false);
+  const summary = article.normalized_data?.summary || article.normalized_data?.object_summary;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(article.content);
@@ -43,6 +44,16 @@ export function ArticleContent({ article }: { article: Article }) {
 
   return (
     <div className="py-8 px-10 min-w-0" style={{ borderRight: '2px solid var(--color-text)' }}>
+      {summary && (
+        <div className="mb-7 p-5" style={{ border: '2px solid var(--color-accent)', background: 'var(--color-accent-100)' }}>
+          <div className="text-[11px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-accent-800)' }}>
+            Resumo
+          </div>
+          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-neutral-800)' }}>
+            {summary}
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
           Texto da publicação
