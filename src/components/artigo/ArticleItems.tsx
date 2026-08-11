@@ -35,8 +35,20 @@ function extractItems(content: string): { number: string; description: string; q
   return items.slice(0, 20);
 }
 
+// Doc types where a real "itens/lotes" breakdown can plausibly exist.
+// Everything else (portaria, nomeação, pauta de julgamento, etc.) tends to
+// have unrelated numbered lists (observações, processos) that the generic
+// fallback in extractItems() would otherwise misidentify as items.
+const ITEMIZABLE_DOC_TYPES = new Set([
+  'licitacao', 'dispensa', 'inexigibilidade', 'adjudicacao', 'homologacao', 'contrato', 'aditivo',
+]);
+
 export function ArticleItems({ article }: { article: Article }) {
   const [copied, setCopied] = useState(false);
+  const docType = article.normalized_data?.doc_type;
+
+  if (docType && !ITEMIZABLE_DOC_TYPES.has(docType)) return null;
+
   const items = extractItems(article.content);
 
   if (items.length === 0) return null;
