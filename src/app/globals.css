@@ -121,3 +121,59 @@ h1, h2, h3, h4 {
   animation: pulse 1.5s ease-in-out infinite;
   background: var(--color-divider);
 }
+
+/* ── Search highlights ── */
+mark, .search-highlight {
+  background: var(--color-accent-200);
+  color: var(--color-text);
+  font-weight: 800;
+  padding: 0 2px;
+}
+
+/* ── Base form elements ── */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+  background: var(--color-bg);
+  border: 2px solid var(--color-divider);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+/* ── Base button ── */
+button, .btn {
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  border: 2px solid var(--color-text);
+  transition: opacity 0.15s;
+}
+button:hover, .btn:hover { opacity: 0.85; }
+button:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Links ── */
+a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* ── Tables ── */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-neutral-400); }
