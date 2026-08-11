@@ -27,6 +27,7 @@ export default function BuscaPage() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [booleanMode, setBooleanMode] = useState(true);
+  const [semanticMode, setSemanticMode] = useState(false);
 
   // Filters
   const [organs, setOrgans] = useState<string[]>([]);
@@ -52,7 +53,9 @@ export default function BuscaPage() {
         const sortParam = "&sort_by=date";  // default: date (most recent first)
         const dateFromParam = dateFrom ? `&published_since=${dateFrom}` : "";
         const dateToParam = dateTo ? `&published_until=${dateTo}` : "";
-        const url = `${API_BASE}/api/v1/search?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}`;
+        const searchPath = semanticMode ? "search/semantic" : "search";
+        const hybridParam = semanticMode ? "&hybrid=true" : "";
+        const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}`;
         const res = await fetch(url);
         const body = await res.json();
         const all: Article[] = body.results || [];
@@ -96,7 +99,7 @@ export default function BuscaPage() {
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
-    [organs, modalities, ufs, valueMin, valueMax, booleanMode]
+    [organs, modalities, ufs, valueMin, valueMax, booleanMode, semanticMode]
   );
 
   const handleClearFilters = () => {
@@ -130,6 +133,8 @@ export default function BuscaPage() {
           loading={loading}
           booleanMode={booleanMode}
           onToggleMode={setBooleanMode}
+          semanticMode={semanticMode}
+          onToggleSemantic={setSemanticMode}
         />
         <div className="grid grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
           <SearchFilters
