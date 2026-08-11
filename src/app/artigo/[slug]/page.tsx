@@ -27,8 +27,10 @@ export default async function ArticlePage({
       <DashboardLayout>
         <ArticleDetailHeader article={article} />
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
-          <ArticleContent article={article} />
-          <ArticleItems article={article} />
+          <div className="min-w-0">
+            <ArticleContent article={article} />
+            <ArticleItems article={article} />
+          </div>
           <ArticleMeta article={article} />
         </div>
         <SimilarArticles slug={slug} />
