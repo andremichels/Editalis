@@ -8,10 +8,11 @@ import { AccountHeader, type PerfilTab } from '@/components/perfil/AccountHeader
 import { ContaTab, type ProfileData, type PreferencesData, type NotificationDefaults, type ActivityItem } from '@/components/perfil/tabs/ContaTab';
 import { EmpresaTab, type Cnae, type CompanyData } from '@/components/perfil/tabs/EmpresaTab';
 import { AssinaturaTab } from '@/components/perfil/tabs/AssinaturaTab';
+import { PagamentosTab } from '@/components/perfil/tabs/PagamentosTab';
 import { EquipeTab, type TeamMember } from '@/components/perfil/tabs/EquipeTab';
 import { supabase } from '@/lib/auth';
 import { authFetch } from '@/lib/api';
-import { getSubscription, getSubscriptionPortalUrl, type Subscription } from '@/lib/api';
+import { getSubscription, getSubscriptionPortalUrl, getPayments, type Subscription, type Payment } from '@/lib/api';
 import { useFavorites } from '@/lib/useFavorites';
 import { useToast } from '@/components/Toast';
 
@@ -39,6 +40,7 @@ export default function PerfilPage() {
   const [company, setCompany] = useState<CompanyData>(emptyCompany);
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
 
   const [savingProfile, setSavingProfile] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
@@ -46,13 +48,14 @@ export default function PerfilPage() {
   const [savingPassword, setSavingPassword] = useState(false);
 
   const fetchAccountData = (uid: string) => {
-    fetch(`${API_BASE}/api/v1/account/profile?user_id=${uid}`).then((r) => r.json()).then((d) => setProfile({ nome_completo: d.nome_completo ?? '', cargo: d.cargo ?? '', celular: d.celular ?? '' })).catch(() => {});
-    fetch(`${API_BASE}/api/v1/account/preferences?user_id=${uid}`).then((r) => r.json()).then(setPreferences).catch(() => {});
-    fetch(`${API_BASE}/api/v1/account/notification-defaults?user_id=${uid}`).then((r) => r.json()).then(setNotifications).catch(() => {});
-    fetch(`${API_BASE}/api/v1/account/activity?user_id=${uid}&limit=10`).then((r) => r.json()).then((d) => setActivity(Array.isArray(d) ? d : [])).catch(() => {});
-    fetch(`${API_BASE}/api/v1/account/company/cnaes?user_id=${uid}`).then((r) => r.json()).then((d) => setCnaes(Array.isArray(d) ? d : [])).catch(() => {});
-    fetch(`${API_BASE}/api/v1/account/team?user_id=${uid}`).then((r) => r.json()).then((d) => setTeam(Array.isArray(d) ? d : [])).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/profile`).then((r) => r.json()).then((d) => setProfile({ nome_completo: d.nome_completo ?? '', cargo: d.cargo ?? '', celular: d.celular ?? '' })).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/preferences`).then((r) => r.json()).then(setPreferences).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/notification-defaults`).then((r) => r.json()).then(setNotifications).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/activity?limit=10`).then((r) => r.json()).then((d) => setActivity(Array.isArray(d) ? d : [])).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/company/cnaes`).then((r) => r.json()).then((d) => setCnaes(Array.isArray(d) ? d : [])).catch(() => {});
+    authFetch(`${API_BASE}/api/v1/account/team`).then((r) => r.json()).then((d) => setTeam(Array.isArray(d) ? d : [])).catch(() => {});
     getSubscription(uid).then(setSubscription).catch(() => {});
+    getPayments().then(setPayments).catch(() => {});
   };
 
   useEffect(() => {
@@ -102,14 +105,14 @@ export default function PerfilPage() {
     if (!userId) return;
     const next = [...cnaes, c];
     setCnaes(next);
-    await fetch(`${API_BASE}/api/v1/account/company/cnaes?user_id=${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(next) });
+    await authFetch(`${API_BASE}/api/v1/account/company/cnaes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(next) });
   };
 
   const removeCnae = async (codigo: string) => {
     if (!userId) return;
     const next = cnaes.filter((c) => c.codigo !== codigo);
     setCnaes(next);
-    await fetch(`${API_BASE}/api/v1/account/company/cnaes?user_id=${userId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(next) });
+    await authFetch(`${API_BASE}/api/v1/account/company/cnaes`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(next) });
   };
 
   // ── Assinatura tab ──
@@ -241,6 +244,10 @@ export default function PerfilPage() {
 
         {activeTab === 'assinatura' && (
           <AssinaturaTab subscription={subscription} teamCount={team.length} onManagePortal={managePortal} openingPortal={openingPortal} />
+        )}
+
+        {activeTab === 'pagamentos' && (
+          <PagamentosTab payments={payments} />
         )}
 
         {activeTab === 'equipe' && (

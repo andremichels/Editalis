@@ -6,7 +6,6 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartp
 /**
  * Fetch with Supabase JWT Bearer token.
  * Automatically gets the current session token and adds it to the Authorization header.
- * Falls back to ?user_id= for backward compat during migration.
  */
 export async function authFetch(
   url: string,
@@ -14,7 +13,6 @@ export async function authFetch(
 ): Promise<Response> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
-  const userId = data.session?.user?.id;
 
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
@@ -22,10 +20,6 @@ export async function authFetch(
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
-  } else if (userId) {
-    // Fallback: append user_id to URL (backend deprecation warning)
-    const sep = url.includes('?') ? '&' : '?';
-    url = `${url}${sep}user_id=${userId}`;
   }
 
   return fetch(url, { ...options, headers });
@@ -135,4 +129,27 @@ export async function getSubscriptionPortalUrl(userId: string): Promise<string> 
 export async function cancelSubscription(userId: string): Promise<boolean> {
   const res = await authFetch(`${API_BASE}/api/v1/account/subscription/cancel`, { method: 'POST' });
   return res.ok;
+}
+
+// ── Payments (client history) ──
+
+export interface Payment {
+  id: number;
+  amount_cents: number;
+  currency: string;
+  status: string;
+  plan: string | null;
+  billing_cycle: string | null;
+  period_start: string | null;
+  period_end: string | null;
+  created_at: string;
+  invoice_url: string | null;
+  receipt_url: string | null;
+}
+
+export async function getPayments(): Promise<Payment[]> {
+  const res = await authFetch(`${API_BASE}/api/v1/account/payments`);
+  if (!res.ok) throw new Error(`Payments failed: ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }

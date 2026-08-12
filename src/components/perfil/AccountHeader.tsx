@@ -1,9 +1,10 @@
-export type PerfilTab = 'conta' | 'empresa' | 'assinatura' | 'equipe';
+export type PerfilTab = 'conta' | 'empresa' | 'assinatura' | 'pagamentos' | 'equipe';
 
 const TABS: { id: PerfilTab; label: string }[] = [
   { id: 'conta', label: 'Conta' },
   { id: 'empresa', label: 'Empresa e faturamento' },
   { id: 'assinatura', label: 'Assinatura' },
+  { id: 'pagamentos', label: 'Pagamentos' },
   { id: 'equipe', label: 'Equipe e segurança' },
 ];
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/auth';
+import { authFetch } from '@/lib/api';
 import { useFavorites } from '@/lib/useFavorites';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
@@ -26,7 +27,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       const user = data.session?.user;
       setName(user?.user_metadata?.nome || user?.email?.split('@')[0] || '');
       if (user) {
-        fetch(`${API_BASE}/api/v1/alerts?user_id=${user.id}`)
+        authFetch(`${API_BASE}/api/v1/alerts`)
           .then(r => r.json())
           .then((alerts: any[]) => setAlertCount(alerts.length))
           .catch(() => {});
