@@ -5,6 +5,7 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AlertForm, type AlertFormState } from '@/components/alertas/AlertForm';
 import { AlertCard, type AlertProfile } from '@/components/alertas/AlertCard';
+import { DesktopOnlyNotice } from '@/components/layout/DesktopOnlyNotice';
 import { useToast } from '@/components/Toast';
 import { supabase } from '@/lib/auth';
 import { getSubscription, authFetch, type Subscription } from '@/lib/api';
@@ -156,6 +157,8 @@ export default function AlertasPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
+        <DesktopOnlyNotice description="A criação e edição de alertas ainda não foi adaptada pro celular — abra pelo computador pra gerenciar seus perfis de busca." />
+        <div className="hidden lg:block">
         <div className="py-7 px-10 flex items-center justify-between" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div>
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
@@ -230,6 +233,7 @@ export default function AlertasPage() {
               ))}
             </div>
           )}
+        </div>
         </div>
       </DashboardLayout>
     </AuthGuard>

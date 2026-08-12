@@ -158,9 +158,9 @@ export default function DashboardPage() {
 
         <MetricsBar metrics={metrics} />
 
-        <div className="grid grid-cols-[1fr_340px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
           {/* Recent articles from DOU API */}
-          <div style={{ borderRight: '2px solid var(--color-text)' }} className="min-w-0">
+          <div className="min-w-0 lg:border-r-2" style={{ borderColor: 'var(--color-text)' }}>
             <div className="pt-6 px-10 pb-4 flex items-baseline justify-between">
               <h2 className="text-xl font-black tracking-[-0.02em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
                 Publicações recentes

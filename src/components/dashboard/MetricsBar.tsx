@@ -6,24 +6,32 @@ interface Metric {
 
 export function MetricsBar({ metrics }: { metrics: Metric[] }) {
   return (
-    <div className="grid grid-cols-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
-      {metrics.map((m, i) => (
-        <div
-          key={m.label}
-          className={`py-7 ${i === 0 ? 'px-10' : 'px-6'}`}
-          style={{ borderRight: i < metrics.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
-        >
-          <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
-            {m.label}
-          </div>
+    <div className="grid grid-cols-2 lg:grid-cols-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
+      {metrics.map((m, i) => {
+        const mobileRight = i % 2 === 0;
+        const desktopRight = i < metrics.length - 1;
+        const mobileBottom = i < 2;
+        const rightBorder = mobileRight && desktopRight ? 'border-r' : !mobileRight && desktopRight ? 'lg:border-r' : mobileRight && !desktopRight ? 'border-r lg:border-r-0' : '';
+        const bottomBorder = mobileBottom ? 'border-b lg:border-b-0' : '';
+
+        return (
           <div
-            className="text-[38px] font-black tracking-[-0.03em] mt-2"
-            style={{ color: m.accent ? 'var(--color-accent)' : 'var(--color-text)' }}
+            key={m.label}
+            className={`py-5 lg:py-7 min-w-0 ${i === 0 ? 'px-5 lg:px-10' : 'px-5 lg:px-6'} ${rightBorder} ${bottomBorder}`}
+            style={{ borderColor: 'var(--color-divider)' }}
           >
-            {m.value}
+            <div className="text-[11px] font-bold uppercase truncate" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
+              {m.label}
+            </div>
+            <div
+              className="text-[26px] lg:text-[38px] font-black tracking-[-0.03em] mt-2 truncate"
+              style={{ color: m.accent ? 'var(--color-accent)' : 'var(--color-text)' }}
+            >
+              {m.value}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

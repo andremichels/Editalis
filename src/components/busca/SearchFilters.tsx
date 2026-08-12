@@ -80,7 +80,7 @@ export function SearchFilters({
   };
 
   return (
-    <div className="py-6 px-5" style={{ borderRight: '2px solid var(--color-text)' }}>
+    <div className="py-6 px-5">
       <div className="flex justify-between items-baseline mb-5">
         <span className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</span>
         <button onClick={onClear} className="text-xs border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>limpar</button>

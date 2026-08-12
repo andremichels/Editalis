@@ -30,6 +30,7 @@ export default function BuscaPage() {
   const [semanticMode, setSemanticMode] = useState(false);
   const [smartMode, setSmartMode] = useState(false);
   const [smartFilters, setSmartFilters] = useState<Record<string, any> | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Filters
   const [organs, setOrgans] = useState<string[]>([]);
@@ -149,6 +150,9 @@ export default function BuscaPage() {
     window.location.href = `/alertas?prefill=${encodeURIComponent(params.toString())}`;
   };
 
+  const activeFilterCount = organs.length + modalities.length + ufs.length
+    + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
+
   return (
     <AuthGuard>
       <DashboardLayout>
@@ -163,18 +167,59 @@ export default function BuscaPage() {
           onSmartSearch={handleSmartSearch}
           onToggleSmart={setSmartMode}
         />
-        <div className="grid grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
-          <SearchFilters
-            organs={organs} setOrgans={setOrgans}
-            modalities={modalities} setModalities={setModalities}
-            ufs={ufs} setUfs={setUfs}
-            valueMin={valueMin} setValueMin={setValueMin}
-            valueMax={valueMax} setValueMax={setValueMax}
-            dateFrom={dateFrom} setDateFrom={setDateFrom}
-            dateTo={dateTo} setDateTo={setDateTo}
-            onApply={() => { if (query) doSearch(query); }}
-            onClear={handleClearFilters}
-          />
+        {/* Mobile filters trigger */}
+        <div className="lg:hidden px-10 py-3 flex items-center" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+          <button
+            onClick={() => setMobileFiltersOpen(true)}
+            className="text-[13px] font-bold py-2 px-4 cursor-pointer"
+            style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}
+          >
+            Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </button>
+        </div>
+
+        {/* Mobile filters bottom sheet */}
+        {mobileFiltersOpen && (
+          <div
+            className="lg:hidden fixed inset-0 z-50 flex items-end"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setMobileFiltersOpen(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-h-[85vh] overflow-y-auto"
+              style={{ background: 'var(--color-bg)', borderTop: '3px solid var(--color-text)' }}
+            >
+              <div style={{ width: 44, height: 4, background: 'var(--color-neutral-400)' }} className="mx-auto mt-3 mb-1" />
+              <SearchFilters
+                organs={organs} setOrgans={setOrgans}
+                modalities={modalities} setModalities={setModalities}
+                ufs={ufs} setUfs={setUfs}
+                valueMin={valueMin} setValueMin={setValueMin}
+                valueMax={valueMax} setValueMax={setValueMax}
+                dateFrom={dateFrom} setDateFrom={setDateFrom}
+                dateTo={dateTo} setDateTo={setDateTo}
+                onApply={() => { if (query) doSearch(query); setMobileFiltersOpen(false); }}
+                onClear={handleClearFilters}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
+          <div className="hidden lg:block" style={{ borderRight: '2px solid var(--color-text)' }}>
+            <SearchFilters
+              organs={organs} setOrgans={setOrgans}
+              modalities={modalities} setModalities={setModalities}
+              ufs={ufs} setUfs={setUfs}
+              valueMin={valueMin} setValueMin={setValueMin}
+              valueMax={valueMax} setValueMax={setValueMax}
+              dateFrom={dateFrom} setDateFrom={setDateFrom}
+              dateTo={dateTo} setDateTo={setDateTo}
+              onApply={() => { if (query) doSearch(query); }}
+              onClear={handleClearFilters}
+            />
+          </div>
           <div className="min-w-0">
             {!searched ? (
               <div className="py-24 text-center">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { DesktopOnlyNotice } from '@/components/layout/DesktopOnlyNotice';
 import { AccountHeader, type PerfilTab } from '@/components/perfil/AccountHeader';
 import { ContaTab, type ProfileData, type PreferencesData, type NotificationDefaults, type ActivityItem } from '@/components/perfil/tabs/ContaTab';
 import { EmpresaTab, type Cnae, type CompanyData } from '@/components/perfil/tabs/EmpresaTab';
@@ -195,6 +196,8 @@ export default function PerfilPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
+        <DesktopOnlyNotice description="Minha conta (dados, empresa, assinatura, equipe) ainda não foi adaptada pro celular — abra pelo computador." />
+        <div className="hidden lg:block">
         <AccountHeader
           initials={displayName.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || '·'}
           name={displayName}
@@ -252,6 +255,7 @@ export default function PerfilPage() {
             passwordSaving={savingPassword}
           />
         )}
+        </div>
       </DashboardLayout>
     </AuthGuard>
   );
