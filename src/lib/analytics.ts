@@ -12,6 +12,7 @@ export function initAnalytics() {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
     person_profiles: 'identified_only',
     capture_pageview: false, // captured manually on route change, see PostHogProvider
+    capture_exceptions: true, // auto-captures uncaught errors + unhandled promise rejections
   });
   initialized = true;
 }
@@ -34,4 +35,9 @@ export function identifyUser(userId: string, properties?: Record<string, unknown
 export function resetUser() {
   if (!initialized) return;
   posthog.reset();
+}
+
+export function captureException(error: unknown, properties?: Record<string, unknown>) {
+  if (!initialized) return;
+  posthog.captureException(error, properties);
 }
