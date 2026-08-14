@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/auth';
 import { FormField } from '@/components/ui/FormField';
+import { track } from '@/lib/analytics';
 
 export function CadastroForm() {
   const [nome, setNome] = useState('');
@@ -22,9 +23,14 @@ export function CadastroForm() {
     if (password.length < 8) { setError('Senha deve ter no mínimo 8 caracteres'); return; }
     if (!aceito) { setError('Você precisa aceitar os termos'); return; }
     setLoading(true);
+    track('signup_started');
     const { error: err } = await supabase.auth.signUp({ email, password, options: { data: { nome, cnpj } } });
-    if (err) setError(err.message);
-    else router.push('/dashboard');
+    if (err) {
+      setError(err.message);
+    } else {
+      track('signup_completed');
+      router.push('/dashboard');
+    }
     setLoading(false);
   };
 

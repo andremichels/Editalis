@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { supabase } from "@/lib/auth";
 import { authFetch } from "@/lib/api";
+import { track } from "@/lib/analytics";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 
@@ -34,6 +35,7 @@ function CheckoutForm() {
     if (!userId) return;
     setLoading(true);
     setError("");
+    track('checkout_started', { plan, billing_cycle: cycle });
 
     try {
       const res = await authFetch(`${API_BASE}/api/v1/account/subscription/checkout`, {

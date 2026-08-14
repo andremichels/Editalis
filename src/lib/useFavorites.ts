@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/auth";
 import { authFetch } from "@/lib/api";
+import { track } from "@/lib/analytics";
 
 const STORAGE_KEY = "editalis_favorites";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -57,11 +58,13 @@ export function useFavorites() {
       const next = new Set(prev);
       if (next.has(articleId)) {
         next.delete(articleId);
+        track('article_unfavorited', { article_id: articleId });
         if (userId) {
           authFetch(`${API_BASE}/api/v1/favorites/${articleId}`, { method: "DELETE" }).catch(() => {});
         }
       } else {
         next.add(articleId);
+        track('article_favorited', { article_id: articleId });
         if (userId) {
           authFetch(`${API_BASE}/api/v1/favorites/${articleId}`, { method: "POST" }).catch(() => {});
         }

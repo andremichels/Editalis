@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { MarketingLayout } from '@/components/layout/PageLayout';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Check, ArrowRight } from 'lucide-react';
+import { track } from '@/lib/analytics';
 
 interface PlanCard {
   name: string;
@@ -74,6 +75,7 @@ export default function PlanosPage() {
   const [annual, setAnnual] = useState(false);
 
   const handleSelect = (planKey: string) => {
+    track('plan_selected', { plan: planKey, billing_cycle: annual ? 'annual' : 'monthly' });
     if (planKey === 'enterprise') {
       window.location.href = 'mailto:andre@smartpeople.us?subject=Plano%20Enterprise%20Editalis';
       return;

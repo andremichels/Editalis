@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/auth";
+import { identifyUser } from "@/lib/analytics";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
@@ -13,6 +14,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setAuthed(true);
+        identifyUser(session.user.id, { email: session.user.email });
       } else {
         router.push("/login");
       }

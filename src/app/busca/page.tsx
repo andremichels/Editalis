@@ -10,6 +10,7 @@ import { SearchResultItem } from "@/components/busca/SearchResultItem";
 import { Pagination } from "@/components/busca/Pagination";
 import { useFavorites } from "@/lib/useFavorites";
 import { useToast } from "@/components/Toast";
+import { track } from "@/lib/analytics";
 import type { Article } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -95,6 +96,12 @@ export default function BuscaPage() {
 
         setResults(filtered);
         setTotal(apiTotal);
+        track('search_performed', {
+          query_length: q.trim().length,
+          mode: semanticMode ? 'semantic' : booleanMode ? 'boolean' : 'keyword',
+          results_count: apiTotal,
+          page: p,
+        });
       } catch {
         setResults([]);
         setTotal(0);
@@ -108,6 +115,7 @@ export default function BuscaPage() {
   const handleSmartSearch = async (q: string) => {
     if (!q || q.trim().length < 5) return;
     setLoading(true);
+    track('smart_search_used', { query_length: q.trim().length });
     try {
       const res = await fetch(`${API_BASE}/api/v1/search/parse?q=${encodeURIComponent(q)}`, { method: "POST" });
       const filters = await res.json();
@@ -152,6 +160,17 @@ export default function BuscaPage() {
 
   const activeFilterCount = organs.length + modalities.length + ufs.length
     + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
+
+  const handleApplyFilters = () => {
+    track('filter_applied', {
+      organs_count: organs.length,
+      modalities_count: modalities.length,
+      ufs_count: ufs.length,
+      has_value_range: !!(valueMin || valueMax),
+      has_date_range: !!(dateFrom || dateTo),
+    });
+    if (query) doSearch(query);
+  };
 
   return (
     <AuthGuard>
@@ -199,7 +218,7 @@ export default function BuscaPage() {
                 valueMax={valueMax} setValueMax={setValueMax}
                 dateFrom={dateFrom} setDateFrom={setDateFrom}
                 dateTo={dateTo} setDateTo={setDateTo}
-                onApply={() => { if (query) doSearch(query); setMobileFiltersOpen(false); }}
+                onApply={() => { handleApplyFilters(); setMobileFiltersOpen(false); }}
                 onClear={handleClearFilters}
               />
             </div>
@@ -216,7 +235,7 @@ export default function BuscaPage() {
               valueMax={valueMax} setValueMax={setValueMax}
               dateFrom={dateFrom} setDateFrom={setDateFrom}
               dateTo={dateTo} setDateTo={setDateTo}
-              onApply={() => { if (query) doSearch(query); }}
+              onApply={handleApplyFilters}
               onClear={handleClearFilters}
             />
           </div>

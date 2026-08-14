@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Check, ArrowRight } from 'lucide-react';
+import { track } from '@/lib/analytics';
 
 const PLAN_LABELS: Record<string, string> = {
   essencial: 'Essencial',
@@ -16,6 +17,10 @@ function SuccessContent() {
   const plan = params.get('plan') || 'profissional';
   const planLabel = PLAN_LABELS[plan] || 'Profissional';
   const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    track('checkout_completed', { plan });
+  }, [plan]);
 
   useEffect(() => {
     const timer = setInterval(() => {

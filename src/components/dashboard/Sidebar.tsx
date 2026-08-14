@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/auth';
 import { authFetch } from '@/lib/api';
 import { useFavorites } from '@/lib/useFavorites';
+import { resetUser } from '@/lib/analytics';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
@@ -37,6 +38,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    resetUser();
     router.push('/login');
   };
 

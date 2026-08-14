@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { track } from '@/lib/analytics';
 
 const STORAGE_KEY = 'editalis_onboarding_seen';
 
@@ -37,7 +38,8 @@ export function OnboardingModal() {
     } catch {}
   }, []);
 
-  const dismiss = () => {
+  const dismiss = (reason: 'completed' | 'skipped') => {
+    track(reason === 'completed' ? 'onboarding_completed' : 'onboarding_skipped');
     try {
       localStorage.setItem(STORAGE_KEY, '1');
     } catch {}
@@ -50,7 +52,7 @@ export function OnboardingModal() {
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.5)' }}
-      onClick={dismiss}
+      onClick={() => dismiss('skipped')}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -90,13 +92,13 @@ export function OnboardingModal() {
 
         <div className="p-6 flex items-center justify-between" style={{ borderTop: '2px solid var(--color-text)' }}>
           <button
-            onClick={dismiss}
+            onClick={() => dismiss('skipped')}
             className="text-[13px] font-bold cursor-pointer"
             style={{ color: 'var(--color-neutral-600)' }}
           >
             Pular
           </button>
-          <Button onClick={dismiss}>Começar a buscar →</Button>
+          <Button onClick={() => dismiss('completed')}>Começar a buscar →</Button>
         </div>
       </div>
     </div>

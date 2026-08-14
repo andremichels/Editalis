@@ -9,6 +9,7 @@ import { DesktopOnlyNotice } from '@/components/layout/DesktopOnlyNotice';
 import { useToast } from '@/components/Toast';
 import { supabase } from '@/lib/auth';
 import { getSubscription, authFetch, type Subscription } from '@/lib/api';
+import { track } from '@/lib/analytics';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
@@ -89,6 +90,12 @@ export default function AlertasPage() {
       body: JSON.stringify(body),
     });
     if (res.ok) {
+      track(isEdit ? 'alert_edited' : 'alert_created', {
+        has_keywords: body.keywords.length > 0,
+        has_organs: body.organs.length > 0,
+        has_ufs: body.ufs.length > 0,
+        has_modalities: body.modalities.length > 0,
+      });
       toast(isEdit ? 'Alerta atualizado' : 'Alerta criado', 'success');
       setShowForm(false);
       setEditingId(null);
@@ -127,12 +134,14 @@ export default function AlertasPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled: !alert.enabled }),
     });
+    track('alert_toggled', { enabled: !alert.enabled });
     load();
   };
 
   const handleDelete = async (alert: AlertProfile) => {
     if (!confirm(`Remover alerta "${alert.name}"?`)) return;
     await authFetch(`${API_BASE}/api/v1/alerts/${alert.id}`, { method: 'DELETE' });
+    track('alert_deleted');
     toast('Alerta removido', 'success');
     load();
   };

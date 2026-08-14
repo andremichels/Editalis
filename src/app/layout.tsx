@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${archivo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <ToastProvider>{children}</ToastProvider>
+        <PostHogProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
