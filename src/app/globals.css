@@ -177,3 +177,12 @@ a:hover { text-decoration: underline; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-neutral-400); }
+
+/* ── Landing hero attention pulse (finite, distinct from .skeleton's loop) ── */
+@keyframes ed-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .anim-pulse { animation: ed-pulse 2.4s ease-in-out 900ms 3; }
+}

@@ -2,6 +2,8 @@
 
 import { MarketingLayout } from '@/components/layout/PageLayout';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { Reveal } from '@/components/marketing/Reveal';
+import { CountUp } from '@/components/marketing/CountUp';
 import { ArrowRight, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getStats, type PublicStats } from '@/lib/api';
@@ -39,16 +41,16 @@ export default function LandingPage() {
   }, []);
 
   const todayCount = stats?.articles_today?.toLocaleString('pt-BR') ?? '1.284';
-  const totalCount = stats?.total_articles?.toLocaleString('pt-BR') ?? '30.850';
   const lastSync = stats?.last_sync_at
     ? new Date(stats.last_sync_at).toLocaleDateString('pt-BR')
     : '10/08/2026';
 
-  const statsItems: [string, string][] = [
-    ['1.480+', 'diários oficiais indexados'],
-    [totalCount, 'licitações na base'],
-    ['06h30', 'alerta diário na sua caixa'],
-    ['2018', 'base contínua desde'],
+  type StatItem = { label: string } & ({ value: string } | { count: number; suffix?: string });
+  const statsItems: StatItem[] = [
+    { count: 1480, suffix: '+', label: 'diários oficiais indexados' },
+    { count: stats?.total_articles ?? 30850, label: 'licitações na base' },
+    { value: '06h30', label: 'alerta diário na sua caixa' },
+    { value: '2018', label: 'base contínua desde' },
   ];
 
   const plans = [
@@ -73,19 +75,21 @@ export default function LandingPage() {
           style={{ borderBottom: '2px solid var(--color-text)' }}
         >
           <div>
-            <p className={`${eyebrow} mb-6 lg:mb-7`} style={{ ...eyebrowStyle, color: 'var(--color-accent-700)' }}>
+            <Reveal delay={0} className={`${eyebrow} mb-6 lg:mb-7`} style={{ ...eyebrowStyle, color: 'var(--color-accent-700)' }}>
               Diários oficiais · União, 27 estados, 1.400+ municípios
-            </p>
-            <h1
-              className="text-[40px] sm:text-[56px] lg:text-[76px] leading-[0.94] tracking-[-0.035em] mb-6 lg:mb-7 text-wrap-pretty"
-              style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--color-text)' }}
-            >
-              Lemos todos os diários oficiais. Você recebe só o que a sua empresa vende.
-            </h1>
-            <p className="text-base sm:text-[19px] leading-[1.5] max-w-[560px] mb-8 lg:mb-9" style={{ color: 'var(--color-neutral-800)' }}>
+            </Reveal>
+            <Reveal delay={70}>
+              <h1
+                className="text-[40px] sm:text-[56px] lg:text-[76px] leading-[0.94] tracking-[-0.035em] mb-6 lg:mb-7 text-wrap-pretty"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--color-text)' }}
+              >
+                Lemos todos os diários oficiais. Você recebe só o que a sua empresa vende.
+              </h1>
+            </Reveal>
+            <Reveal delay={140} className="text-base sm:text-[19px] leading-[1.5] max-w-[560px] mb-8 lg:mb-9" style={{ color: 'var(--color-neutral-800)' }}>
               O Editalis lê os diários oficiais todos os dias, estrutura cada edital e entrega no seu e-mail apenas o que casa com o que você fornece. Sem garimpo em PDF, sem perder prazo.
-            </p>
-            <div className="flex flex-wrap gap-4 items-center">
+            </Reveal>
+            <Reveal delay={210} className="flex flex-wrap gap-4 items-center">
               <button
                 onClick={() => (window.location.href = '/cadastro')}
                 className="inline-flex items-center gap-2 text-base font-bold py-4 px-7 cursor-pointer"
@@ -99,11 +103,11 @@ export default function LandingPage() {
               >
                 Ver a plataforma
               </button>
-            </div>
-            <p className="mt-5 text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>7 dias sem cartão · cancele quando quiser</p>
+            </Reveal>
+            <Reveal delay={280} className="mt-5 text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>7 dias sem cartão · cancele quando quiser</Reveal>
           </div>
 
-          <div className="self-end" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
+          <Reveal delay={280} className="self-end" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
             <div
               className="py-3 px-4 text-[11px] font-bold uppercase"
               style={{ letterSpacing: '0.14em', background: 'var(--color-text)', color: 'var(--color-neutral-100)' }}
@@ -123,23 +127,26 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
-            <div className="py-3.5 px-4 text-[13px] font-bold" style={{ background: 'var(--color-accent)', color: '#fff' }}>
+            <div className="anim-pulse py-3.5 px-4 text-[13px] font-bold" style={{ background: 'var(--color-accent)', color: '#fff' }}>
               + {todayCount} publicações nas últimas 24h
             </div>
-          </div>
+          </Reveal>
         </div>
 
         {/* ═══════════ STATS ═══════════ */}
         <div className="grid grid-cols-2 sm:grid-cols-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          {statsItems.map(([num, label], i) => (
-            <div
-              key={label}
+          {statsItems.map((item, i) => (
+            <Reveal
+              key={item.label}
+              delay={i * 70}
               className={`py-8 ${i === 0 ? 'pr-4 lg:pr-6 pl-0' : i === statsItems.length - 1 ? 'pl-4 lg:pl-6 pr-0' : 'px-4 lg:px-6'}`}
               style={{ borderRight: i < statsItems.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
             >
-              <div className="text-[32px] sm:text-[44px] font-black leading-none tracking-[-0.03em]" style={{ color: 'var(--color-text)' }}>{num}</div>
-              <div className="text-[13px] mt-1.5" style={{ color: 'var(--color-neutral-700)' }}>{label}</div>
-            </div>
+              <div className="text-[32px] sm:text-[44px] font-black leading-none tracking-[-0.03em]" style={{ color: 'var(--color-text)' }}>
+                {'count' in item ? <CountUp target={item.count} suffix={item.suffix} /> : item.value}
+              </div>
+              <div className="text-[13px] mt-1.5" style={{ color: 'var(--color-neutral-700)' }}>{item.label}</div>
+            </Reveal>
           ))}
         </div>
 
@@ -147,22 +154,24 @@ export default function LandingPage() {
         <div id="produto" className="pt-14 lg:pt-[72px]">
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-10 lg:gap-16 pb-10 lg:pb-14">
             <div>
-              <div className={eyebrow} style={{ ...eyebrowStyle, color: 'var(--color-accent-700)' }}>Como funciona</div>
-              <h2 className={`${sectionTitle} text-[32px] sm:text-[40px] mt-4`} style={sectionTitleStyle}>Três passos e o edital certo chega até você.</h2>
+              <Reveal delay={0} className={eyebrow} style={{ ...eyebrowStyle, color: 'var(--color-accent-700)' }}>Como funciona</Reveal>
+              <Reveal delay={60}>
+                <h2 className={`${sectionTitle} text-[32px] sm:text-[40px] mt-4`} style={sectionTitleStyle}>Três passos e o edital certo chega até você.</h2>
+              </Reveal>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3" style={{ borderTop: '2px solid var(--color-text)' }}>
               {steps.map((step, i) => (
-                <div key={i} className="py-7 px-6 first:pl-0 last:pr-0" style={{ borderRight: i < steps.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
+                <Reveal key={i} delay={i * 80} className="py-7 px-6 first:pl-0 last:pr-0" style={{ borderRight: i < steps.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
                   <div className="text-[13px] font-black" style={{ color: 'var(--color-accent)' }}>{step.number}</div>
                   <div className="text-[19px] font-extrabold mt-2.5 mb-2 leading-[1.2]" style={{ color: 'var(--color-text)' }}>{step.title}</div>
                   <p className="text-sm leading-[1.55]" style={{ color: 'var(--color-neutral-700)' }}>{step.description}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 py-10 lg:py-14" style={{ borderTop: '2px solid var(--color-text)' }}>
-            <div>
+            <Reveal delay={0}>
               <div className={eyebrow} style={{ ...eyebrowStyle, color: 'var(--color-neutral-600)' }}>Busca</div>
               <h3 className="text-[26px] sm:text-[32px] font-black tracking-[-0.025em] mt-3 mb-4 leading-[1.05]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
                 Operadores de verdade, não uma caixinha de pesquisa.
@@ -175,8 +184,8 @@ export default function LandingPage() {
                 <span style={{ fontWeight: 700 }}>E</span> uf:SP,MG <span style={{ fontWeight: 700 }}>E</span> valor:&gt;100000<br />
                 <span style={{ fontWeight: 700 }}>NÃO</span> &quot;hospitalar&quot;
               </div>
-            </div>
-            <div>
+            </Reveal>
+            <Reveal delay={100}>
               <div className={eyebrow} style={{ ...eyebrowStyle, color: 'var(--color-neutral-600)' }}>Alertas</div>
               <h3 className="text-[26px] sm:text-[32px] font-black tracking-[-0.025em] mt-3 mb-4 leading-[1.05]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
                 O prazo não espera você abrir o sistema.
@@ -196,29 +205,29 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
 
         {/* ═══════════ COBERTURA ═══════════ */}
         <div id="cobertura" className="py-10 lg:py-14" style={{ borderTop: '2px solid var(--color-text)' }}>
-          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-7">
+          <Reveal delay={0} className="flex flex-wrap items-baseline justify-between gap-2 mb-7">
             <h2 className={`${sectionTitle} text-[32px] sm:text-[40px]`} style={sectionTitleStyle}>Cobertura da base</h2>
             <span className="text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>atualizado em {lastSync}</span>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{ borderTop: '2px solid var(--color-text)' }}>
             {coverage.map((item, i) => (
-              <div key={i} className="py-6 px-6 first:pl-0 last:pr-0" style={{ borderRight: i < coverage.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
+              <Reveal key={i} delay={i * 70} className="py-6 px-6 first:pl-0 last:pr-0" style={{ borderRight: i < coverage.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
                 <div className="text-[15px] font-extrabold" style={{ color: 'var(--color-text)' }}>{item.label}</div>
                 <p className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>{item.detail}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* ═══════════ PLANOS ═══════════ */}
         <div id="planos" className="py-10 lg:py-14" style={{ borderTop: '2px solid var(--color-text)' }}>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+          <Reveal delay={0} className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
             <div>
               <h2 className={`${sectionTitle} text-[32px] sm:text-[40px] mb-2.5`} style={sectionTitleStyle}>Planos</h2>
               <p className="text-base" style={{ color: 'var(--color-neutral-700)' }}>Preço por empresa, usuários ilimitados em todos os planos.</p>
@@ -232,12 +241,13 @@ export default function LandingPage() {
               value={annual ? 'annual' : 'monthly'}
               onChange={(v) => setAnnual(v === 'annual')}
             />
-          </div>
+          </Reveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-3" style={{ borderTop: '2px solid var(--color-text)', borderBottom: '2px solid var(--color-text)' }}>
             {plans.map((plan, i) => (
-              <div
+              <Reveal
                 key={i}
+                delay={i * 100}
                 className="relative flex flex-col py-8 px-7 first:pl-0 last:pr-0"
                 style={{ borderRight: i < plans.length - 1 ? '1px solid var(--color-divider)' : 'none', background: plan.highlight ? 'var(--color-neutral-100)' : 'transparent' }}
               >
@@ -274,38 +284,41 @@ export default function LandingPage() {
                 >
                   {plan.cta}
                 </button>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* ═══════════ LOGOS ═══════════ */}
         <div className="py-10 lg:py-12" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          <p className={`${eyebrow} mb-6`} style={{ ...eyebrowStyle, color: 'var(--color-neutral-600)' }}>
+          <Reveal delay={0} className={`${eyebrow} mb-6`} style={{ ...eyebrowStyle, color: 'var(--color-neutral-600)' }}>
             Usado por equipes de captação em
-          </p>
+          </Reveal>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 items-center">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div
+              <Reveal
                 key={i}
+                delay={i * 50}
                 className="h-14 flex items-center justify-center text-[13px] font-bold"
                 style={{ letterSpacing: '0.1em', border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-500)' }}
               >
                 LOGO
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* ═══════════ FAQ ═══════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-10 lg:gap-16 py-10 lg:py-14">
-          <h2 className={`${sectionTitle} text-[32px] sm:text-[40px]`} style={sectionTitleStyle}>Perguntas frequentes</h2>
+          <Reveal delay={0}>
+            <h2 className={`${sectionTitle} text-[32px] sm:text-[40px]`} style={sectionTitleStyle}>Perguntas frequentes</h2>
+          </Reveal>
           <div style={{ borderTop: '2px solid var(--color-text)' }}>
             {faq.map((item, i) => (
-              <div key={i} className="py-[22px]" style={{ borderBottom: i < faq.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
+              <Reveal key={i} delay={i * 60} className="py-[22px]" style={{ borderBottom: i < faq.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
                 <div className="text-[17px] font-extrabold mb-1.5" style={{ color: 'var(--color-text)' }}>{item.q}</div>
                 <p className="text-[15px] leading-[1.55]" style={{ color: 'var(--color-neutral-700)' }}>{item.a}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -314,10 +327,12 @@ export default function LandingPage() {
       {/* ═══════════ FINAL CTA ═══════════ */}
       <section style={{ background: 'var(--color-accent)', color: '#fff' }}>
         <div className="mx-auto max-w-7xl px-5 sm:px-10 py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-16 lg:items-end">
-          <h2 className="text-[36px] sm:text-[52px] lg:text-[64px] font-black leading-[0.98] tracking-[-0.035em]" style={{ fontFamily: 'var(--font-heading)' }}>
-            O edital que você não leu foi vendido por outro.
-          </h2>
-          <div>
+          <Reveal delay={0}>
+            <h2 className="text-[36px] sm:text-[52px] lg:text-[64px] font-black leading-[0.98] tracking-[-0.035em]" style={{ fontFamily: 'var(--font-heading)' }}>
+              O edital que você não leu foi vendido por outro.
+            </h2>
+          </Reveal>
+          <Reveal delay={100}>
             <p className="text-[17px] leading-[1.5] mb-6" style={{ color: '#ffe0d9' }}>Comece a monitorar hoje. Configuração em dois minutos, sem instalação.</p>
             <button
               onClick={() => (window.location.href = '/cadastro')}
@@ -326,7 +341,7 @@ export default function LandingPage() {
             >
               Criar minha conta <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
+          </Reveal>
         </div>
       </section>
     </MarketingLayout>
