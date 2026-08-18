@@ -28,6 +28,15 @@ export interface Organ {
   count: number;
 }
 
+export interface Vertical {
+  id: number;
+  slug: string;
+  name: string;
+  description?: string;
+  keywords?: string[];
+  cnaes?: string[];
+}
+
 export interface NormalizedData {
   doc_type?: string;
   modality?: string;

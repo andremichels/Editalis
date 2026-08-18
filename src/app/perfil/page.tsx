@@ -19,7 +19,7 @@ import { useToast } from '@/components/Toast';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 const emptyProfile: ProfileData = { nome_completo: '', cargo: '', celular: '' };
-const emptyPreferences: PreferencesData = { ufs_padrao: [], valor_minimo_interesse: null, abrir_painel_filtrado: false, ocultar_homologadas: false, favoritar_ao_baixar: false };
+const emptyPreferences: PreferencesData = { ufs_padrao: [], valor_minimo_interesse: null, abrir_painel_filtrado: false, ocultar_homologadas: false, favoritar_ao_baixar: false, verticals: [] };
 const emptyNotifications: NotificationDefaults = { email_diario: false, whatsapp_48h: false, notificacao_app: false };
 const emptyCompany: CompanyData = { razao_social: '', cnpj: '', inscricao_municipal: '', cep: '', cidade_uf: '', email_nota_fiscal: '' };
 

@@ -1,4 +1,4 @@
-import { Article, Organ, SearchResponse } from './types';
+import { Article, Organ, SearchResponse, Vertical } from './types';
 import { supabase } from './auth';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
@@ -87,6 +87,21 @@ export async function getOrgans(query?: string): Promise<Organ[]> {
     : `${API_BASE}/api/v1/organs`;
   const res = await fetch(url);
   if (!res.ok) return [];
+  return res.json();
+}
+
+// ── Verticais (lente vertical por tags) ──
+
+export async function getVerticals(): Promise<Vertical[]> {
+  const res = await fetch(`${API_BASE}/api/v1/verticals`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getVerticalArticles(slug: string, limit = 20): Promise<{ count: number; results: Article[] }> {
+  const res = await fetch(`${API_BASE}/api/v1/verticals/${encodeURIComponent(slug)}/articles?limit=${limit}`);
+  if (!res.ok) throw new Error(`Vertical articles failed: ${res.status}`);
   return res.json();
 }
 
