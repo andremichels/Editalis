@@ -49,6 +49,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     { label: 'Busca', href: '/busca' },
     { label: 'Favoritas', href: '/favoritos', count: favCount },
     { label: 'Alertas', href: '/alertas', count: alertCount },
+    { label: 'Setores', href: '/onboarding' },
     { label: 'Última consultada' },
     { label: 'Minha conta', href: '/perfil' },
   ];
