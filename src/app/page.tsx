@@ -7,9 +7,10 @@ import { CountUp } from '@/components/marketing/CountUp';
 import { ArrowRight, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getStats, type PublicStats } from '@/lib/api';
+import { track } from '@/lib/analytics';
 
 const steps = [
-  { number: '01', title: 'Descreva o que você vende', description: 'CNAE, palavras-chave, regiões e faixa de valor. O perfil de captação leva dois minutos.' },
+  { number: '01', title: 'Escolha o seu setor', description: 'Comece por Comunicação — publicidade, mídia, eventos, conteúdo — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.' },
   { number: '02', title: 'A base cruza tudo à noite', description: 'Cada publicação é lida, classificada por objeto e ligada ao órgão comprador.' },
   { number: '03', title: 'Você recebe e decide', description: 'E-mail às 06h30, WhatsApp para urgências e o painel com prazos e favoritas.' },
 ];
@@ -45,6 +46,11 @@ export default function LandingPage() {
     ? new Date(stats.last_sync_at).toLocaleDateString('pt-BR')
     : '10/08/2026';
 
+  const goCadastro = (position: string) => {
+    track('landing_cta_clicked', { position });
+    window.location.href = `/login?tab=cadastro&via=${position}`;
+  };
+
   type StatItem = { label: string } & ({ value: string } | { count: number; suffix?: string });
   const statsItems: StatItem[] = [
     { count: 1480, suffix: '+', label: 'diários oficiais indexados' },
@@ -76,35 +82,36 @@ export default function LandingPage() {
         >
           <div>
             <Reveal delay={0} className={`${eyebrow} mb-6 lg:mb-7`} style={{ ...eyebrowStyle, color: 'var(--color-accent-700)' }}>
-              Diários oficiais · União, 27 estados, 1.400+ municípios
+              Monitor de licitações para agências de publicidade e produtoras
             </Reveal>
             <Reveal delay={70}>
               <h1
                 className="text-[40px] sm:text-[56px] lg:text-[76px] leading-[0.94] tracking-[-0.035em] mb-6 lg:mb-7 text-wrap-pretty"
                 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--color-text)' }}
               >
-                Lemos todos os diários oficiais. Você recebe só o que a sua empresa vende.
+                Nunca mais perca um edital de comunicação.
               </h1>
             </Reveal>
             <Reveal delay={140} className="text-base sm:text-[19px] leading-[1.5] max-w-[560px] mb-8 lg:mb-9" style={{ color: 'var(--color-neutral-800)' }}>
-              O Editalis lê os diários oficiais todos os dias, estrutura cada edital e entrega no seu e-mail apenas o que casa com o que você fornece. Sem garimpo em PDF, sem perder prazo.
+              O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de publicidade, mídia, eventos, conteúdo e marketing — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.
             </Reveal>
             <Reveal delay={210} className="flex flex-wrap gap-4 items-center">
               <button
-                onClick={() => (window.location.href = '/cadastro')}
+                onClick={() => goCadastro('hero')}
                 className="inline-flex items-center gap-2 text-base font-bold py-4 px-7 cursor-pointer"
                 style={{ background: 'var(--color-accent)', border: '2px solid var(--color-accent)', color: '#fff' }}
               >
                 Começar teste grátis <ArrowRight className="w-4 h-4" />
               </button>
               <button
+                onClick={() => document.getElementById('produto')?.scrollIntoView({ behavior: 'smooth' })}
                 className="text-base font-bold py-4 px-7 cursor-pointer"
                 style={{ background: 'transparent', border: '2px solid var(--color-text)', color: 'var(--color-text)' }}
               >
                 Ver a plataforma
               </button>
             </Reveal>
-            <Reveal delay={280} className="mt-5 text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>7 dias sem cartão · cancele quando quiser</Reveal>
+            <Reveal delay={280} className="mt-5 text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>7 dias sem cartão · comece pelo seu setor (Comunicação, Tecnologia, Saúde e mais)</Reveal>
           </div>
 
           <Reveal delay={280} className="self-end" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
@@ -115,8 +122,8 @@ export default function LandingPage() {
               Publicado hoje
             </div>
             {[
-              { title: 'Pregão eletrônico 114/2026 · SP', desc: 'Aquisição de equipamentos de informática para a rede municipal de ensino', organ: 'Prefeitura de Campinas', value: 'R$ 2.480.000' },
-              { title: 'Dispensa 22/2026 · MG', desc: 'Serviços continuados de manutenção predial', organ: 'Universidade Federal de Minas Gerais', value: 'R$ 386.500' },
+              { title: 'Concorrência 03/2026 · DF', desc: 'Serviços de publicidade e propaganda para a administração pública', organ: 'Ministério das Comunicações', value: 'R$ 4.800.000' },
+              { title: 'Pregão eletrônico 88/2026 · SP', desc: 'Produção de conteúdo e veiculação de mídia OOH', organ: 'Governo do Estado de São Paulo', value: 'R$ 1.250.000' },
             ].map((bid, i) => (
               <div key={i} className="py-5 px-4" style={{ borderBottom: '1px solid var(--color-neutral-300)' }}>
                 <div className="text-[11px] font-bold uppercase mb-0" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-600)' }}>{bid.title}</div>
@@ -180,8 +187,8 @@ export default function LandingPage() {
                 Combine termos com E / OU / NÃO, restrinja por UF, órgão, modalidade, valor e situação, e salve a consulta como perfil monitorado.
               </p>
               <div className="p-4" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)', fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 14, lineHeight: 1.7 }}>
-                <span style={{ color: 'var(--color-accent-700)', fontWeight: 700 }}>(&quot;uniforme&quot; OU &quot;vestuário&quot;)</span><br />
-                <span style={{ fontWeight: 700 }}>E</span> uf:SP,MG <span style={{ fontWeight: 700 }}>E</span> valor:&gt;100000<br />
+                <span style={{ color: 'var(--color-accent-700)', fontWeight: 700 }}>(&quot;publicidade&quot; OU &quot;mídia&quot; OU &quot;propaganda&quot;)</span><br />
+                <span style={{ fontWeight: 700 }}>E</span> uf:SP,DF <span style={{ fontWeight: 700 }}>E</span> valor:&gt;100000<br />
                 <span style={{ fontWeight: 700 }}>NÃO</span> &quot;hospitalar&quot;
               </div>
             </Reveal>
@@ -276,7 +283,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <button
-                  onClick={plan.highlight ? () => (window.location.href = '/cadastro') : undefined}
+                  onClick={plan.highlight ? () => goCadastro('planos') : undefined}
                   className="mt-7 w-full text-left py-3.5 px-5 text-[15px] font-bold cursor-pointer"
                   style={plan.highlight
                     ? { background: 'var(--color-accent)', border: '2px solid var(--color-accent)', color: '#fff' }
@@ -329,13 +336,13 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-10 py-16 lg:py-20 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-16 lg:items-end">
           <Reveal delay={0}>
             <h2 className="text-[36px] sm:text-[52px] lg:text-[64px] font-black leading-[0.98] tracking-[-0.035em]" style={{ fontFamily: 'var(--font-heading)' }}>
-              O edital que você não leu foi vendido por outro.
+              Nunca mais perca um edital de comunicação.
             </h2>
           </Reveal>
           <Reveal delay={100}>
-            <p className="text-[17px] leading-[1.5] mb-6" style={{ color: '#ffe0d9' }}>Comece a monitorar hoje. Configuração em dois minutos, sem instalação.</p>
+            <p className="text-[17px] leading-[1.5] mb-6" style={{ color: '#ffe0d9' }}>Comece pelo setor de Comunicação e configure seus alertas em dois minutos. O mesmo monitor serve para tecnologia, construção, saúde e outros setores.</p>
             <button
-              onClick={() => (window.location.href = '/cadastro')}
+              onClick={() => goCadastro('final')}
               className="inline-flex items-center gap-2 text-base font-extrabold py-4 px-7 text-left cursor-pointer"
               style={{ background: '#fff', border: '2px solid #fff', color: 'var(--color-accent-700)' }}
             >

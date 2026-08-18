@@ -1,2 +1,2 @@
 import { redirect } from "next/navigation";
-export default function CadastroPage() { redirect("/login"); }
+export default function CadastroPage() { redirect("/login?tab=cadastro"); }
