@@ -9,6 +9,7 @@ import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
 import { ProfilesCard } from '@/components/dashboard/ProfilesCard';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
 import { VerticalFeed } from '@/components/dashboard/VerticalFeed';
+import { Funnel } from '@/components/dashboard/Funnel';
 import { getStats, getRecentArticles, authFetch, type PublicStats } from '@/lib/api';
 import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
@@ -160,6 +161,8 @@ export default function DashboardPage() {
         <MetricsBar metrics={metrics} />
 
         <VerticalFeed />
+
+        <Funnel />
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
           {/* Recent articles from DOU API */}
