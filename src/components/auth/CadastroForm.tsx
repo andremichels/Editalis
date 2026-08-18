@@ -23,12 +23,13 @@ export function CadastroForm() {
     if (password.length < 8) { setError('Senha deve ter no mínimo 8 caracteres'); return; }
     if (!aceito) { setError('Você precisa aceitar os termos'); return; }
     setLoading(true);
-    track('signup_started');
+    const via = typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('via') || 'direct') : 'direct';
+    track('signup_started', { via });
     const { error: err } = await supabase.auth.signUp({ email, password, options: { data: { nome, cnpj } } });
     if (err) {
       setError(err.message);
     } else {
-      track('signup_completed');
+      track('signup_completed', { via });
       router.push('/dashboard');
     }
     setLoading(false);

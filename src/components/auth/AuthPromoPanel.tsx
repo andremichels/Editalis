@@ -9,10 +9,10 @@ export function AuthPromoPanel() {
       </div>
       <div>
         <h2 className="text-[52px] font-black leading-none tracking-[-0.035em] mb-5" style={{ fontFamily: 'var(--font-heading)' }}>
-          1.284 novas licitações desde ontem.
+          Nunca mais perca um edital de comunicação.
         </h2>
         <p className="text-[17px] leading-[1.55] max-w-[420px]" style={{ color: 'var(--color-accent-200)' }}>
-          Entre para ver as que casam com o seu perfil de captação, os prazos que fecham esta semana e suas favoritas.
+          Entre para ver as licitações de publicidade, mídia, eventos e conteúdo que casam com a sua agência, os prazos que fecham esta semana e suas favoritas.
         </p>
       </div>
       <div className="text-[13px]" style={{ color: 'var(--color-accent-300)' }}>

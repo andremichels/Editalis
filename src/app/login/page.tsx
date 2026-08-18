@@ -7,7 +7,9 @@ import { CadastroForm } from '@/components/auth/CadastroForm';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 
 export default function AuthPage() {
-  const [tab, setTab] = useState<'login' | 'cadastro'>('login');
+  const [tab, setTab] = useState<'login' | 'cadastro'>(() =>
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tab') === 'cadastro' ? 'cadastro' : 'login'
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
