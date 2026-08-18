@@ -16,6 +16,13 @@ export interface Article {
   created_at?: string;
   excerpt?: string;
   normalized_data?: NormalizedData;
+  links?: LinkItem[];
+}
+
+export interface LinkItem {
+  url: string;
+  type: string; // 'anexo' | 'portal' | 'dou'
+  text?: string;
 }
 
 export interface SearchResponse {

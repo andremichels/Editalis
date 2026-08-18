@@ -4,6 +4,7 @@ import { ArticleDetailHeader } from '@/components/artigo/ArticleDetailHeader';
 import { ArticleContent } from '@/components/artigo/ArticleContent';
 import { ArticleMeta } from '@/components/artigo/ArticleMeta';
 import { ArticleItems } from '@/components/artigo/ArticleItems';
+import { ArticleLinks } from '@/components/artigo/ArticleLinks';
 import { SimilarArticles } from '@/components/artigo/SimilarArticles';
 import { ArticleViewTracker } from '@/components/artigo/ArticleViewTracker';
 import { getArticle } from '@/lib/api';
@@ -33,7 +34,10 @@ export default async function ArticlePage({
             <ArticleContent article={article} />
             <ArticleItems article={article} />
           </div>
-          <ArticleMeta article={article} />
+          <div>
+            <ArticleMeta article={article} />
+            <ArticleLinks article={article} />
+          </div>
         </div>
         <SimilarArticles slug={slug} />
       </DashboardLayout>
