@@ -15,6 +15,18 @@ function formatMoney(v?: number): string {
   return `R$ ${v.toLocaleString('pt-BR')}`;
 }
 
+function deadlineHint(dateStr?: string) {
+  if (!dateStr) return null;
+  const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
+  if (d < 0) return null; // já passou
+  const label = d === 0 ? 'abertura hoje' : d === 1 ? 'abertura amanhã' : `abertura em ${d} dias`;
+  return (
+    <div className="text-[11px] font-bold mt-0.5" style={{ color: d <= 3 ? 'var(--color-accent)' : 'var(--color-neutral-500)' }}>
+      {label}
+    </div>
+  );
+}
+
 export function Funnel() {
   const [processos, setProcessos] = useState<Processo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,6 +104,7 @@ export function Funnel() {
                       {p.modalidade ? `${p.modalidade} · ` : ''}
                       {formatMoney(p.valor)}
                     </div>
+                    {deadlineHint(p.data_abertura)}
                   </a>
                 ))}
               </div>
