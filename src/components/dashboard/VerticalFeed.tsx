@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { authFetch, getVerticalArticles, getVerticals } from '@/lib/api';
 import type { Article, Vertical } from '@/lib/types';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
@@ -58,9 +59,14 @@ export function VerticalFeed() {
         <h2 className="text-xl font-black tracking-[-0.02em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
           Do seu setor
         </h2>
-        <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>
-          {verticals.filter((v) => selected.includes(v.slug)).map((v) => v.name).join(' · ')}
-        </span>
+        <div className="flex items-baseline gap-3">
+          <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>
+            {verticals.filter((v) => selected.includes(v.slug)).map((v) => v.name).join(' · ')}
+          </span>
+          <Link href="/onboarding" className="text-[12px] font-bold" style={{ color: 'var(--color-accent)' }}>
+            Editar setores
+          </Link>
+        </div>
       </div>
       <div style={{ borderTop: '2px solid var(--color-text)' }}>
         {articles.length === 0 && (
