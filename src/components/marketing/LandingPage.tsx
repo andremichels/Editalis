@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { getStats, type PublicStats } from '@/lib/api';
 import { track } from '@/lib/analytics';
 
-export type LandingVariant = 'generic' | 'comunicacao';
+export type LandingVariant = 'generic' | 'comunicacao' | 'tecnologia' | 'saude' | 'construcao' | 'alimentacao' | 'limpeza';
 
 interface LandingConfig {
   eyebrow: string;
@@ -60,6 +60,91 @@ const CONFIGS: Record<LandingVariant, LandingConfig> = {
     finalH2: 'O edital de comunicação que você não viu virou case de outra agência.',
     finalSub: 'Comece pelo setor de Comunicação e configure seus alertas em dois minutos. O mesmo monitor serve para tecnologia, construção, saúde e outros setores.',
     viaPrefix: 'comunicacao',
+  },
+  tecnologia: {
+    eyebrow: 'Monitor de licitações para empresas de tecnologia e TI',
+    h1: 'Nunca mais perca um edital de tecnologia.',
+    subcopy: 'O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de software, cloud, dados, infraestrutura e equipamentos de TI — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.',
+    bids: [
+      { title: 'Pregão eletrônico 72/2026 · DF', desc: 'Licenciamento de software e serviços de computação em nuvem', organ: 'Ministério da Gestão', value: 'R$ 3.200.000' },
+      { title: 'Concorrência 15/2026 · SP', desc: 'Equipamentos de informática e infraestrutura de datacenter', organ: 'Governo do Estado de São Paulo', value: 'R$ 980.000' },
+    ],
+    stepOneTitle: 'Escolha o seu setor',
+    stepOneDesc: 'Comece por Tecnologia — software, cloud, dados, infraestrutura — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.',
+    searchTerms: ['software', 'cloud', 'dados'],
+    searchUfs: 'SP,DF',
+    caption: '7 dias sem cartão · comece pelo setor de Tecnologia',
+    finalH2: 'Nunca mais perca um edital de tecnologia.',
+    finalSub: 'Comece pelo setor de Tecnologia e configure seus alertas em dois minutos. O mesmo monitor serve para comunicação, saúde e outros setores.',
+    viaPrefix: 'tecnologia',
+  },
+  saude: {
+    eyebrow: 'Monitor de licitações para saúde, hospitais e laboratórios',
+    h1: 'Nunca mais perca um edital de saúde.',
+    subcopy: 'O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de medicamentos, equipamentos hospitalares, laboratório e serviços de saúde — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.',
+    bids: [
+      { title: 'Pregão eletrônico 210/2026 · MG', desc: 'Fornecimento de medicamentos e insumos hospitalares', organ: 'Secretaria de Saúde de Minas Gerais', value: 'R$ 5.400.000' },
+      { title: 'Concorrência 08/2026 · RS', desc: 'Equipamentos de imagem e diagnóstico', organ: 'Hospital de Clínicas de Porto Alegre', value: 'R$ 2.100.000' },
+    ],
+    stepOneTitle: 'Escolha o seu setor',
+    stepOneDesc: 'Comece por Saúde — medicamentos, hospitalar, laboratório — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.',
+    searchTerms: ['medicamentos', 'hospitalar', 'laboratório'],
+    searchUfs: 'MG,RS',
+    caption: '7 dias sem cartão · comece pelo setor de Saúde',
+    finalH2: 'Nunca mais perca um edital de saúde.',
+    finalSub: 'Comece pelo setor de Saúde e configure seus alertas em dois minutos. O mesmo monitor serve para tecnologia, comunicação e outros setores.',
+    viaPrefix: 'saude',
+  },
+  construcao: {
+    eyebrow: 'Monitor de licitações para construtoras e engenharia',
+    h1: 'Nunca mais perca uma obra pública.',
+    subcopy: 'O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de obras, infraestrutura, engenharia e manutenção predial — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.',
+    bids: [
+      { title: 'Concorrência 44/2026 · SP', desc: 'Obras de pavimentação e drenagem urbana', organ: 'Prefeitura de São Paulo', value: 'R$ 12.500.000' },
+      { title: 'Pregão eletrônico 90/2026 · DF', desc: 'Manutenção predial e serviços de engenharia', organ: 'Ministério da Infraestrutura', value: 'R$ 3.700.000' },
+    ],
+    stepOneTitle: 'Escolha o seu setor',
+    stepOneDesc: 'Comece por Construção — obras, infraestrutura, engenharia — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.',
+    searchTerms: ['obras', 'pavimentação', 'infraestrutura'],
+    searchUfs: 'SP,DF',
+    caption: '7 dias sem cartão · comece pelo setor de Construção',
+    finalH2: 'Nunca mais perca uma obra pública.',
+    finalSub: 'Comece pelo setor de Construção e configure seus alertas em dois minutos. O mesmo monitor serve para saúde, tecnologia e outros setores.',
+    viaPrefix: 'construcao',
+  },
+  alimentacao: {
+    eyebrow: 'Monitor de licitações para alimentação e distribuidoras',
+    h1: 'Nunca mais perca um edital de alimentação.',
+    subcopy: 'O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de gêneros alimentícios, merenda escolar, refeições e distribuição — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.',
+    bids: [
+      { title: 'Pregão eletrônico 33/2026 · SP', desc: 'Fornecimento de gêneros alimentícios para merenda escolar', organ: 'Prefeitura de Campinas', value: 'R$ 6.800.000' },
+      { title: 'Concorrência 12/2026 · RJ', desc: 'Serviços de alimentação e refeições terceirizadas', organ: 'Universidade Federal do Rio de Janeiro', value: 'R$ 2.900.000' },
+    ],
+    stepOneTitle: 'Escolha o seu setor',
+    stepOneDesc: 'Comece por Alimentação — gêneros alimentícios, merenda, refeições — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.',
+    searchTerms: ['alimentos', 'merenda', 'refeições'],
+    searchUfs: 'SP,RJ',
+    caption: '7 dias sem cartão · comece pelo setor de Alimentação',
+    finalH2: 'Nunca mais perca um edital de alimentação.',
+    finalSub: 'Comece pelo setor de Alimentação e configure seus alertas em dois minutos. O mesmo monitor serve para saúde, construção e outros setores.',
+    viaPrefix: 'alimentacao',
+  },
+  limpeza: {
+    eyebrow: 'Monitor de licitações para limpeza, conservação e facilities',
+    h1: 'Nunca mais perca um edital de facilities.',
+    subcopy: 'O Editalis varre os diários oficiais todos os dias e entrega na sua caixa só os editais de limpeza, conservação, vigilância, portaria e serviços gerais — com órgão, prazo e valor. Sem garimpo em PDF, sem deixar concorrência passar.',
+    bids: [
+      { title: 'Pregão eletrônico 55/2026 · DF', desc: 'Serviços de limpeza, conservação e asseio', organ: 'Ministério da Economia', value: 'R$ 1.600.000' },
+      { title: 'Concorrência 19/2026 · SP', desc: 'Vigilância patrimonial e serviços de portaria', organ: 'Tribunal de Justiça de São Paulo', value: 'R$ 2.300.000' },
+    ],
+    stepOneTitle: 'Escolha o seu setor',
+    stepOneDesc: 'Comece por Limpeza & Facilities — limpeza, vigilância, portaria — e refine com palavras-chave, regiões e faixa de valor. Leva dois minutos.',
+    searchTerms: ['limpeza', 'vigilância', 'conservação'],
+    searchUfs: 'DF,SP',
+    caption: '7 dias sem cartão · comece pelo setor de Facilities',
+    finalH2: 'Nunca mais perca um edital de facilities.',
+    finalSub: 'Comece pelo setor de Limpeza & Facilities e configure seus alertas em dois minutos. O mesmo monitor serve para construção, saúde e outros setores.',
+    viaPrefix: 'limpeza',
   },
 };
 
