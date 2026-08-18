@@ -16,6 +16,7 @@ export interface PreferencesData {
   abrir_painel_filtrado: boolean;
   ocultar_homologadas: boolean;
   favoritar_ao_baixar: boolean;
+  verticals: string[];
 }
 
 export interface NotificationDefaults {
