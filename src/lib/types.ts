@@ -37,6 +37,36 @@ export interface Vertical {
   cnaes?: string[];
 }
 
+export interface Processo {
+  id: number;
+  numero: string;
+  numero_canonical: string;
+  organ?: string;
+  objeto?: string;
+  modalidade?: string;
+  valor?: number;
+  data_abertura?: string;
+  uf?: string;
+  data_primeira_publicacao?: string;
+  data_ultima_publicacao?: string;
+  total_artigos?: number;
+  keywords?: string[];
+  status?: string;
+  timeline?: ProcessoAto[];
+}
+
+export interface ProcessoAto {
+  article_id: number;
+  slug?: string;
+  title?: string;
+  published_date?: string;
+  doc_type?: string;
+  modality?: string;
+  value?: number;
+  opening_date?: string;
+  organ?: string;
+}
+
 export interface NormalizedData {
   doc_type?: string;
   modality?: string;

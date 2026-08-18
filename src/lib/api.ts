@@ -1,4 +1,4 @@
-import { Article, Organ, SearchResponse, Vertical } from './types';
+import { Article, Organ, Processo, SearchResponse, Vertical } from './types';
 import { supabase } from './auth';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
@@ -102,6 +102,21 @@ export async function getVerticals(): Promise<Vertical[]> {
 export async function getVerticalArticles(slug: string, limit = 20): Promise<{ count: number; results: Article[] }> {
   const res = await fetch(`${API_BASE}/api/v1/verticals/${encodeURIComponent(slug)}/articles?limit=${limit}`);
   if (!res.ok) throw new Error(`Vertical articles failed: ${res.status}`);
+  return res.json();
+}
+
+// ── Processos (Fase 2 — funil) ──
+
+export async function getProcessos(limit = 100): Promise<Processo[]> {
+  const res = await fetch(`${API_BASE}/api/v1/processos?limit=${limit}`);
+  if (!res.ok) throw new Error(`Processos failed: ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getProcesso(id: number): Promise<Processo> {
+  const res = await fetch(`${API_BASE}/api/v1/processos/${id}`);
+  if (!res.ok) throw new Error(`Processo not found: ${res.status}`);
   return res.json();
 }
 
