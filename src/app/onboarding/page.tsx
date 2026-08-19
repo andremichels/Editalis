@@ -30,6 +30,7 @@ export default function OnboardingPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [currentPrefs, setCurrentPrefs] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -38,6 +39,7 @@ export default function OnboardingPage() {
         setVerticals(all);
         const prefsRes = await authFetch(`${API_BASE}/api/v1/account/preferences`);
         const prefs = prefsRes.ok ? await prefsRes.json() : {};
+        setCurrentPrefs(prefs);
         setSelected(prefs.verticals ?? []);
         setUfs(prefs.ufs_padrao ?? []);
         setValorMinimo(prefs.valor_minimo_interesse != null ? String(prefs.valor_minimo_interesse) : '');
@@ -65,8 +67,14 @@ export default function OnboardingPage() {
     setSaving(true);
     setError(null);
     try {
-      const prefsRes = await authFetch(`${API_BASE}/api/v1/account/preferences`);
-      const current = prefsRes.ok ? await prefsRes.json() : {};
+      // Reusa as prefs já carregadas no mount (evita um GET redundante que
+      // dobrava a latência do redirect). Só re-busca se por algum motivo
+      // ainda não tiver carregado.
+      let current = currentPrefs;
+      if (!current || Object.keys(current).length === 0) {
+        const prefsRes = await authFetch(`${API_BASE}/api/v1/account/preferences`);
+        current = prefsRes.ok ? await prefsRes.json() : {};
+      }
       const body = {
         ...current,
         verticals: selected,
@@ -210,6 +218,17 @@ export default function OnboardingPage() {
           {error && (
             <div className="mt-6 p-4 text-sm font-bold" style={{ background: '#f8d7da', border: '2px solid #f5c6cb', color: '#721c24' }}>
               {error}
+            </div>
+          )}
+
+          {saving && (
+            <div className="mt-8">
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-[13px] font-bold" style={{ color: 'var(--color-text)' }}>
+                  Salvando suas preferências…
+                </span>
+              </div>
+              <div className="ed-progress" role="progressbar" aria-label="Salvando preferências" />
             </div>
           )}
 
