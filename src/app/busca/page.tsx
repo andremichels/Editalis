@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SearchHeader } from "@/components/busca/SearchHeader";
@@ -11,7 +11,8 @@ import { Pagination } from "@/components/busca/Pagination";
 import { useFavorites } from "@/lib/useFavorites";
 import { useToast } from "@/components/Toast";
 import { track } from "@/lib/analytics";
-import type { Article } from "@/lib/types";
+import { getPreferences, getVerticals } from "@/lib/api";
+import type { Article, Vertical } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const PAGE_SIZE = 10;
@@ -37,13 +38,34 @@ export default function BuscaPage() {
   const [organs, setOrgans] = useState<string[]>([]);
   const [modalities, setModalities] = useState<string[]>([]);
   const [ufs, setUfs] = useState<string[]>([]);
+  const [verticals, setVerticals] = useState<string[]>([]);
+  const [availableVerticals, setAvailableVerticals] = useState<Vertical[]>([]);
   const [valueMin, setValueMin] = useState("");
   const [valueMax, setValueMax] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
+  // Aplica as preferências do perfil como filtros default (P1: busca respeita o perfil)
+  useEffect(() => {
+    Promise.all([getPreferences(), getVerticals()])
+      .then(([prefs, verts]) => {
+        setAvailableVerticals(verts);
+        if (prefs.verticals?.length) setVerticals(prefs.verticals);
+        if (prefs.ufs_padrao?.length) setUfs(prefs.ufs_padrao);
+        if (prefs.valor_minimo_interesse != null) setValueMin(String(prefs.valor_minimo_interesse));
+      })
+      .catch(() => {
+        // fallback: ao menos carrega as verticais pra renderizar os chips
+        getVerticals().then(setAvailableVerticals).catch(() => {});
+      });
+  }, []);
+
   const doSearch = useCallback(
-    async (q: string, p: number = 1) => {
+    async (
+      q: string,
+      p: number = 1,
+      opts?: { verticals?: string[]; ufs?: string[]; valueMin?: string; valueMax?: string }
+    ) => {
       if (!q || q.trim().length < 3) return;
       setLoading(true);
       setSearched(true);
@@ -51,21 +73,30 @@ export default function BuscaPage() {
       setPage(p);
       const t0 = performance.now();
 
+      const v = opts?.verticals ?? verticals;
+      const u = opts?.ufs ?? ufs;
+      const vmin = opts?.valueMin ?? valueMin;
+      const vmax = opts?.valueMax ?? valueMax;
+
       try {
         const offset = (p - 1) * PAGE_SIZE;
         const modeParam = booleanMode ? "&mode=boolean" : "";
         const sortParam = "&sort_by=date";  // default: date (most recent first)
         const dateFromParam = dateFrom ? `&published_since=${dateFrom}` : "";
         const dateToParam = dateTo ? `&published_until=${dateTo}` : "";
+        const verticalsParam = v.length ? `&verticals=${v.join(",")}` : "";
+        const ufsParam = u.length ? `&ufs=${u.join(",")}` : "";
+        const valueMinParam = vmin ? `&value_min=${vmin}` : "";
+        const valueMaxParam = vmax ? `&value_max=${vmax}` : "";
         const searchPath = semanticMode ? "search/semantic" : "search";
         const hybridParam = semanticMode ? "&hybrid=true" : "";
-        const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}`;
+        const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}${verticalsParam}${ufsParam}${valueMinParam}${valueMaxParam}`;
         const res = await fetch(url);
         const body = await res.json();
         const all: Article[] = body.results || [];
         const apiTotal: number = body.count || 0;
 
-        // Client-side filtering
+        // Client-side filtering (só órgão e modalidade — backend já trata verticais/UFs/valor)
         let filtered = all;
         if (organs.length > 0) {
           filtered = filtered.filter(
@@ -76,21 +107,6 @@ export default function BuscaPage() {
           filtered = filtered.filter((a) => {
             const m = a.normalized_data?.modality;
             return m && modalities.some((f) => f.toLowerCase() === m.toLowerCase());
-          });
-        }
-        if (ufs.length > 0) {
-          filtered = filtered.filter((a) => {
-            const au = a.normalized_data?.ufs || [];
-            return ufs.some((u) => au.map((x) => x.toUpperCase()).includes(u.toUpperCase()));
-          });
-        }
-        const vMin = valueMin ? parseFloat(valueMin) : 0;
-        const vMax = valueMax ? parseFloat(valueMax) : Infinity;
-        if (vMin > 0 || vMax < Infinity) {
-          filtered = filtered.filter((a) => {
-            const v = a.normalized_data?.value;
-            if (v == null) return vMin === 0;
-            return v >= vMin && v <= vMax;
           });
         }
 
@@ -109,7 +125,7 @@ export default function BuscaPage() {
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
-    [organs, modalities, ufs, valueMin, valueMax, booleanMode, semanticMode]
+    [organs, modalities, verticals, ufs, valueMin, valueMax, booleanMode, semanticMode]
   );
 
   const handleSmartSearch = async (q: string) => {
@@ -145,6 +161,15 @@ export default function BuscaPage() {
     setDateTo("");
   };
 
+  // "Mostrar tudo" — remove a personalização do perfil e re-busca sem ela
+  const handleShowAll = () => {
+    setVerticals([]);
+    setUfs([]);
+    setValueMin("");
+    track('search_show_all', {});
+    if (query) doSearch(query, 1, { verticals: [], ufs: [], valueMin: "" });
+  };
+
   const handleSaveAsAlert = () => {
     if (!query) return;
     const params = new URLSearchParams();
@@ -160,6 +185,12 @@ export default function BuscaPage() {
 
   const activeFilterCount = organs.length + modalities.length + ufs.length
     + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
+
+  const verticalNames = verticals
+    .map((slug) => availableVerticals.find((v) => v.slug === slug)?.name)
+    .filter(Boolean)
+    .join(', ');
+  const profileScoped = verticals.length > 0 || ufs.length > 0 || !!valueMin;
 
   const handleApplyFilters = () => {
     track('filter_applied', {
@@ -214,6 +245,8 @@ export default function BuscaPage() {
                 organs={organs} setOrgans={setOrgans}
                 modalities={modalities} setModalities={setModalities}
                 ufs={ufs} setUfs={setUfs}
+                verticals={verticals} setVerticals={setVerticals}
+                availableVerticals={availableVerticals}
                 valueMin={valueMin} setValueMin={setValueMin}
                 valueMax={valueMax} setValueMax={setValueMax}
                 dateFrom={dateFrom} setDateFrom={setDateFrom}
@@ -225,12 +258,33 @@ export default function BuscaPage() {
           </div>
         )}
 
+        {profileScoped && (
+          <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ background: 'var(--color-neutral-100)', borderBottom: '1px solid var(--color-divider)' }}>
+            <span className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
+              {verticalNames ? (
+                <>Buscando no seu setor: <strong>{verticalNames}</strong>{ufs.length > 0 ? ` · ${ufs.join('/')}` : ''}{valueMin ? ` · a partir de R$ ${Number(valueMin).toLocaleString('pt-BR')}` : ''}</>
+              ) : (
+                <>Filtros do seu perfil aplicados</>
+              )}
+            </span>
+            <button
+              onClick={handleShowAll}
+              className="text-[12px] font-bold underline cursor-pointer border-0 bg-transparent shrink-0"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              mostrar tudo
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
           <div className="hidden lg:block" style={{ borderRight: '2px solid var(--color-text)' }}>
             <SearchFilters
               organs={organs} setOrgans={setOrgans}
               modalities={modalities} setModalities={setModalities}
               ufs={ufs} setUfs={setUfs}
+              verticals={verticals} setVerticals={setVerticals}
+              availableVerticals={availableVerticals}
               valueMin={valueMin} setValueMin={setValueMin}
               valueMax={valueMax} setValueMax={setValueMax}
               dateFrom={dateFrom} setDateFrom={setDateFrom}

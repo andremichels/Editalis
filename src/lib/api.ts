@@ -105,6 +105,34 @@ export async function getVerticalArticles(slug: string, limit = 20): Promise<{ c
   return res.json();
 }
 
+// ── Preferences (perfil do usuário) ──
+
+export interface SearchPreferences {
+  ufs_padrao: string[];
+  valor_minimo_interesse: number | null;
+  abrir_painel_filtrado: boolean;
+  ocultar_homologadas: boolean;
+  verticals: string[];
+  favoritar_ao_baixar: boolean;
+  onboarding_completed: boolean;
+}
+
+const EMPTY_PREFERENCES: SearchPreferences = {
+  ufs_padrao: [],
+  valor_minimo_interesse: null,
+  abrir_painel_filtrado: false,
+  ocultar_homologadas: false,
+  verticals: [],
+  favoritar_ao_baixar: false,
+  onboarding_completed: false,
+};
+
+export async function getPreferences(): Promise<SearchPreferences> {
+  const res = await authFetch(`${API_BASE}/api/v1/account/preferences`);
+  if (!res.ok) return EMPTY_PREFERENCES;
+  return res.json();
+}
+
 // ── Processos (Fase 2 — funil) ──
 
 export async function getProcessos(limit = 100): Promise<Processo[]> {
