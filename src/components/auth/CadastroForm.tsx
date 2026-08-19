@@ -30,7 +30,7 @@ export function CadastroForm() {
       setError(err.message);
     } else {
       track('signup_completed', { via });
-      router.push('/dashboard');
+      router.push('/onboarding');
     }
     setLoading(false);
   };

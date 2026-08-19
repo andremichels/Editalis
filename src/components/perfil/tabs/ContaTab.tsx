@@ -17,6 +17,7 @@ export interface PreferencesData {
   ocultar_homologadas: boolean;
   favoritar_ao_baixar: boolean;
   verticals: string[];
+  onboarding_completed: boolean;
 }
 
 export interface NotificationDefaults {
