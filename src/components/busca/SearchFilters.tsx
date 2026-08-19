@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { Vertical } from '@/lib/types';
 
 interface SearchFiltersProps {
   organs: string[];
@@ -9,6 +10,9 @@ interface SearchFiltersProps {
   setModalities: (v: string[]) => void;
   ufs: string[];
   setUfs: (v: string[]) => void;
+  verticals: string[];
+  setVerticals: (v: string[]) => void;
+  availableVerticals: Vertical[];
   valueMin: string;
   setValueMin: (v: string) => void;
   valueMax: string;
@@ -62,6 +66,8 @@ export function SearchFilters({
   organs, setOrgans,
   modalities, setModalities,
   ufs, setUfs,
+  verticals, setVerticals,
+  availableVerticals,
   valueMin, setValueMin,
   valueMax, setValueMax,
   dateFrom, setDateFrom,
@@ -85,6 +91,33 @@ export function SearchFilters({
         <span className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</span>
         <button onClick={onClear} className="text-xs border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>limpar</button>
       </div>
+
+      <FilterGroup title="Setores">
+        {availableVerticals.length === 0 ? (
+          <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>Carregando setores…</div>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {availableVerticals.map((v) => {
+              const active = verticals.includes(v.slug);
+              return (
+                <button
+                  key={v.slug}
+                  type="button"
+                  onClick={() => setVerticals(active ? verticals.filter((s) => s !== v.slug) : [...verticals, v.slug])}
+                  className="text-[12px] px-2.5 py-1.5 font-bold cursor-pointer transition-all"
+                  style={{
+                    background: active ? 'var(--color-accent)' : 'transparent',
+                    color: active ? '#fff' : 'var(--color-text)',
+                    border: `2px solid ${active ? 'var(--color-accent)' : 'var(--color-divider)'}`,
+                  }}
+                >
+                  {v.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </FilterGroup>
 
       <FilterGroup title="UF">
         <CheckboxGroup options={ALL_UFS} selected={ufs} onChange={setUfs} />
