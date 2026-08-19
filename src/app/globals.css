@@ -147,6 +147,18 @@ h1, h2, h3, h4 {
   .ed-progress::after { animation: none; left: 0; width: 100%; opacity: 0.6; }
 }
 
+/* Fade-in do copy rotativo do loading */
+@keyframes ed-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ed-copy-fade {
+  animation: ed-fade-in 0.35s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ed-copy-fade { animation: none; }
+}
+
 /* ── Search highlights ── */
 mark, .search-highlight {
   background: var(--color-accent-200);

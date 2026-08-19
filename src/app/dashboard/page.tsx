@@ -14,6 +14,7 @@ import { getStats, getRecentArticles, authFetch, type PublicStats } from '@/lib/
 import type { Article } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { LoadingProgress } from '@/components/ui/LoadingProgress';
 import { supabase } from '@/lib/auth';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
@@ -31,6 +32,15 @@ interface DeadlineItem {
   days: string;
   tone: 'urgent' | 'default' | 'later';
 }
+
+const LOADING_MESSAGES = [
+  'Preparando suas configurações…',
+  'Escolhendo as licitações do seu setor…',
+  'Varrendo o Diário Oficial…',
+  'Cruzando suas palavras-chave com os editais…',
+  'Calculando prazos de abertura…',
+  'Organizando o funil de oportunidades…',
+];
 
 function computeDeadlines(articles: Article[]): DeadlineItem[] {
   const now = new Date();
@@ -81,9 +91,10 @@ export default function DashboardPage() {
   const [volume, setVolume] = useState<{date: string; count: number}[]>([]);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
   const [deadlines, setDeadlines] = useState<DeadlineItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const loadProfiles = (userId: string) => {
-    authFetch(`${API_BASE}/api/v1/alerts`)
+  const loadProfiles = (userId: string): Promise<void> => {
+    return authFetch(`${API_BASE}/api/v1/alerts`)
       .then((r) => r.json())
       .then((alerts: any[]) => {
         const items = alerts.map((a) => ({
@@ -97,21 +108,36 @@ export default function DashboardPage() {
 
   const loadData = () => {
     setError(null);
-    getStats().then(setStats).catch((e) => {
-      setError('Não foi possível carregar os dados. Verifique sua conexão.');
-      console.error(e);
-    });
-    getRecentArticles(50).then((articles) => {
-      setRecent(articles.slice(0, 5));
-      setDeadlines(computeDeadlines(articles));
-    }).catch(console.error);
-    fetch(`${API_BASE}/api/v1/volume?days=7`)
-      .then((r) => r.json())
-      .then(setVolume)
-      .catch(console.error);
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) loadProfiles(data.session.user.id);
-    });
+    setLoading(true);
+    const jobs: Promise<unknown>[] = [];
+
+    jobs.push(
+      getStats().then(setStats).catch((e) => {
+        setError('Não foi possível carregar os dados. Verifique sua conexão.');
+        console.error(e);
+      })
+    );
+    jobs.push(
+      getRecentArticles(50).then((articles) => {
+        setRecent(articles.slice(0, 5));
+        setDeadlines(computeDeadlines(articles));
+      }).catch(console.error)
+    );
+    jobs.push(
+      fetch(`${API_BASE}/api/v1/volume?days=7`)
+        .then((r) => r.json())
+        .then(setVolume)
+        .catch(console.error)
+    );
+    jobs.push(
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) return loadProfiles(data.session.user.id);
+      })
+    );
+
+    // Mínimo de ~700ms para o loading não piscar em conexões rápidas
+    const minDelay = new Promise((r) => setTimeout(r, 700));
+    Promise.allSettled([...jobs, minDelay]).then(() => setLoading(false));
   };
 
   useEffect(() => { loadData(); }, []);
@@ -131,6 +157,12 @@ export default function DashboardPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[60vh] px-10 py-16">
+            <LoadingProgress messages={LOADING_MESSAGES} />
+          </div>
+        ) : (
+          <>
         <div className="py-7 px-10 flex items-center justify-between" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div>
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>Painel</h1>
@@ -215,6 +247,8 @@ export default function DashboardPage() {
             <VolumeChart data={volume} />
           </div>
         </div>
+          </>
+        )}
       </DashboardLayout>
     </AuthGuard>
   );
