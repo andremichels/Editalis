@@ -44,6 +44,7 @@ export default function BuscaPage() {
   const [valueMax, setValueMax] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance');
 
   // Aplica as preferências do perfil como filtros default (P1: busca respeita o perfil)
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function BuscaPage() {
     async (
       q: string,
       p: number = 1,
-      opts?: { verticals?: string[]; ufs?: string[]; valueMin?: string; valueMax?: string }
+      opts?: { verticals?: string[]; ufs?: string[]; valueMin?: string; valueMax?: string; sortBy?: 'relevance' | 'date' }
     ) => {
       if (!q || q.trim().length < 3) return;
       setLoading(true);
@@ -77,11 +78,12 @@ export default function BuscaPage() {
       const u = opts?.ufs ?? ufs;
       const vmin = opts?.valueMin ?? valueMin;
       const vmax = opts?.valueMax ?? valueMax;
+      const sort = opts?.sortBy ?? sortBy;
 
       try {
         const offset = (p - 1) * PAGE_SIZE;
         const modeParam = booleanMode ? "&mode=boolean" : "";
-        const sortParam = "&sort_by=date";  // default: date (most recent first)
+        const sortParam = `&sort_by=${sort}`;
         const dateFromParam = dateFrom ? `&published_since=${dateFrom}` : "";
         const dateToParam = dateTo ? `&published_until=${dateTo}` : "";
         const verticalsParam = v.length ? `&verticals=${v.join(",")}` : "";
@@ -125,7 +127,7 @@ export default function BuscaPage() {
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
-    [organs, modalities, verticals, ufs, valueMin, valueMax, booleanMode, semanticMode]
+    [organs, modalities, verticals, ufs, valueMin, valueMax, sortBy, booleanMode, semanticMode]
   );
 
   const handleSmartSearch = async (q: string) => {
@@ -168,6 +170,13 @@ export default function BuscaPage() {
     setValueMin("");
     track('search_show_all', {});
     if (query) doSearch(query, 1, { verticals: [], ufs: [], valueMin: "" });
+  };
+
+  // Troca de ordenação (relevância vs data)
+  const handleSortChange = (s: 'relevance' | 'date') => {
+    setSortBy(s);
+    track('search_sort_changed', { sort: s });
+    if (query) doSearch(query, 1, { sortBy: s });
   };
 
   const handleSaveAsAlert = () => {
@@ -327,7 +336,7 @@ export default function BuscaPage() {
                   {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-500)" }}>— {smartFilters.keywords.join(" ")}</span>}
                 </div>
               )}
-              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} />
+              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} />
                 {results.map((a) => (
                   <SearchResultItem
                     key={a.id}
