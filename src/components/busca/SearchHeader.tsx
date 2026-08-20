@@ -13,6 +13,8 @@ export function SearchHeader({
   smartMode,
   onSmartSearch,
   onToggleSmart,
+  sectorOnly,
+  onSectorOnly,
 }: {
   onSearch: (q: string) => void;
   loading: boolean;
@@ -23,6 +25,8 @@ export function SearchHeader({
   smartMode: boolean;
   onSmartSearch: (q: string) => void;
   onToggleSmart: (v: boolean) => void;
+  sectorOnly: boolean;
+  onSectorOnly: (v: boolean) => void;
 }
 ) {
   const [query, setQuery] = useState('');
@@ -73,6 +77,12 @@ export function SearchHeader({
             className="cursor-pointer"
           />
           Operadores booleanos
+        </label>
+
+        {/* Sector-only toggle (P3) */}
+        <label className="flex items-center gap-1.5 text-xs cursor-pointer" style={{ color: sectorOnly ? "var(--color-accent)" : "var(--color-neutral-600)", fontWeight: sectorOnly ? 800 : 400 }}>
+          <input type="checkbox" checked={sectorOnly} onChange={(e) => onSectorOnly(e.target.checked)} className="cursor-pointer" />
+          🎯 Somente meu setor
         </label>
 
         {/* Help toggle */}
