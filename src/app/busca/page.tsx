@@ -12,6 +12,7 @@ import { useFavorites } from "@/lib/useFavorites";
 import { useToast } from "@/components/Toast";
 import { track } from "@/lib/analytics";
 import { getPreferences, getVerticals } from "@/lib/api";
+import type { SearchPreferences } from "@/lib/api";
 import type { Article, Vertical } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
@@ -45,15 +46,26 @@ export default function BuscaPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance');
+  const [sectorOnly, setSectorOnly] = useState(true);
+  const [profilePrefs, setProfilePrefs] = useState<SearchPreferences | null>(null);
 
   // Aplica as preferências do perfil como filtros default (P1: busca respeita o perfil)
   useEffect(() => {
     Promise.all([getPreferences(), getVerticals()])
       .then(([prefs, verts]) => {
         setAvailableVerticals(verts);
-        if (prefs.verticals?.length) setVerticals(prefs.verticals);
-        if (prefs.ufs_padrao?.length) setUfs(prefs.ufs_padrao);
-        if (prefs.valor_minimo_interesse != null) setValueMin(String(prefs.valor_minimo_interesse));
+        setProfilePrefs(prefs);
+        const hasScope = (prefs.verticals?.length || 0) > 0
+          || (prefs.ufs_padrao?.length || 0) > 0
+          || prefs.valor_minimo_interesse != null;
+        if (hasScope) {
+          setVerticals(prefs.verticals ?? []);
+          setUfs(prefs.ufs_padrao ?? []);
+          if (prefs.valor_minimo_interesse != null) setValueMin(String(prefs.valor_minimo_interesse));
+          setSectorOnly(true);
+        } else {
+          setSectorOnly(false);
+        }
       })
       .catch(() => {
         // fallback: ao menos carrega as verticais pra renderizar os chips
@@ -163,13 +175,27 @@ export default function BuscaPage() {
     setDateTo("");
   };
 
-  // "Mostrar tudo" — remove a personalização do perfil e re-busca sem ela
-  const handleShowAll = () => {
-    setVerticals([]);
-    setUfs([]);
-    setValueMin("");
-    track('search_show_all', {});
-    if (query) doSearch(query, 1, { verticals: [], ufs: [], valueMin: "" });
+  // P3 — toggle "só meu setor": liga/desliga a personalização do perfil
+  const handleSectorOnly = (on: boolean) => {
+    setSectorOnly(on);
+    const prefs = profilePrefs;
+    if (on && prefs) {
+      setVerticals(prefs.verticals ?? []);
+      setUfs(prefs.ufs_padrao ?? []);
+      if (prefs.valor_minimo_interesse != null) setValueMin(String(prefs.valor_minimo_interesse));
+    } else {
+      setVerticals([]);
+      setUfs([]);
+      setValueMin("");
+    }
+    track('search_sector_only', { on });
+    if (query) {
+      doSearch(query, 1, {
+        verticals: on && prefs ? (prefs.verticals ?? []) : [],
+        ufs: on && prefs ? (prefs.ufs_padrao ?? []) : [],
+        valueMin: on && prefs && prefs.valor_minimo_interesse != null ? String(prefs.valor_minimo_interesse) : "",
+      });
+    }
   };
 
   // Troca de ordenação (relevância vs data)
@@ -225,6 +251,8 @@ export default function BuscaPage() {
           smartMode={smartMode}
           onSmartSearch={handleSmartSearch}
           onToggleSmart={setSmartMode}
+          sectorOnly={sectorOnly}
+          onSectorOnly={handleSectorOnly}
         />
         {/* Mobile filters trigger */}
         <div className="lg:hidden px-10 py-3 flex items-center" style={{ borderBottom: '1px solid var(--color-divider)' }}>
@@ -277,7 +305,7 @@ export default function BuscaPage() {
               )}
             </span>
             <button
-              onClick={handleShowAll}
+              onClick={() => handleSectorOnly(false)}
               className="text-[12px] font-bold underline cursor-pointer border-0 bg-transparent shrink-0"
               style={{ color: 'var(--color-accent)' }}
             >
