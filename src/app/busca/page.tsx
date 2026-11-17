@@ -18,6 +18,37 @@ import type { Article, Vertical } from "@/lib/types";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const PAGE_SIZE = 10;
 
+function downloadSearchCsv(articles: Article[]) {
+  if (!articles.length) return;
+  const header = ["Título", "Órgão", "Modalidade", "Tipo", "Valor (R$)", "UFs", "Processo", "Abertura", "Publicado", "Link"];
+  const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = articles.map((a) => {
+    const nd = a.normalized_data;
+    return [
+      a.title_marker || a.title || "",
+      a.organ_level_1 || a.organ || "",
+      (nd?.modality || "").replace(/_/g, " "),
+      (nd?.doc_type || "").replace(/_/g, " "),
+      nd?.value != null ? nd.value : "",
+      (nd?.ufs || []).join(";"),
+      nd?.process_number || "",
+      nd?.opening_date || "",
+      a.published_date || "",
+      `https://www.in.gov.br/web/dou/-/${a.slug}`,
+    ];
+  });
+  const csv = [header, ...rows].map((r) => r.map(escape).join(",")).join("\r\n");
+  const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `editalis-busca-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export default function BuscaPage() {
   const { toggle, isFavorite } = useFavorites();
   const { toast } = useToast();
@@ -205,6 +236,11 @@ export default function BuscaPage() {
     if (query) doSearch(query, 1, { sortBy: s });
   };
 
+  const handleExportCsv = () => {
+    downloadSearchCsv(results);
+    track('search_export_csv', { count: results.length });
+  };
+
   const handleSaveAsAlert = () => {
     if (!query) return;
     const params = new URLSearchParams();
@@ -364,7 +400,7 @@ export default function BuscaPage() {
                   {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-500)" }}>— {smartFilters.keywords.join(" ")}</span>}
                 </div>
               )}
-              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} />
+              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} onExportCsv={handleExportCsv} />
                 {results.map((a) => (
                   <SearchResultItem
                     key={a.id}

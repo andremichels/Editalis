@@ -3,9 +3,10 @@ interface SearchResultsHeaderProps {
   elapsed: string;
   sortBy: 'relevance' | 'date';
   onSortChange: (s: 'relevance' | 'date') => void;
+  onExportCsv: () => void;
 }
 
-export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange }: SearchResultsHeaderProps) {
+export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange, onExportCsv }: SearchResultsHeaderProps) {
   return (
     <div className="py-[18px] px-10 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-divider)' }}>
       <div className="text-sm">
@@ -23,6 +24,7 @@ export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange }: Se
           <option value="date">Mais recentes</option>
         </select>
         <button
+          onClick={onExportCsv}
           className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"
           style={{ background: 'transparent', border: '2px solid var(--color-text)', color: 'var(--color-text)' }}
         >
