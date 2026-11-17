@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useFavorites } from "@/lib/useFavorites";
 import { FavoriteButton } from "@/components/ui/FavoriteButton";
 import type { Article } from "@/lib/types";
+import { authFetch } from "@/lib/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 
@@ -16,35 +18,18 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Uma única busca: /api/v1/favorites já devolve os artigos completos.
+  // (Antes: até 200 GETs inúteis em série + /recent?limit=200, refeitos a cada ★.)
   useEffect(() => {
-    if (!loaded || favorites.size === 0) {
-      setLoading(false);
-      return;
-    }
+    authFetch(`${API_BASE}/api/v1/favorites`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setArticles(Array.isArray(data) ? data : []))
+      .catch(() => setArticles([]))
+      .finally(() => setLoading(false));
+  }, []);
 
-    // Fetch articles in batches of 50
-    const ids = [...favorites];
-    const fetchAll = async () => {
-      const results: Article[] = [];
-      for (const id of ids.slice(0, 200)) {
-        try {
-          const res = await fetch(`${API_BASE}/api/v1/recent?limit=1`);
-          // We can't easily query by ID, so fetch recent and filter
-          // For MVP, fetch recent and match by ID
-        } catch {}
-      }
-      // Alternative: use search endpoint with no query to get articles
-      try {
-        const res = await fetch(`${API_BASE}/api/v1/recent?limit=200`);
-        const all = await res.json();
-        const idSet = new Set(ids);
-        const matched = (all as Article[]).filter((a) => idSet.has(a.id));
-        setArticles(matched);
-      } catch {}
-      setLoading(false);
-    };
-    fetchAll();
-  }, [favorites, loaded]);
+  // Desfavoritar aqui some da lista na hora, sem refazer a busca.
+  const visible = articles.filter((a) => favorites.has(a.id));
 
   return (
     <AuthGuard>
@@ -79,19 +64,19 @@ export default function FavoritesPage() {
                 Ir para o painel
               </button>
             </div>
-          ) : articles.length === 0 ? (
+          ) : visible.length === 0 ? (
             <div className="py-16 text-center">
               <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
-                {favorites.size} artigo{favorites.size !== 1 ? "s" : ""} salvo{favorites.size !== 1 ? "s" : ""}, mas nenhum apareceu nos resultados recentes.
+                {favorites.size} artigo{favorites.size !== 1 ? "s" : ""} salvo{favorites.size !== 1 ? "s" : ""}, mas não foi possível carregá-los agora.
               </p>
               <p className="text-xs mt-2" style={{ color: "var(--color-neutral-400)" }}>
-                Os favoritos mais antigos podem não aparecer nos 200 mais recentes. Use a busca para encontrá-los.
+                Favoritos marcados sem conexão sincronizam na próxima vez que você entrar.
               </p>
             </div>
           ) : (
             <div style={{ borderTop: "2px solid var(--color-text)" }}>
-              {articles.map((article) => (
-                <a
+              {visible.map((article) => (
+                <Link
                   key={article.id}
                   href={`/artigo/${article.slug}`}
                   className="block py-4 cursor-pointer hover:opacity-80 transition-opacity relative"
@@ -109,7 +94,7 @@ export default function FavoritesPage() {
                   <div className="text-[12px]" style={{ color: "var(--color-neutral-500)" }}>
                     {new Date(article.published_date).toLocaleDateString("pt-BR")}
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

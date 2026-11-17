@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { getProcessos } from '@/lib/api';
+import Link from 'next/link';
 import type { Processo } from '@/lib/types';
 
 const STAGES = [
@@ -27,18 +26,20 @@ function deadlineHint(dateStr?: string) {
   );
 }
 
-export function Funnel() {
-  const [processos, setProcessos] = useState<Processo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getProcessos(300)
-      .then(setProcessos)
-      .catch(() => setProcessos([]))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return null;
+/** `processos === null` = ainda carregando (o /dashboard busca em paralelo). */
+export function Funnel({ processos }: { processos: Processo[] | null }) {
+  if (!processos) {
+    return (
+      <div className="px-10 pt-7">
+        <div className="h-7 w-56 skeleton mb-4" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {STAGES.map((stage) => (
+            <div key={stage.key} className="h-40 skeleton" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const byStatus = (s: string) => processos.filter((p) => p.status === s);
 
@@ -88,7 +89,7 @@ export function Funnel() {
                   </div>
                 )}
                 {items.slice(0, 8).map((p) => (
-                  <a
+                  <Link
                     key={p.id}
                     href={`/processo/${p.id}`}
                     className="block px-4 py-3 cursor-pointer hover:opacity-80 transition-opacity"
@@ -105,7 +106,7 @@ export function Funnel() {
                       {formatMoney(p.valor)}
                     </div>
                     {deadlineHint(p.data_abertura)}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

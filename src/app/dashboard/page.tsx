@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
@@ -8,10 +9,10 @@ import { MetricsBar } from '@/components/dashboard/MetricsBar';
 import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
 import { ProfilesCard } from '@/components/dashboard/ProfilesCard';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
-import { VerticalFeed } from '@/components/dashboard/VerticalFeed';
+import { VerticalFeed, loadVerticalFeed, type VerticalFeedData } from '@/components/dashboard/VerticalFeed';
 import { Funnel } from '@/components/dashboard/Funnel';
-import { getStats, getRecentArticles, authFetch, type PublicStats } from '@/lib/api';
-import type { Article } from '@/lib/types';
+import { getStats, getRecentArticles, getProcessos, authFetch, type PublicStats } from '@/lib/api';
+import type { Article, Processo } from '@/lib/types';
 import { parseSectionNumber } from '@/lib/utils';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { LoadingProgress } from '@/components/ui/LoadingProgress';
@@ -92,6 +93,8 @@ export default function DashboardPage() {
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
   const [deadlines, setDeadlines] = useState<DeadlineItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [feed, setFeed] = useState<VerticalFeedData | null>(null);
+  const [processos, setProcessos] = useState<Processo[] | null>(null);
 
   const loadProfiles = (userId: string): Promise<void> => {
     return authFetch(`${API_BASE}/api/v1/alerts`)
@@ -109,6 +112,16 @@ export default function DashboardPage() {
   const loadData = () => {
     setError(null);
     setLoading(true);
+
+    // Seções secundárias: começam já, em paralelo com o resto, mas não seguram
+    // a tela de loading — renderizam esqueleto até chegarem.
+    loadVerticalFeed()
+      .then(setFeed)
+      .catch(() => setFeed({ verticals: [], selected: [], articles: [] }));
+    getProcessos(300)
+      .then(setProcessos)
+      .catch(() => setProcessos([]));
+
     const jobs: Promise<unknown>[] = [];
 
     jobs.push(
@@ -135,9 +148,7 @@ export default function DashboardPage() {
       })
     );
 
-    // Mínimo de ~700ms para o loading não piscar em conexões rápidas
-    const minDelay = new Promise((r) => setTimeout(r, 700));
-    Promise.allSettled([...jobs, minDelay]).then(() => setLoading(false));
+    Promise.allSettled(jobs).then(() => setLoading(false));
   };
 
   useEffect(() => { loadData(); }, []);
@@ -192,9 +203,9 @@ export default function DashboardPage() {
 
         <MetricsBar metrics={metrics} />
 
-        <VerticalFeed />
+        <VerticalFeed data={feed} />
 
-        <Funnel />
+        <Funnel processos={processos} />
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
           {/* Recent articles from DOU API */}
@@ -214,7 +225,7 @@ export default function DashboardPage() {
                 {recent.map((article) => {
                   const sectionNumber = parseSectionNumber(article.section);
                   return (
-                    <a
+                    <Link
                       key={article.id}
                       href={`/artigo/${article.slug}`}
                       className="block py-4 cursor-pointer hover:opacity-80 transition-opacity relative"
@@ -234,7 +245,7 @@ export default function DashboardPage() {
                         {sectionNumber ? ` · Seção ${sectionNumber}` : ''}
                         {article.page ? ` · p. ${article.page}` : ''}
                       </div>
-                    </a>
+                    </Link>
                   );
                 })}
               </div>

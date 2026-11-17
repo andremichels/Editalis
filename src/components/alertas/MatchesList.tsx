@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface MatchArticle {
   id: number;
   slug: string;
@@ -34,7 +36,7 @@ export function MatchesList({ loading, matches }: MatchesListProps) {
   return (
     <div>
       {matches.map((a) => (
-        <a
+        <Link
           key={a.id}
           href={`/artigo/${a.slug}`}
           className="block py-3 cursor-pointer hover:opacity-80 transition-opacity"
@@ -49,7 +51,7 @@ export function MatchesList({ loading, matches }: MatchesListProps) {
           <div className="text-[11px] mt-1" style={{ color: 'var(--color-neutral-500)' }}>
             {new Date(a.published_date).toLocaleDateString('pt-BR')}
           </div>
-        </a>
+        </Link>
       ))}
     </div>
   );

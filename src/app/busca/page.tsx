@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { SearchHeader } from "@/components/busca/SearchHeader";
@@ -52,6 +53,7 @@ function downloadSearchCsv(articles: Article[]) {
 export default function BuscaPage() {
   const { toggle, isFavorite } = useFavorites();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Article[]>([]);
@@ -251,7 +253,7 @@ export default function BuscaPage() {
     if (modalities.length) params.set("modalities", modalities.join(","));
     if (valueMin) params.set("value_min", valueMin);
     if (valueMax) params.set("value_max", valueMax);
-    window.location.href = `/alertas?prefill=${encodeURIComponent(params.toString())}`;
+    router.push(`/alertas?prefill=${encodeURIComponent(params.toString())}`);
   };
 
   const activeFilterCount = organs.length + modalities.length + ufs.length

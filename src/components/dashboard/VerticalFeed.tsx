@@ -1,56 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { authFetch, getVerticalArticles, getVerticals } from '@/lib/api';
+import { getPreferences, getVerticalArticles, getVerticals } from '@/lib/api';
 import type { Article, Vertical } from '@/lib/types';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
+export interface VerticalFeedData {
+  verticals: Vertical[];
+  selected: string[];
+  articles: Article[];
+}
 
-export function VerticalFeed() {
-  const [verticals, setVerticals] = useState<Vertical[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+/**
+ * Busca os dados do feed "Do seu setor". Chamado pelo /dashboard junto com as
+ * outras buscas da página (antes o componente buscava sozinho e só depois de
+ * montar, em cascata: verticais → preferências → artigos).
+ */
+export async function loadVerticalFeed(): Promise<VerticalFeedData> {
+  const [verticals, prefs] = await Promise.all([
+    getVerticals(),
+    getPreferences().catch(() => ({ verticals: [] as string[] })),
+  ]);
+  const selected: string[] = prefs.verticals ?? [];
+  if (selected.length === 0) return { verticals, selected, articles: [] };
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const all = await getVerticals();
-        const prefsRes = await authFetch(`${API_BASE}/api/v1/account/preferences`);
-        const prefs = prefsRes.ok ? await prefsRes.json() : {};
-        const slugs: string[] = prefs.verticals ?? [];
-        setSelected(slugs);
-
-        if (slugs.length > 0) {
-          // agrega artigos das verticais selecionadas (limita por vertical)
-          const results = await Promise.all(
-            slugs.map((s) => getVerticalArticles(s, 10).catch(() => ({ count: 0, results: [] }))),
-          );
-          const seen = new Set<number>();
-          const merged: Article[] = [];
-          for (const r of results) {
-            for (const a of r.results) {
-              if (!seen.has(a.id)) {
-                seen.add(a.id);
-                merged.push(a);
-              }
-            }
-          }
-          setArticles(merged.slice(0, 5));
-        }
-        setVerticals(all);
-      } catch {
-        setArticles([]);
-      } finally {
-        setLoading(false);
+  // agrega artigos das verticais selecionadas (limita por vertical)
+  const results = await Promise.all(
+    selected.map((s) => getVerticalArticles(s, 10).catch(() => ({ count: 0, results: [] as Article[] }))),
+  );
+  const seen = new Set<number>();
+  const merged: Article[] = [];
+  for (const r of results) {
+    for (const a of r.results) {
+      if (!seen.has(a.id)) {
+        seen.add(a.id);
+        merged.push(a);
       }
-    };
-    load();
-  }, []);
+    }
+  }
+  return { verticals, selected, articles: merged.slice(0, 5) };
+}
 
-  if (loading) return null;
+export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
+  if (!data) {
+    return (
+      <div className="px-10 pt-6">
+        <div className="h-7 w-40 skeleton mb-3" />
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-16 skeleton" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  const { verticals, selected, articles } = data;
   if (selected.length === 0) return null;
 
   return (
@@ -75,7 +79,7 @@ export function VerticalFeed() {
           </div>
         )}
         {articles.map((article) => (
-          <a
+          <Link
             key={article.id}
             href={`/artigo/${article.slug}`}
             className="block py-4 cursor-pointer hover:opacity-80 transition-opacity relative"
@@ -93,7 +97,7 @@ export function VerticalFeed() {
             <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>
               {new Date(article.published_date).toLocaleDateString('pt-BR')}
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
