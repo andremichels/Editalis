@@ -42,30 +42,6 @@ export async function getStats(): Promise<PublicStats> {
 
 // ── Search ──
 
-export async function searchArticles(params: {
-  q: string;
-  organ?: string;
-  limit?: number;
-  offset?: number;
-  published_since?: string;
-  published_until?: string;
-  sort_by?: 'relevance' | 'date';
-}): Promise<SearchResponse> {
-  const searchParams = new URLSearchParams();
-  searchParams.set('q', params.q);
-  if (params.organ) searchParams.set('organ', params.organ);
-  if (params.limit) searchParams.set('limit', String(params.limit));
-  if (params.offset) searchParams.set('offset', String(params.offset));
-  if (params.published_since) searchParams.set('published_since', params.published_since);
-  if (params.published_until) searchParams.set('published_until', params.published_until);
-  if (params.sort_by) searchParams.set('sort_by', params.sort_by);
-
-  const res = await fetch(`${API_BASE}/api/v1/search?${searchParams}`);
-  if (!res.ok) throw new Error(`Search failed: ${res.status}`);
-  const articles: Article[] = await res.json();
-  return { articles };
-}
-
 export async function getArticle(slug: string): Promise<Article> {
   const res = await fetch(`${API_BASE}/api/v1/article/${encodeURIComponent(slug)}`);
   if (!res.ok) throw new Error(`Article not found: ${res.status}`);
