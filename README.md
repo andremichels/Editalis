@@ -6,7 +6,7 @@ Plataforma SaaS de monitoramento de licitações a partir de diários oficiais. 
 
 ## Stack
 
-- **Framework**: Next.js 14 (App Router) + TypeScript + Tailwind
+- **Framework**: Next.js 16.2.12 (App Router) + TypeScript + Tailwind v4
 - **Auth**: Supabase Auth (localStorage sessions via `@supabase/supabase-js`)
 - **API**: FastAPI no VPS (editalis-api.smartpeople.us)
 - **Pagamento**: Stripe Checkout (hosted page)
@@ -29,9 +29,13 @@ Plataforma SaaS de monitoramento de licitações a partir de diários oficiais. 
 | `/busca/cnpj` | Busca por CNPJ com input formatado |
 | `/alertas` | CRUD de perfis de alerta + matches em tempo real |
 | `/favoritos` | Lista com toggle inline via API |
-| `/perfil` | 4 abas: Conta, Empresa, Assinatura, Equipe |
+| `/perfil` | 5 abas: Conta, Empresa, Assinatura, Pagamentos, Equipe |
+| `/processo/[id]` | Detalhe do processo licitatório (timeline por estágio) |
+| `/convite/[token]` | Aceite de convite de equipe |
+| `/onboarding` | Wizard de setores/UFs/valor (gate pós-login) |
+| `/comunicacao` (e demais verticais) | Landings por vertical: tecnologia, saude, construcao, alimentacao, limpeza |
 
-Todas as páginas são mobile-responsive com menu hambúrguer (< 768px).
+Mobile: `/dashboard`, `/busca`, `/favoritos` e `/artigo/[slug]` são responsivos com bottom tab bar. `/alertas` e `/perfil` são desktop-first (exibem aviso "funciona melhor no desktop").
 
 ## Features
 
