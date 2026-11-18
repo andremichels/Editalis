@@ -36,11 +36,11 @@ export function AccountHeader({ initials, name, subtitle, stats, activeTab, onTa
         <div className="flex gap-6 text-right">
           <div>
             <div className="text-2xl font-black">{stats.perfis}</div>
-            <div className="text-[11px] uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>perfis</div>
+            <div className="text-[11px] uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>alertas</div>
           </div>
           <div>
             <div className="text-2xl font-black">{stats.favoritas}</div>
-            <div className="text-[11px] uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>favoritas</div>
+            <div className="text-[11px] uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>favoritos</div>
           </div>
           <div>
             <div className="text-2xl font-black">{stats.usuarios}</div>

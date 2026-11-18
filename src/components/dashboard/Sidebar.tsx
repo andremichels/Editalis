@@ -33,7 +33,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     { label: 'Busca', href: '/busca' },
     { label: 'Favoritos', href: '/favoritos' },
     { label: 'Alertas', href: '/alertas', badge: matches > 0 ? `+${matches}` : undefined },
-    { label: 'Setores', href: '/onboarding' },
+    { label: 'Setores', href: '/setores' },
     { label: 'Minha conta', href: '/perfil' },
   ];
 

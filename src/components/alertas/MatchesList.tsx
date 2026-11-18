@@ -11,7 +11,7 @@ export function MatchesList({ loading, matches }: MatchesListProps) {
 
   if (matches.length === 0) {
     return (
-      <p className="text-[14px]" style={{ color: 'var(--color-neutral-700)' }}>
+      <p className="text-[14px] py-5" style={{ color: 'var(--color-neutral-700)', borderBottom: '1px solid var(--color-divider)' }}>
         Nenhuma publicação encontrada com esses critérios.
       </p>
     );

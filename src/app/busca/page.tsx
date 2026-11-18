@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { SearchHeader } from "@/components/busca/SearchHeader";
+import { SearchHeader, type SearchMode } from "@/components/busca/SearchHeader";
 import { SearchFilters } from "@/components/busca/SearchFilters";
 import { SearchResultsHeader } from "@/components/busca/SearchResultsHeader";
 import { SearchResultItem } from "@/components/busca/SearchResultItem";
@@ -13,7 +13,7 @@ import { track } from "@/lib/analytics";
 import { getPreferences, getVerticals } from "@/lib/api";
 import type { SearchPreferences } from "@/lib/api";
 import type { Article, Vertical } from "@/lib/types";
-import { articleKind, articleTitle, modalityLabel } from "@/lib/format";
+import { articleKind, articleTitle, formatDateShort, formatMoney, modalityLabel } from "@/lib/format";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const PAGE_SIZE = 10;
@@ -113,6 +113,8 @@ export default function BuscaPage() {
   const [unscopedTotal, setUnscopedTotal] = useState<number | null>(null);
   // Restauração da última busca (sessionStorage) ao voltar para esta tela
   const restoredRef = useRef(saved !== null);
+  // Ignora respostas de buscas antigas (filtros mudam rápido e as buscas se cruzam)
+  const requestId = useRef(0);
   const pendingRestore = useRef<SavedSearch | null>(saved);
   const initialQuery = saved?.q ?? "";
 
@@ -150,6 +152,7 @@ export default function BuscaPage() {
       opts?: { verticals?: string[]; ufs?: string[]; valueMin?: string; valueMax?: string; sortBy?: 'relevance' | 'date' }
     ) => {
       if (!q || q.trim().length < 3) return;
+      const id = ++requestId.current;
       setLoading(true);
       setSearched(true);
       setUnscopedTotal(null);
@@ -178,6 +181,7 @@ export default function BuscaPage() {
         const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}${verticalsParam}${ufsParam}${valueMinParam}${valueMaxParam}`;
         const res = await fetch(url);
         const body = await res.json();
+        if (id !== requestId.current) return;
         const all: Article[] = body.results || [];
         const apiTotal: number = body.count || 0;
 
@@ -221,9 +225,11 @@ export default function BuscaPage() {
           page: p,
         });
       } catch {
+        if (id !== requestId.current) return;
         setResults([]);
         setTotal(0);
       }
+      if (id !== requestId.current) return;
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
@@ -236,6 +242,36 @@ export default function BuscaPage() {
     pendingRestore.current = null;
     doSearch(restore.q, restore.page);
   }, [doSearch]);
+
+  // Filtros instantâneos: qualquer mudança refaz a busca (com uma pequena
+  // espera para agrupar cliques e digitação de valores).
+  const filterKey = JSON.stringify([organs, modalities, ufs, verticals, valueMin, valueMax, dateFrom, dateTo, sortBy, booleanMode, semanticMode]);
+  const lastFilterKey = useRef(filterKey);
+  useEffect(() => {
+    if (filterKey === lastFilterKey.current) return;
+    lastFilterKey.current = filterKey;
+    if (!query) return;
+    const t = setTimeout(() => {
+      doSearch(query, 1);
+      track('filter_applied', {
+        organs_count: organs.length,
+        modalities_count: modalities.length,
+        ufs_count: ufs.length,
+        has_value_range: !!(valueMin || valueMax),
+        has_date_range: !!(dateFrom || dateTo),
+      });
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey]);
+
+  const mode: SearchMode = smartMode ? "ia" : semanticMode ? "semantica" : "palavras";
+  const handleModeChange = (m: SearchMode) => {
+    setSmartMode(m === "ia");
+    setSemanticMode(m === "semantica");
+    setBooleanMode(true);
+    track('search_mode_changed', { mode: m });
+  };
 
   const handleSmartSearch = async (q: string) => {
     if (!q || q.trim().length < 5) return;
@@ -284,20 +320,12 @@ export default function BuscaPage() {
       setValueMin("");
     }
     track('search_sector_only', { on });
-    if (query) {
-      doSearch(query, 1, {
-        verticals: on && prefs ? (prefs.verticals ?? []) : [],
-        ufs: on && prefs ? (prefs.ufs_padrao ?? []) : [],
-        valueMin: on && prefs && prefs.valor_minimo_interesse != null ? String(prefs.valor_minimo_interesse) : "",
-      });
-    }
   };
 
   // Troca de ordenação (relevância vs data)
   const handleSortChange = (s: 'relevance' | 'date') => {
     setSortBy(s);
     track('search_sort_changed', { sort: s });
-    if (query) doSearch(query, 1, { sortBy: s });
   };
 
   const handleExportCsv = () => {
@@ -318,6 +346,22 @@ export default function BuscaPage() {
     router.push(`/alertas?prefill=${encodeURIComponent(params.toString())}`);
   };
 
+  // Chips dos filtros ativos — cada um remove o seu filtro.
+  const chips: { key: string; label: string; remove: () => void }[] = [
+    ...verticals.map((slug) => ({
+      key: `v:${slug}`,
+      label: availableVerticals?.find((x) => x.slug === slug)?.name ?? slug,
+      remove: () => setVerticals(verticals.filter((x) => x !== slug)),
+    })),
+    ...ufs.map((uf) => ({ key: `u:${uf}`, label: uf, remove: () => setUfs(ufs.filter((x) => x !== uf)) })),
+    ...modalities.map((m) => ({ key: `m:${m}`, label: modalityLabel(m), remove: () => setModalities(modalities.filter((x) => x !== m)) })),
+    ...organs.map((o) => ({ key: `o:${o}`, label: o, remove: () => setOrgans(organs.filter((x) => x !== o)) })),
+    ...(valueMin ? [{ key: 'vmin', label: `a partir de ${formatMoney(valueMin)}`, remove: () => setValueMin('') }] : []),
+    ...(valueMax ? [{ key: 'vmax', label: `até ${formatMoney(valueMax)}`, remove: () => setValueMax('') }] : []),
+    ...(dateFrom ? [{ key: 'df', label: `desde ${formatDateShort(dateFrom)}`, remove: () => setDateFrom('') }] : []),
+    ...(dateTo ? [{ key: 'dt', label: `até ${formatDateShort(dateTo)}`, remove: () => setDateTo('') }] : []),
+  ];
+
   const activeFilterCount = organs.length + modalities.length + ufs.length
     + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
 
@@ -327,16 +371,6 @@ export default function BuscaPage() {
     .join(', ');
   const profileScoped = verticals.length > 0 || ufs.length > 0 || !!valueMin;
 
-  const handleApplyFilters = () => {
-    track('filter_applied', {
-      organs_count: organs.length,
-      modalities_count: modalities.length,
-      ufs_count: ufs.length,
-      has_value_range: !!(valueMin || valueMax),
-      has_date_range: !!(dateFrom || dateTo),
-    });
-    if (query) doSearch(query);
-  };
 
   return (
     <AuthGuard>
@@ -344,13 +378,9 @@ export default function BuscaPage() {
         <SearchHeader
           onSearch={(q) => doSearch(q)}
           loading={loading}
-          booleanMode={booleanMode}
-          onToggleMode={setBooleanMode}
-          semanticMode={semanticMode}
-          onToggleSemantic={setSemanticMode}
-          smartMode={smartMode}
+          mode={mode}
+          onModeChange={handleModeChange}
           onSmartSearch={handleSmartSearch}
-          onToggleSmart={setSmartMode}
           sectorOnly={sectorOnly}
           onSectorOnly={handleSectorOnly}
           initialQuery={initialQuery}
@@ -389,7 +419,7 @@ export default function BuscaPage() {
                 valueMax={valueMax} setValueMax={setValueMax}
                 dateFrom={dateFrom} setDateFrom={setDateFrom}
                 dateTo={dateTo} setDateTo={setDateTo}
-                onApply={() => { handleApplyFilters(); setMobileFiltersOpen(false); }}
+                onDone={() => setMobileFiltersOpen(false)}
                 onClear={handleClearFilters}
               />
             </div>
@@ -427,18 +457,42 @@ export default function BuscaPage() {
               valueMax={valueMax} setValueMax={setValueMax}
               dateFrom={dateFrom} setDateFrom={setDateFrom}
               dateTo={dateTo} setDateTo={setDateTo}
-              onApply={handleApplyFilters}
               onClear={handleClearFilters}
             />
           </div>
           <div className="min-w-0">
+            {chips.length > 0 && (
+              <div className="px-6 sm:px-10 py-3 flex flex-wrap items-center gap-2" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+                {chips.map((c) => (
+                  <span key={c.key} className="inline-flex items-center text-[13px] font-bold pl-2.5" style={{ border: '2px solid var(--color-text)' }}>
+                    {c.label}
+                    <button
+                      type="button"
+                      onClick={c.remove}
+                      className="w-8 h-7 text-[16px] leading-none cursor-pointer"
+                      style={{ background: 'transparent', border: 'none', color: 'var(--color-text)' }}
+                      aria-label={`Remover filtro ${c.label}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+                {chips.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => { handleClearFilters(); setVerticals([]); }}
+                    className="text-[13px] underline cursor-pointer py-1"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    limpar tudo
+                  </button>
+                )}
+              </div>
+            )}
             {!searched ? (
-              <div className="py-24 text-center">
-                <p className="text-sm" style={{ color: "var(--color-neutral-700)" }}>
-                  Use o campo de busca para pesquisar atos oficiais. Ative 🧠 para busca em linguagem natural.
-                </p>
-                <p className="text-xs mt-2" style={{ color: "var(--color-neutral-700)" }}>
-                  Operadores booleanos ativos: AND, OR, NOT (-), "frase exata"
+              <div className="py-16 px-6 sm:px-10">
+                <p className="text-[14px]" style={{ color: "var(--color-neutral-700)" }}>
+                  Digite o que procura no campo acima — um assunto, um órgão ou um número de processo.
                 </p>
               </div>
             ) : loading ? (

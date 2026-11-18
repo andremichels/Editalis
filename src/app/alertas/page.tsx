@@ -244,9 +244,11 @@ export default function AlertasPage() {
               ))}
             </div>
           ) : alerts.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
-                Nenhum alerta configurado. Crie um para receber notificações de novas licitações.
+            <div className="py-12 max-w-md">
+              <p className="text-[15px] font-bold mb-1">Nenhum alerta ainda.</p>
+              <p className="text-[14px]" style={{ color: 'var(--color-neutral-700)' }}>
+                Um alerta é uma busca salva: avisamos quando sair uma publicação nova que combine com ela.
+                Crie um aqui ou use “Salvar como alerta” depois de uma busca.
               </p>
             </div>
           ) : (

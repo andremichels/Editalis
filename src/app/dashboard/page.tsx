@@ -48,7 +48,7 @@ export default function DashboardPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
-        <div className="py-7 px-10 flex items-center justify-between gap-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
+        <div className="py-7 px-6 sm:px-10 flex items-center justify-between gap-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div>
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>Painel</h1>
             <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>{hoje}</div>
@@ -62,12 +62,13 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
+        <DeadlinesCard items={deadlines} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
           <div className="min-w-0 pb-10 lg:border-r-2" style={{ borderColor: 'var(--color-text)' }}>
             <VerticalFeed data={feed} />
           </div>
           <div>
-            <DeadlinesCard items={deadlines} />
             <ProfilesCard alerts={alerts} />
           </div>
         </div>

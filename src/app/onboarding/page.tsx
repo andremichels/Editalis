@@ -13,7 +13,7 @@ const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', '
 const VALOR_PRESETS = [50000, 100000, 250000, 500000, 1000000];
 
 const STEPS = [
-  { title: 'Quais setores te interessam?', desc: 'A gente filtra o feed e os alertas pros setores que você acompanha. Dá pra mudar depois no seu perfil.' },
+  { title: 'Quais setores te interessam?', desc: 'A gente filtra o feed e os alertas pros setores que você acompanha. Dá pra mudar depois na tela Setores.' },
   { title: 'Em quais estados?', desc: 'Selecione as UFs onde você quer concorrer ou acompanhar licitações.' },
   { title: 'A partir de que valor?', desc: 'Opcional — deixe em branco se qualquer valor serve.' },
   { title: 'Ajustes finais', desc: 'Como você quer ver as licitações no painel.' },
