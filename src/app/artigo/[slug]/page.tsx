@@ -28,7 +28,7 @@ export default async function ArticlePage({
   return (
     <AuthGuard>
       <DashboardLayout>
-        <ArticleViewTracker slug={slug} title={articleTitle(article, 90)} docType={article.normalized_data?.doc_type} />
+        <ArticleViewTracker id={article.id} slug={slug} title={articleTitle(article, 90)} docType={article.normalized_data?.doc_type} />
         <ArticleDetailHeader article={article} />
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
           <div className="min-w-0">

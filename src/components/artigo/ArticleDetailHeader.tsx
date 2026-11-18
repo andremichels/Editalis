@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import type { Article } from '@/lib/types';
-import { useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
+import { useToast } from '@/components/Toast';
 import { articleKind, articleTitle, formatDateLong, modalityLabel } from '@/lib/format';
 import { backHrefServer, backHrefSnapshot, backLabel, subscribeBack } from '@/lib/backLink';
 import { useFavorites } from '@/lib/useFavorites';
@@ -17,10 +18,40 @@ export function ArticleDetailHeader({ article }: { article: Article }) {
   const n = article.normalized_data;
   const backHref = useSyncExternalStore(subscribeBack, backHrefSnapshot, backHrefServer);
   const back = { href: backHref, label: backLabel(backHref) };
+  const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
+
+  // Compartilhar: menu nativo do sistema quando existe (celular), senão copia o link.
+  const share = async () => {
+    const url = window.location.href;
+    const title = articleTitle(article, 120);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text: `${title} — Diário Oficial da União`, url });
+        return;
+      } catch (e) {
+        if ((e as Error)?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      toast('Link copiado', 'success');
+    } catch {
+      toast('Não foi possível copiar o link', 'error');
+    }
+  };
+
+  // "Baixar PDF": a impressão do navegador permite "Salvar como PDF"; o CSS
+  // de impressão esconde menu, botões e semelhantes.
+  const savePdf = () => window.print();
+
+  const actionStyle = { border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' };
 
   return (
     <>
-      <div className="py-4 px-10" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+      <div className="py-4 px-10 print:hidden" style={{ borderBottom: '1px solid var(--color-divider)' }}>
         <Link href={back.href} className="text-[13px] font-semibold py-1 inline-block" style={{ color: 'var(--color-text)' }}>
           ← {back.label}
         </Link>
@@ -46,17 +77,26 @@ export function ArticleDetailHeader({ article }: { article: Article }) {
             <div className="text-[15px]" style={{ color: 'var(--color-neutral-700)' }}>{orgTrail || article.organ}</div>
           )}
         </div>
-        {loaded && (
-          <button
-            onClick={() => toggle(article.id)}
-            className="text-left text-sm font-bold py-3 px-4 cursor-pointer whitespace-nowrap"
-            style={favorita
-              ? { border: '2px solid var(--color-text)', background: 'var(--color-text)', color: 'var(--color-bg)' }
-              : { border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
-          >
-            {favorita ? '★ Nos favoritos' : '☆ Favoritar'}
+        <div className="flex flex-row lg:flex-col gap-2 flex-wrap print:hidden">
+          {loaded && (
+            <button
+              onClick={() => toggle(article.id)}
+              className="text-left text-sm font-bold py-3 px-4 cursor-pointer whitespace-nowrap"
+              style={favorita
+                ? { border: '2px solid var(--color-text)', background: 'var(--color-text)', color: 'var(--color-bg)' }
+                : actionStyle}
+              aria-pressed={favorita}
+            >
+              {favorita ? '★ Nos favoritos' : '☆ Favoritar'}
+            </button>
+          )}
+          <button onClick={share} className="text-left text-sm font-bold py-3 px-4 cursor-pointer whitespace-nowrap" style={actionStyle}>
+            {copied ? '✓ Link copiado' : 'Compartilhar'}
           </button>
-        )}
+          <button onClick={savePdf} className="text-left text-sm font-bold py-3 px-4 cursor-pointer whitespace-nowrap" style={actionStyle}>
+            Baixar PDF
+          </button>
+        </div>
       </div>
     </>
   );

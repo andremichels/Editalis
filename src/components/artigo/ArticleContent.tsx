@@ -66,7 +66,7 @@ export function ArticleContent({ article }: { article: Article }) {
         </div>
         <button
           onClick={handleCopy}
-          className="text-[13px] font-bold px-3 py-2 cursor-pointer transition-colors"
+          className="text-[13px] font-bold px-3 py-2 cursor-pointer transition-colors print:hidden"
           style={{
             border: '1px solid var(--color-neutral-400)',
             color: copied ? '#155724' : 'var(--color-text)',
