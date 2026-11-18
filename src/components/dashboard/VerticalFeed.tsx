@@ -38,7 +38,7 @@ export async function loadVerticalFeed(): Promise<VerticalFeedData> {
       }
     }
   }
-  return { verticals, selected, articles: merged.slice(0, 5) };
+  return { verticals, selected, articles: merged.slice(0, 10) };
 }
 
 export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
@@ -55,7 +55,25 @@ export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
     );
   }
   const { verticals, selected, articles } = data;
-  if (selected.length === 0) return null;
+  if (selected.length === 0) {
+    return (
+      <div className="px-10 pt-6">
+        <h2 className="text-xl font-black tracking-[-0.02em] mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
+          Do seu setor
+        </h2>
+        <p className="text-[13px] mb-4" style={{ color: 'var(--color-neutral-600)' }}>
+          Escolha os setores que você acompanha para ver aqui as publicações que importam pra você.
+        </p>
+        <Link
+          href="/onboarding"
+          className="inline-block py-2.5 px-4 text-[13px] font-bold"
+          style={{ background: 'var(--color-accent)', color: '#fff' }}
+        >
+          Escolher setores
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="px-10 pt-6">

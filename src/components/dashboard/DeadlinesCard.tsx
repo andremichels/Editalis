@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface Deadline {
   id?: number;
   slug?: string;
@@ -13,22 +15,28 @@ const toneColor = {
   later: 'var(--color-neutral-400)',
 } as const;
 
-export function DeadlinesCard({ items }: { items: Deadline[] }) {
+export function DeadlinesCard({ items }: { items: Deadline[] | null }) {
   return (
     <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
       <div className="text-[11px] font-bold uppercase mb-3.5" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
         Prazos próximos
       </div>
-      {items.length === 0 ? (
+      {items === null ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-12 skeleton" />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
         <p className="text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>
           Nenhum prazo de abertura encontrado nos artigos recentes.
         </p>
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((item, i) => (
-            <a
+            <Link
               key={i}
-              href={item.slug ? `/artigo/${item.slug}` : undefined}
+              href={item.slug ? `/artigo/${item.slug}` : '#'}
               className="block pl-3 cursor-pointer hover:opacity-80 transition-opacity"
               style={{ borderLeft: `4px solid ${toneColor[item.tone]}`, textDecoration: 'none' }}
             >
@@ -43,7 +51,7 @@ export function DeadlinesCard({ items }: { items: Deadline[] }) {
               <div className="text-xs mt-0.5 font-bold" style={{ color: toneColor[item.tone] }}>
                 {item.days}
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}
