@@ -1,25 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { SearchResultItem } from '@/components/busca/SearchResultItem';
-import { useFavorites } from '@/lib/useFavorites';
 import type { Article } from '@/lib/types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 export default function CnpjBuscaPage() {
-  const { toggle, isFavorite } = useFavorites();
-  const [cnpj, setCnpj] = useState('');
+  // Link "outras publicações deste CNPJ" do detalhe chega com ?cnpj=
+  const [cnpjFromUrl] = useState(() =>
+    typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('cnpj') || '',
+  );
+  const [cnpj, setCnpj] = useState(cnpjFromUrl);
   const [results, setResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const raw = cnpj.replace(/\D/g, '');
+  const runSearch = async (value: string) => {
+    const raw = value.replace(/\D/g, '');
     if (raw.length < 8) { setError('CNPJ inválido — mínimo 8 dígitos'); return; }
     setError('');
     setLoading(true);
@@ -37,6 +38,16 @@ export default function CnpjBuscaPage() {
     setLoading(false);
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    runSearch(cnpj);
+  };
+
+  useEffect(() => {
+    if (cnpjFromUrl) queueMicrotask(() => runSearch(cnpjFromUrl));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <AuthGuard>
       <DashboardLayout>
@@ -44,7 +55,7 @@ export default function CnpjBuscaPage() {
           <h1 className="text-[30px] font-black tracking-[-0.03em] mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
             Busca por CNPJ
           </h1>
-          <p className="text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>
+          <p className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
             Encontre todas as publicações do DOU que mencionam um CNPJ específico
           </p>
         </div>
@@ -76,7 +87,7 @@ export default function CnpjBuscaPage() {
           )}
 
           {!searched ? (
-            <p className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>
+            <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
               Digite um CNPJ para buscar publicações relacionadas.
             </p>
           ) : loading ? (
@@ -84,12 +95,12 @@ export default function CnpjBuscaPage() {
               {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-24 skeleton" />)}
             </div>
           ) : results.length === 0 ? (
-            <p className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>
+            <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
               Nenhum resultado encontrado para este CNPJ.
             </p>
           ) : (
             <div>
-              <div className="text-xs mb-4" style={{ color: 'var(--color-neutral-600)' }}>
+              <div className="text-xs mb-4" style={{ color: 'var(--color-neutral-700)' }}>
                 {results.length} resultado{results.length !== 1 ? 's' : ''}
               </div>
               <div style={{ borderTop: '2px solid var(--color-text)' }}>
@@ -97,8 +108,7 @@ export default function CnpjBuscaPage() {
                   <SearchResultItem
                     key={a.id}
                     article={a}
-                    favorita={isFavorite(a.id)}
-                    onToggleFavorita={() => toggle(a.id)}
+                    query={cnpj}
                   />
                 ))}
               </div>

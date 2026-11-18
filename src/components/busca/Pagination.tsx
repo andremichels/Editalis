@@ -32,7 +32,7 @@ export function Pagination({ pages, current, onPage }: { pages: number; current:
       )}
       {items.map((page, i) =>
         page === null ? (
-          <span key={`e${i}`} className="text-[13px] mx-1" style={{ color: 'var(--color-neutral-600)' }}>…</span>
+          <span key={`e${i}`} className="text-[13px] mx-1" style={{ color: 'var(--color-neutral-700)' }}>…</span>
         ) : (
           <button
             key={page}

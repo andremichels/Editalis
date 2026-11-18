@@ -4,63 +4,22 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
+import { DeadlinesCard, type DeadlineItem } from '@/components/dashboard/DeadlinesCard';
 import { ProfilesCard } from '@/components/dashboard/ProfilesCard';
 import { VerticalFeed, loadVerticalFeed, type VerticalFeedData } from '@/components/dashboard/VerticalFeed';
-import { getRecentArticles, authFetch } from '@/lib/api';
+import { getRecentArticles } from '@/lib/api';
+import { articleOrgan, articleTitle, daysUntil } from '@/lib/format';
+import { useAccount } from '@/lib/useAccount';
 import type { Article } from '@/lib/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
-
-interface ProfileItem {
-  name: string;
-  count: string;
-}
-
-interface DeadlineItem {
-  id: number;
-  slug: string;
-  title: string;
-  organ: string;
-  days: string;
-  tone: 'urgent' | 'default' | 'later';
-}
-
 function computeDeadlines(articles: Article[]): DeadlineItem[] {
-  const now = new Date();
-  const deadlines: DeadlineItem[] = [];
-
+  const items: DeadlineItem[] = [];
   for (const a of articles) {
-    const nd = a.normalized_data;
-    if (!nd || typeof nd === 'string') continue;
-    const openingDate = nd.opening_date;
-    if (!openingDate) continue;
-
-    const od = new Date(openingDate);
-    const diffDays = Math.ceil((od.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) continue; // já passou
-    if (diffDays > 30) continue; // muito longe
-
-    let tone: 'urgent' | 'default' | 'later';
-    if (diffDays <= 3) tone = 'urgent';
-    else if (diffDays <= 7) tone = 'default';
-    else tone = 'later';
-
-    deadlines.push({
-      id: a.id,
-      slug: a.slug,
-      title: a.title_marker || a.title,
-      organ: a.organ_level_1 || a.organ || '',
-      days: diffDays === 0 ? 'abertura hoje' : diffDays === 1 ? 'abertura amanhã' : `abertura em ${diffDays} dias`,
-      tone,
-    });
+    const days = daysUntil(a.normalized_data?.opening_date);
+    if (days == null || days < 0 || days > 30) continue;
+    items.push({ slug: a.slug, title: articleTitle(a, 90), organ: articleOrgan(a), days });
   }
-
-  return deadlines.sort((a, b) => {
-    const urgency = { urgent: 0, default: 1, later: 2 };
-    return urgency[a.tone] - urgency[b.tone];
-  }).slice(0, 5);
+  return items.sort((a, b) => a.days - b.days).slice(0, 5);
 }
 
 /**
@@ -70,9 +29,9 @@ function computeDeadlines(articles: Article[]): DeadlineItem[] {
  */
 export default function DashboardPage() {
   const router = useRouter();
+  const { alerts } = useAccount();
   const [feed, setFeed] = useState<VerticalFeedData | null>(null);
   const [deadlines, setDeadlines] = useState<DeadlineItem[] | null>(null);
-  const [profiles, setProfiles] = useState<ProfileItem[] | null>(null);
 
   useEffect(() => {
     loadVerticalFeed()
@@ -82,18 +41,6 @@ export default function DashboardPage() {
     getRecentArticles(50)
       .then((articles) => setDeadlines(computeDeadlines(articles)))
       .catch(() => setDeadlines([]));
-
-    authFetch(`${API_BASE}/api/v1/alerts`)
-      .then((r) => (r.ok ? r.json() : []))
-      .then((alerts: { name: string; match_count: number }[]) =>
-        setProfiles(
-          (Array.isArray(alerts) ? alerts : []).map((a) => ({
-            name: a.name,
-            count: a.match_count > 0 ? `+${a.match_count}` : '0',
-          })),
-        ),
-      )
-      .catch(() => setProfiles([]));
   }, []);
 
   const hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -101,17 +48,17 @@ export default function DashboardPage() {
   return (
     <AuthGuard>
       <DashboardLayout>
-        <div className="py-7 px-10 flex items-center justify-between" style={{ borderBottom: '2px solid var(--color-text)' }}>
+        <div className="py-7 px-10 flex items-center justify-between gap-4" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div>
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>Painel</h1>
-            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-600)' }}>{hoje}</div>
+            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>{hoje}</div>
           </div>
           <button
             onClick={() => router.push('/busca')}
             className="text-left py-3 px-5 text-sm font-bold cursor-pointer"
             style={{ background: 'var(--color-accent)', border: '2px solid var(--color-accent)', color: '#fff' }}
           >
-            Nova busca
+            Buscar
           </button>
         </div>
 
@@ -121,7 +68,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <DeadlinesCard items={deadlines} />
-            <ProfilesCard items={profiles} onManage={() => router.push('/alertas')} />
+            <ProfilesCard alerts={alerts} />
           </div>
         </div>
       </DashboardLayout>

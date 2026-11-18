@@ -1,4 +1,6 @@
 import { formatMoney } from '@/lib/utils';
+import { modalityLabel } from '@/lib/format';
+import type { Article } from '@/lib/types';
 import { MatchesList } from './MatchesList';
 
 export interface AlertProfile {
@@ -15,19 +17,10 @@ export interface AlertProfile {
   created_at: string;
 }
 
-interface MatchArticle {
-  id: number;
-  slug: string;
-  title: string;
-  title_marker?: string;
-  published_date: string;
-  organ_level_1?: string;
-}
-
 interface AlertCardProps {
   alert: AlertProfile;
   expanded: boolean;
-  matches: MatchArticle[];
+  matches: Article[];
   matchesLoading: boolean;
   onToggleMatches: () => void;
   onEdit: () => void;
@@ -35,11 +28,11 @@ interface AlertCardProps {
   onDelete: () => void;
 }
 
-function Tag({ children, variant = 'outline' }: { children: React.ReactNode; variant?: 'outline' | 'neutral' | 'accent' }) {
+function Tag({ children, variant = 'outline' }: { children: React.ReactNode; variant?: 'outline' | 'neutral' | 'strong' }) {
   const styles = {
     outline: { border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-700)' },
     neutral: { background: 'var(--color-neutral-200)', color: 'var(--color-neutral-700)' },
-    accent: { background: 'var(--color-accent)', color: '#fff', fontWeight: 700 },
+    strong: { background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 700 },
   } as const;
   return (
     <span className="text-xs py-0.5 px-2" style={styles[variant]}>
@@ -68,20 +61,25 @@ export function AlertCard({ alert, expanded, matches, matchesLoading, onToggleMa
           <div className="flex flex-wrap gap-1.5">
             {alert.keywords.map((kw) => <Tag key={kw} variant="neutral">{kw}</Tag>)}
             {alert.organs.map((o) => <Tag key={o}>{o}</Tag>)}
-            {alert.ufs.map((uf) => <Tag key={uf} variant="accent">{uf}</Tag>)}
-            {alert.modalities.map((m) => <Tag key={m}>{m}</Tag>)}
+            {alert.ufs.map((uf) => <Tag key={uf} variant="strong">{uf}</Tag>)}
+            {alert.modalities.map((m) => <Tag key={m}>{modalityLabel(m)}</Tag>)}
             {alert.value_min !== null && <Tag>≥ {formatMoney(alert.value_min)}</Tag>}
             {alert.value_max !== null && <Tag>≤ {formatMoney(alert.value_max)}</Tag>}
           </div>
         </div>
-        <div className="flex gap-4 shrink-0">
-          <button onClick={onToggleMatches} className="text-xs font-bold cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>
-            {expanded ? 'Fechar' : `Matches${alert.match_count ? ` (${alert.match_count})` : ''}`}
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <button
+            onClick={onToggleMatches}
+            className="text-[13px] font-bold py-2 px-3 cursor-pointer whitespace-nowrap"
+            style={{ border: '2px solid var(--color-text)', background: expanded ? 'var(--color-text)' : 'transparent', color: expanded ? 'var(--color-bg)' : 'var(--color-text)' }}
+          >
+            {expanded ? 'Ocultar resultados' : `Ver ${alert.match_count || ''} resultado${alert.match_count === 1 ? '' : 's'}`.replace('Ver  ', 'Ver ')}
           </button>
-          <button onClick={onEdit} className="text-xs font-bold cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>
+          <button onClick={onEdit} className="text-[13px] font-bold py-2 px-3 cursor-pointer" style={{ color: 'var(--color-text)' }}>
             Editar
           </button>
-          <button onClick={onDelete} className="text-xs font-bold cursor-pointer" style={{ color: 'var(--color-accent)' }}>
+          <span className="w-px h-6 mx-1" style={{ background: 'var(--color-divider)' }} aria-hidden />
+          <button onClick={onDelete} className="text-[13px] font-semibold py-2 px-3 cursor-pointer underline" style={{ color: 'var(--color-neutral-700)' }}>
             Remover
           </button>
         </div>

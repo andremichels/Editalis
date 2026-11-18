@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -9,15 +9,42 @@ import { SearchFilters } from "@/components/busca/SearchFilters";
 import { SearchResultsHeader } from "@/components/busca/SearchResultsHeader";
 import { SearchResultItem } from "@/components/busca/SearchResultItem";
 import { Pagination } from "@/components/busca/Pagination";
-import { useFavorites } from "@/lib/useFavorites";
-import { useToast } from "@/components/Toast";
 import { track } from "@/lib/analytics";
 import { getPreferences, getVerticals } from "@/lib/api";
 import type { SearchPreferences } from "@/lib/api";
 import type { Article, Vertical } from "@/lib/types";
+import { articleKind, articleTitle, modalityLabel } from "@/lib/format";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const PAGE_SIZE = 10;
+const LAST_SEARCH_KEY = "editalis_last_search";
+
+/** Última busca da sessão — restaurada ao voltar de uma publicação. */
+interface SavedSearch {
+  q: string;
+  page: number;
+  organs: string[];
+  modalities: string[];
+  ufs: string[];
+  verticals: string[];
+  valueMin: string;
+  valueMax: string;
+  dateFrom: string;
+  dateTo: string;
+  sortBy: "relevance" | "date";
+  booleanMode: boolean;
+  semanticMode: boolean;
+  sectorOnly: boolean;
+}
+
+function readSavedSearch(): SavedSearch | null {
+  try {
+    const raw = sessionStorage.getItem(LAST_SEARCH_KEY);
+    return raw ? (JSON.parse(raw) as SavedSearch) : null;
+  } catch {
+    return null;
+  }
+}
 
 function downloadSearchCsv(articles: Article[]) {
   if (!articles.length) return;
@@ -26,10 +53,10 @@ function downloadSearchCsv(articles: Article[]) {
   const rows = articles.map((a) => {
     const nd = a.normalized_data;
     return [
-      a.title_marker || a.title || "",
+      articleTitle(a, 300),
       a.organ_level_1 || a.organ || "",
-      (nd?.modality || "").replace(/_/g, " "),
-      (nd?.doc_type || "").replace(/_/g, " "),
+      modalityLabel(nd?.modality),
+      articleKind(a),
       nd?.value != null ? nd.value : "",
       (nd?.ufs || []).join(";"),
       nd?.process_number || "",
@@ -51,8 +78,9 @@ function downloadSearchCsv(articles: Article[]) {
 }
 
 export default function BuscaPage() {
-  const { toggle, isFavorite } = useFavorites();
-  const { toast } = useToast();
+  // Última busca da sessão (ao voltar de uma publicação): inicializa os filtros
+  // direto no estado; a tela fica atrás do esqueleto do AuthGuard no 1º render.
+  const [saved] = useState<SavedSearch | null>(() => (typeof window === "undefined" ? null : readSavedSearch()));
   const router = useRouter();
 
   const [query, setQuery] = useState("");
@@ -62,25 +90,33 @@ export default function BuscaPage() {
   const [elapsed, setElapsed] = useState("");
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [booleanMode, setBooleanMode] = useState(true);
-  const [semanticMode, setSemanticMode] = useState(false);
+  const [booleanMode, setBooleanMode] = useState(saved?.booleanMode ?? true);
+  const [semanticMode, setSemanticMode] = useState(saved?.semanticMode ?? false);
   const [smartMode, setSmartMode] = useState(false);
   const [smartFilters, setSmartFilters] = useState<Record<string, any> | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Filters
-  const [organs, setOrgans] = useState<string[]>([]);
-  const [modalities, setModalities] = useState<string[]>([]);
-  const [ufs, setUfs] = useState<string[]>([]);
-  const [verticals, setVerticals] = useState<string[]>([]);
-  const [availableVerticals, setAvailableVerticals] = useState<Vertical[]>([]);
-  const [valueMin, setValueMin] = useState("");
-  const [valueMax, setValueMax] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [sortBy, setSortBy] = useState<'relevance' | 'date'>('relevance');
-  const [sectorOnly, setSectorOnly] = useState(true);
+  const [organs, setOrgans] = useState<string[]>(saved?.organs ?? []);
+  const [modalities, setModalities] = useState<string[]>(saved?.modalities ?? []);
+  const [ufs, setUfs] = useState<string[]>(saved?.ufs ?? []);
+  const [verticals, setVerticals] = useState<string[]>(saved?.verticals ?? []);
+  const [availableVerticals, setAvailableVerticals] = useState<Vertical[] | null>(null);
+  const [valueMin, setValueMin] = useState(saved?.valueMin ?? "");
+  const [valueMax, setValueMax] = useState(saved?.valueMax ?? "");
+  const [dateFrom, setDateFrom] = useState(saved?.dateFrom ?? "");
+  const [dateTo, setDateTo] = useState(saved?.dateTo ?? "");
+  const [sortBy, setSortBy] = useState<'relevance' | 'date'>(saved?.sortBy ?? 'relevance');
+  const [sectorOnly, setSectorOnly] = useState(saved?.sectorOnly ?? true);
   const [profilePrefs, setProfilePrefs] = useState<SearchPreferences | null>(null);
+  // Total sem o escopo do setor, quando a busca com escopo deu zero
+  const [unscopedTotal, setUnscopedTotal] = useState<number | null>(null);
+  // Restauração da última busca (sessionStorage) ao voltar para esta tela
+  const restoredRef = useRef(saved !== null);
+  const pendingRestore = useRef<SavedSearch | null>(saved);
+  const initialQuery = saved?.q ?? "";
+
+
 
   // Aplica as preferências do perfil como filtros default (P1: busca respeita o perfil)
   useEffect(() => {
@@ -88,6 +124,7 @@ export default function BuscaPage() {
       .then(([prefs, verts]) => {
         setAvailableVerticals(verts);
         setProfilePrefs(prefs);
+        if (restoredRef.current) return; // a busca restaurada já trouxe seus filtros
         const hasScope = (prefs.verticals?.length || 0) > 0
           || (prefs.ufs_padrao?.length || 0) > 0
           || prefs.valor_minimo_interesse != null;
@@ -102,7 +139,7 @@ export default function BuscaPage() {
       })
       .catch(() => {
         // fallback: ao menos carrega as verticais pra renderizar os chips
-        getVerticals().then(setAvailableVerticals).catch(() => {});
+        getVerticals().then(setAvailableVerticals).catch(() => setAvailableVerticals([]));
       });
   }, []);
 
@@ -115,6 +152,7 @@ export default function BuscaPage() {
       if (!q || q.trim().length < 3) return;
       setLoading(true);
       setSearched(true);
+      setUnscopedTotal(null);
       setQuery(q);
       setPage(p);
       const t0 = performance.now();
@@ -159,6 +197,23 @@ export default function BuscaPage() {
 
         setResults(filtered);
         setTotal(apiTotal);
+        try {
+          const saved: SavedSearch = {
+            q, page: p, organs, modalities, ufs: u, verticals: v, valueMin: vmin, valueMax: vmax,
+            dateFrom, dateTo, sortBy: sort, booleanMode, semanticMode, sectorOnly,
+          };
+          sessionStorage.setItem(LAST_SEARCH_KEY, JSON.stringify(saved));
+        } catch {}
+
+        // "Somente meu setor" pode esconder tudo: conta quantos haveria sem ele,
+        // para oferecer "ver todos" em vez de um zero seco.
+        if (apiTotal === 0 && (v.length || u.length || vmin)) {
+          const unscopedUrl = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=1&offset=0${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}${valueMaxParam}`;
+          fetch(unscopedUrl)
+            .then((r) => r.json())
+            .then((b) => setUnscopedTotal(b.count || 0))
+            .catch(() => {});
+        }
         track('search_performed', {
           query_length: q.trim().length,
           mode: semanticMode ? 'semantic' : booleanMode ? 'boolean' : 'keyword',
@@ -172,8 +227,15 @@ export default function BuscaPage() {
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
       setLoading(false);
     },
-    [organs, modalities, verticals, ufs, valueMin, valueMax, sortBy, booleanMode, semanticMode]
+    [organs, modalities, verticals, ufs, valueMin, valueMax, sortBy, booleanMode, semanticMode, dateFrom, dateTo, sectorOnly]
   );
+
+  useEffect(() => {
+    const restore = pendingRestore.current;
+    if (!restore) return;
+    pendingRestore.current = null;
+    doSearch(restore.q, restore.page);
+  }, [doSearch]);
 
   const handleSmartSearch = async (q: string) => {
     if (!q || q.trim().length < 5) return;
@@ -260,7 +322,7 @@ export default function BuscaPage() {
     + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
 
   const verticalNames = verticals
-    .map((slug) => availableVerticals.find((v) => v.slug === slug)?.name)
+    .map((slug) => availableVerticals?.find((v) => v.slug === slug)?.name)
     .filter(Boolean)
     .join(', ');
   const profileScoped = verticals.length > 0 || ufs.length > 0 || !!valueMin;
@@ -291,6 +353,7 @@ export default function BuscaPage() {
           onToggleSmart={setSmartMode}
           sectorOnly={sectorOnly}
           onSectorOnly={handleSectorOnly}
+          initialQuery={initialQuery}
         />
         {/* Mobile filters trigger */}
         <div className="lg:hidden px-10 py-3 flex items-center" style={{ borderBottom: '1px solid var(--color-divider)' }}>
@@ -344,8 +407,8 @@ export default function BuscaPage() {
             </span>
             <button
               onClick={() => handleSectorOnly(false)}
-              className="text-[12px] font-bold underline cursor-pointer border-0 bg-transparent shrink-0"
-              style={{ color: 'var(--color-accent)' }}
+              className="text-[13px] font-bold underline cursor-pointer border-0 bg-transparent shrink-0 py-1"
+              style={{ color: 'var(--color-text)' }}
             >
               mostrar tudo
             </button>
@@ -371,10 +434,10 @@ export default function BuscaPage() {
           <div className="min-w-0">
             {!searched ? (
               <div className="py-24 text-center">
-                <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
+                <p className="text-sm" style={{ color: "var(--color-neutral-700)" }}>
                   Use o campo de busca para pesquisar atos oficiais. Ative 🧠 para busca em linguagem natural.
                 </p>
-                <p className="text-xs mt-2" style={{ color: "var(--color-neutral-400)" }}>
+                <p className="text-xs mt-2" style={{ color: "var(--color-neutral-700)" }}>
                   Operadores booleanos ativos: AND, OR, NOT (-), "frase exata"
                 </p>
               </div>
@@ -385,30 +448,47 @@ export default function BuscaPage() {
                 ))}
               </div>
             ) : results.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="text-sm font-bold mb-1">Nenhum resultado encontrado.</p>
-                <p className="text-xs" style={{ color: "var(--color-neutral-500)" }}>
-                  Tente outros termos ou remova filtros.
-                </p>
+              <div className="py-16 px-10 max-w-xl">
+                {unscopedTotal ? (
+                  <>
+                    <p className="text-[15px] font-bold mb-1">Nenhum resultado no seu setor.</p>
+                    <p className="text-[14px] mb-4" style={{ color: "var(--color-neutral-700)" }}>
+                      Mas há {unscopedTotal.toLocaleString("pt-BR")} resultado{unscopedTotal === 1 ? "" : "s"} para “{query}” em todos os setores.
+                    </p>
+                    <button
+                      onClick={() => handleSectorOnly(false)}
+                      className="py-2.5 px-4 text-[13px] font-bold cursor-pointer"
+                      style={{ background: "var(--color-accent)", color: "#fff", border: "none" }}
+                    >
+                      Ver todos os {unscopedTotal.toLocaleString("pt-BR")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[15px] font-bold mb-1">Nenhum resultado encontrado.</p>
+                    <p className="text-[14px]" style={{ color: "var(--color-neutral-700)" }}>
+                      Tente outros termos ou remova filtros.
+                    </p>
+                  </>
+                )}
               </div>
             ) : (
               <>
                 {smartFilters && (
                 <div className="px-10 py-3 text-sm" style={{ background: "var(--color-neutral-100)", borderBottom: "1px solid var(--color-divider)" }}>
-                  <span style={{ color: "var(--color-neutral-600)" }}>Entendi: </span>
+                  <span style={{ color: "var(--color-neutral-700)" }}>Entendi: </span>
                   {smartFilters.modalities?.length > 0 && <span className="font-bold">{smartFilters.modalities.join(", ")} </span>}
                   {smartFilters.ufs?.length > 0 && <span className="font-bold">em {smartFilters.ufs.join(", ")} </span>}
                   {smartFilters.value_min && <span className="font-bold">acima de R$ {smartFilters.value_min.toLocaleString("pt-BR")} </span>}
-                  {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-500)" }}>— {smartFilters.keywords.join(" ")}</span>}
+                  {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-700)" }}>— {smartFilters.keywords.join(" ")}</span>}
                 </div>
               )}
-              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} onExportCsv={handleExportCsv} />
+              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} onExportCsv={handleExportCsv} onSaveAlert={handleSaveAsAlert} />
                 {results.map((a) => (
                   <SearchResultItem
                     key={a.id}
                     article={a}
-                    favorita={isFavorite(a.id)}
-                    onToggleFavorita={() => toggle(a.id)}
+                    query={query}
                   />
                 ))}
                 <Pagination
@@ -417,19 +497,6 @@ export default function BuscaPage() {
                   onPage={(p) => doSearch(query, p)}
                 />
 
-                {/* Save as alert */}
-                <div className="px-10 py-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
-                  <button
-                    onClick={handleSaveAsAlert}
-                    className="text-sm font-bold underline cursor-pointer"
-                    style={{ color: 'var(--color-accent)' }}
-                  >
-                    Salvar busca como alerta →
-                  </button>
-                  <span className="text-xs ml-2" style={{ color: 'var(--color-neutral-500)' }}>
-                    Receba novos resultados por e-mail
-                  </span>
-                </div>
               </>
             )}
           </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { getPreferences, getVerticalArticles, getVerticals } from '@/lib/api';
 import type { Article, Vertical } from '@/lib/types';
-import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { ArticleRow, ArticleRowSkeleton } from '@/components/articles/ArticleRow';
 
 export interface VerticalFeedData {
   verticals: Vertical[];
@@ -41,15 +41,31 @@ export async function loadVerticalFeed(): Promise<VerticalFeedData> {
   return { verticals, selected, articles: merged.slice(0, 10) };
 }
 
+function FeedHeader({ names }: { names?: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 mb-3 flex-wrap">
+      <h2 className="text-xl font-black tracking-[-0.02em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
+        Do seu setor
+      </h2>
+      {names !== undefined && (
+        <div className="flex items-baseline gap-3">
+          <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>{names}</span>
+          <Link href="/onboarding" className="text-[13px] font-bold underline" style={{ color: 'var(--color-text)' }}>
+            Editar setores
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
   if (!data) {
     return (
       <div className="px-10 pt-6">
-        <div className="h-7 w-40 skeleton mb-3" />
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-16 skeleton" />
-          ))}
+        <FeedHeader />
+        <div style={{ borderTop: '2px solid var(--color-text)' }}>
+          <ArticleRowSkeleton count={5} />
         </div>
       </div>
     );
@@ -58,10 +74,8 @@ export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
   if (selected.length === 0) {
     return (
       <div className="px-10 pt-6">
-        <h2 className="text-xl font-black tracking-[-0.02em] mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
-          Do seu setor
-        </h2>
-        <p className="text-[13px] mb-4" style={{ color: 'var(--color-neutral-600)' }}>
+        <FeedHeader />
+        <p className="text-[14px] mb-4" style={{ color: 'var(--color-neutral-700)' }}>
           Escolha os setores que você acompanha para ver aqui as publicações que importam pra você.
         </p>
         <Link
@@ -77,45 +91,15 @@ export function VerticalFeed({ data }: { data: VerticalFeedData | null }) {
 
   return (
     <div className="px-10 pt-6">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="text-xl font-black tracking-[-0.02em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
-          Do seu setor
-        </h2>
-        <div className="flex items-baseline gap-3">
-          <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>
-            {verticals.filter((v) => selected.includes(v.slug)).map((v) => v.name).join(' · ')}
-          </span>
-          <Link href="/onboarding" className="text-[12px] font-bold" style={{ color: 'var(--color-accent)' }}>
-            Editar setores
-          </Link>
-        </div>
-      </div>
+      <FeedHeader names={verticals.filter((v) => selected.includes(v.slug)).map((v) => v.name).join(' · ')} />
       <div style={{ borderTop: '2px solid var(--color-text)' }}>
         {articles.length === 0 && (
-          <div className="py-6 text-center text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>
-            Nada recente nos seus setores ainda.
-          </div>
+          <p className="py-6 text-[14px]" style={{ color: 'var(--color-neutral-700)' }}>
+            Nenhuma publicação recente nos seus setores.
+          </p>
         )}
         {articles.map((article) => (
-          <Link
-            key={article.id}
-            href={`/artigo/${article.slug}`}
-            className="block py-4 cursor-pointer hover:opacity-80 transition-opacity relative"
-            style={{ borderBottom: '1px solid var(--color-divider)', textDecoration: 'none' }}
-          >
-            <div className="absolute top-4 right-0">
-              <FavoriteButton articleId={article.id} />
-            </div>
-            <div className="text-[11px] font-bold mb-1" style={{ color: 'var(--color-accent)' }}>
-              {article.organ_level_1 || article.organ || 'DOU'}
-            </div>
-            <h3 className="text-[15px] font-bold leading-snug mb-1" style={{ color: 'var(--color-text)' }}>
-              {article.title_marker || article.title}
-            </h3>
-            <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>
-              {new Date(article.published_date).toLocaleDateString('pt-BR')}
-            </div>
-          </Link>
+          <ArticleRow key={article.id} article={article} />
         ))}
       </div>
     </div>

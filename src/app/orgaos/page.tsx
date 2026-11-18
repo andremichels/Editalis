@@ -37,7 +37,7 @@ export default function OrgaosPage() {
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
               Órgãos
             </h1>
-            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-600)' }}>
+            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>
               {organs.length} órgãos indexados
             </div>
           </div>
@@ -59,7 +59,7 @@ export default function OrgaosPage() {
               {Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-10 skeleton" />)}
             </div>
           ) : organs.length === 0 ? (
-            <p className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>Nenhum órgão encontrado.</p>
+            <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>Nenhum órgão encontrado.</p>
           ) : (
             <div style={{ borderTop: '2px solid var(--color-text)' }}>
               {organs.map((org) => (
@@ -70,7 +70,7 @@ export default function OrgaosPage() {
                   onClick={() => router.push(`/busca?organ=${encodeURIComponent(org.name)}`)}
                 >
                   <span className="text-[15px] font-bold">{org.name}</span>
-                  <span className="text-[13px] font-bold" style={{ color: 'var(--color-accent)' }}>
+                  <span className="text-[13px] font-bold" style={{ color: 'var(--color-text)' }}>
                     {org.count.toLocaleString('pt-BR')}
                   </span>
                 </div>

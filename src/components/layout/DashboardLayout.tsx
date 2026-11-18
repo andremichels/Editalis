@@ -1,10 +1,18 @@
 'use client';
 
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { rememberListPage } from '@/lib/backLink';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { OnboardingModal } from '@/components/onboarding/OnboardingModal';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  useEffect(() => {
+    if (pathname) rememberListPage(pathname);
+  }, [pathname]);
+
   return (
     <div className="min-h-screen">
       <OnboardingModal />

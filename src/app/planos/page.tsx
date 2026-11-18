@@ -24,7 +24,7 @@ const plans: Record<string, PlanCard> = {
     monthly: 49,
     annual: 39,
     features: [
-      '3 perfis de busca monitorados',
+      '3 alertas',
       'Histórico de 30 dias',
       'Alerta por e-mail diário',
       'Exportação CSV',
@@ -38,7 +38,7 @@ const plans: Record<string, PlanCard> = {
     monthly: 199,
     annual: 159,
     features: [
-      '25 perfis de busca monitorados',
+      '25 alertas',
       'Histórico completo desde 2018',
       'E-mail, WhatsApp e app',
       'Exportação CSV e Excel',
@@ -53,7 +53,7 @@ const plans: Record<string, PlanCard> = {
     annual: null,
     priceLabel: 'Sob consulta',
     features: [
-      'Perfis ilimitados',
+      'Alertas ilimitados',
       'API e webhooks',
       'SSO e gestão de equipes',
       'Gerente de conta dedicado',

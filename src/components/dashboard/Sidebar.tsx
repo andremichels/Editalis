@@ -1,40 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/auth';
-import { authFetch } from '@/lib/api';
-import { useFavorites } from '@/lib/useFavorites';
+import { newMatchesCount, useAccount } from '@/lib/useAccount';
 import { resetUser } from '@/lib/analytics';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 interface NavItem {
   label: string;
-  href?: string;
-  count?: number;
+  href: string;
+  /** texto pequeno à direita (ex.: "+12" resultados nos alertas) */
+  badge?: string;
+  /** rótulo secundário, abaixo do item */
+  hint?: string;
 }
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [alertCount, setAlertCount] = useState(0);
-  const { favorites } = useFavorites();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      const user = data.session?.user;
-      setName(user?.user_metadata?.nome || user?.email?.split('@')[0] || '');
-      if (user) {
-        authFetch(`${API_BASE}/api/v1/alerts`)
-          .then(r => r.json())
-          .then((alerts: any[]) => setAlertCount(alerts.length))
-          .catch(() => {});
-      }
-    });
-  }, []);
+  const { name, planLabel, alerts, lastViewed } = useAccount();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -42,63 +26,77 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     router.push('/login');
   };
 
-  const favCount = favorites.size;
+  const matches = newMatchesCount(alerts);
 
   const navItems: NavItem[] = [
     { label: 'Painel', href: '/dashboard' },
     { label: 'Busca', href: '/busca' },
-    { label: 'Favoritas', href: '/favoritos', count: favCount },
-    { label: 'Alertas', href: '/alertas', count: alertCount },
+    { label: 'Favoritos', href: '/favoritos' },
+    { label: 'Alertas', href: '/alertas', badge: matches > 0 ? `+${matches}` : undefined },
     { label: 'Setores', href: '/onboarding' },
-    { label: 'Última consultada' },
     { label: 'Minha conta', href: '/perfil' },
   ];
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-400)' }}>
+    <div className="flex flex-col h-full overflow-y-auto py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-300)' }}>
       <div className="px-5 pb-6 mb-5" style={{ borderBottom: '1px solid var(--color-neutral-800)' }}>
         <div className="text-[19px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: '#fff' }}>
           EDITALIS
         </div>
-        <div className="text-[11px] uppercase mt-1" style={{ letterSpacing: '0.12em' }}>{name}</div>
       </div>
 
       <nav className="flex flex-col">
         {navItems.map((item) => {
-          const active = item.href !== undefined && pathname === item.href;
-          const content = (
-            <>
-              <span>{item.label}</span>
-              {item.count !== undefined && (
-                <span className="text-[11px] font-bold opacity-80">{item.count}</span>
-              )}
-            </>
-          );
-          const className = 'flex items-center justify-between px-5 py-3 text-sm font-semibold';
-          const style = { background: active ? 'var(--color-accent)' : 'transparent', color: active ? '#fff' : 'var(--color-neutral-400)' };
-
-          if (!item.href) {
-            return (
-              <div key={item.label} className={className} style={{ ...style, opacity: 0.6, cursor: 'default' }}>
-                {content}
-              </div>
-            );
-          }
-
+          const active = pathname === item.href;
           return (
-            <Link key={item.href} href={item.href} className={className} style={style} onClick={onNavigate}>
-              {content}
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              aria-current={active ? 'page' : undefined}
+              className="flex items-center justify-between px-5 py-3 text-sm font-semibold"
+              style={{
+                background: active ? 'var(--color-neutral-800)' : 'transparent',
+                color: active ? '#fff' : 'var(--color-neutral-300)',
+                boxShadow: active ? 'inset 4px 0 0 #fff' : 'none',
+              }}
+            >
+              <span>{item.label}</span>
+              {item.badge && (
+                <span className="text-[11px] font-bold" title="Resultados nos seus alertas ativos">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           );
         })}
+
+        {lastViewed && (
+          <Link
+            href={`/artigo/${lastViewed.slug}`}
+            onClick={onNavigate}
+            className="block px-5 py-3 mt-3"
+            style={{ borderTop: '1px solid var(--color-neutral-800)' }}
+            title={lastViewed.title}
+          >
+            <span className="block text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-400)' }}>
+              Última consultada
+            </span>
+            <span className="block text-[13px] font-semibold mt-1 line-clamp-2" style={{ color: 'var(--color-neutral-200)' }}>
+              {lastViewed.title}
+            </span>
+          </Link>
+        )}
       </nav>
 
-      <div className="mt-auto px-5 pt-5" style={{ borderTop: '1px solid var(--color-neutral-800)' }}>
+      <div className="mt-auto px-5 pt-5 pb-10" style={{ borderTop: '1px solid var(--color-neutral-800)' }}>
         <Link href="/perfil" className="block">
-        <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>Plano Profissional</div>
-        <div className="text-[13px] font-bold mt-0.5" style={{ color: '#fff' }}>{name || ' '}</div>
+          <div className="text-[13px] font-bold" style={{ color: '#fff' }}>{name || ' '}</div>
+          {planLabel && (
+            <div className="text-xs mt-0.5" style={{ color: 'var(--color-neutral-400)' }}>Plano {planLabel}</div>
+          )}
         </Link>
-        <button onClick={handleSignOut} className="text-xs mt-2 cursor-pointer" style={{ color: 'var(--color-neutral-500)' }}>
+        <button onClick={handleSignOut} className="text-[13px] mt-3 py-1 cursor-pointer underline" style={{ color: 'var(--color-neutral-300)' }}>
           Sair
         </button>
       </div>

@@ -36,7 +36,7 @@ export function LoginForm() {
 
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 cursor-pointer" style={{ color: 'var(--color-text)' }}>
-            <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="w-4 h-4" style={{ accentColor: 'var(--color-accent)' }} />
+            <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="w-4 h-4" style={{ accentColor: 'var(--color-text)' }} />
             Manter conectado
           </label>
           <a href="#recuperar" className="hover:underline" style={{ color: 'var(--color-accent-700)' }}>Esqueci a senha</a>

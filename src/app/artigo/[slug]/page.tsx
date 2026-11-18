@@ -8,6 +8,7 @@ import { ArticleLinks } from '@/components/artigo/ArticleLinks';
 import { SimilarArticles } from '@/components/artigo/SimilarArticles';
 import { ArticleViewTracker } from '@/components/artigo/ArticleViewTracker';
 import { getArticle } from '@/lib/api';
+import { articleTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
 
 export default async function ArticlePage({
@@ -27,7 +28,7 @@ export default async function ArticlePage({
   return (
     <AuthGuard>
       <DashboardLayout>
-        <ArticleViewTracker slug={slug} docType={article.normalized_data?.doc_type} />
+        <ArticleViewTracker slug={slug} title={articleTitle(article, 90)} docType={article.normalized_data?.doc_type} />
         <ArticleDetailHeader article={article} />
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
           <div className="min-w-0">

@@ -26,7 +26,7 @@ export function AlertForm({ form, onChange, isEditing, editingName, onSubmit, on
   return (
     <div
       className="mb-8 p-6"
-      style={{ border: `2px solid ${isEditing ? 'var(--color-accent)' : 'var(--color-text)'}`, background: 'var(--color-neutral-100)' }}
+      style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}
     >
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-black" style={{ fontFamily: 'var(--font-heading)' }}>

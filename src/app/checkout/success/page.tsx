@@ -51,7 +51,7 @@ function SuccessContent() {
         <p className="text-base mb-1" style={{ color: 'var(--color-neutral-700)' }}>
           Seu plano <b style={{ color: 'var(--color-text)' }}>{planLabel}</b> está ativo.
         </p>
-        <p className="text-sm mb-8" style={{ color: 'var(--color-neutral-500)' }}>
+        <p className="text-sm mb-8" style={{ color: 'var(--color-neutral-700)' }}>
           Você tem 7 dias de teste grátis. A cobrança só começa depois.
         </p>
 
@@ -63,7 +63,7 @@ function SuccessContent() {
           Ir para o painel <ArrowRight className="w-4 h-4" />
         </button>
 
-        <p className="text-xs mt-4" style={{ color: 'var(--color-neutral-400)' }}>
+        <p className="text-xs mt-4" style={{ color: 'var(--color-neutral-700)' }}>
           Redirecionando em {countdown}s...
         </p>
       </div>

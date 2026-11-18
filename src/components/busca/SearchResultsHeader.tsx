@@ -4,14 +4,15 @@ interface SearchResultsHeaderProps {
   sortBy: 'relevance' | 'date';
   onSortChange: (s: 'relevance' | 'date') => void;
   onExportCsv: () => void;
+  onSaveAlert: () => void;
 }
 
-export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange, onExportCsv }: SearchResultsHeaderProps) {
+export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange, onExportCsv, onSaveAlert }: SearchResultsHeaderProps) {
   return (
-    <div className="py-[18px] px-10 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+    <div className="py-[18px] px-10 flex items-center justify-between gap-3 flex-wrap" style={{ borderBottom: '1px solid var(--color-divider)' }}>
       <div className="text-sm">
         <strong className="font-black">{total}</strong> resultados ·{' '}
-        <span style={{ color: 'var(--color-neutral-600)' }}>{elapsed}</span>
+        <span style={{ color: 'var(--color-neutral-700)' }}>{elapsed}</span>
       </div>
       <div className="flex items-center gap-3">
         <select
@@ -23,6 +24,14 @@ export function SearchResultsHeader({ total, elapsed, sortBy, onSortChange, onEx
           <option value="relevance">Mais relevantes</option>
           <option value="date">Mais recentes</option>
         </select>
+        <button
+          onClick={onSaveAlert}
+          className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"
+          style={{ background: 'var(--color-text)', border: '2px solid var(--color-text)', color: 'var(--color-bg)' }}
+          title="Receba por e-mail as novas publicações desta busca"
+        >
+          Salvar como alerta
+        </button>
         <button
           onClick={onExportCsv}
           className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"

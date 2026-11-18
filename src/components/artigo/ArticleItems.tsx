@@ -65,7 +65,7 @@ export function ArticleItems({ article }: { article: Article }) {
   return (
     <div className="py-8 px-10" style={{ borderTop: '2px solid var(--color-divider)' }}>
       <div className="flex items-center justify-between mb-4">
-        <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
+        <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
           Itens / Lotes ({items.length})
         </div>
         <button
@@ -85,14 +85,14 @@ export function ArticleItems({ article }: { article: Article }) {
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--color-text)' }}>
-              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-600)' }}>#</th>
-              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-600)' }}>Descrição</th>
+              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>#</th>
+              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>Descrição</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, i) => (
               <tr key={i} style={{ borderBottom: i < items.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
-                <td className="py-2.5 pr-4 font-bold text-xs" style={{ color: 'var(--color-accent)', whiteSpace: 'nowrap' }}>{item.number}</td>
+                <td className="py-2.5 pr-4 font-bold text-xs" style={{ color: 'var(--color-text)', whiteSpace: 'nowrap' }}>{item.number}</td>
                 <td className="py-2.5 text-[13px] leading-[1.5]" style={{ color: 'var(--color-neutral-800)' }}>{item.description}</td>
               </tr>
             ))}

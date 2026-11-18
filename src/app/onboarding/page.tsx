@@ -101,9 +101,9 @@ export default function OnboardingPage() {
   const last = step === STEPS.length - 1;
 
   const chipStyle = (active: boolean) => ({
-    background: active ? 'var(--color-accent)' : 'transparent',
+    background: active ? 'var(--color-text)' : 'transparent',
     color: active ? '#fff' : 'var(--color-text)',
-    border: `2px solid ${active ? 'var(--color-accent)' : 'var(--color-divider)'}`,
+    border: `2px solid ${active ? 'var(--color-text)' : 'var(--color-neutral-400)'}`,
   });
 
   return (
@@ -113,15 +113,15 @@ export default function OnboardingPage() {
           {/* progresso */}
           <div className="mb-8">
             <div className="flex items-baseline justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--color-neutral-500)' }}>
+              <span className="text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--color-neutral-700)' }}>
                 Passo {step + 1} de {STEPS.length}
               </span>
-              <span className="text-[11px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>
+              <span className="text-[11px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>
                 {Math.round(((step + 1) / STEPS.length) * 100)}%
               </span>
             </div>
             <div className="h-1 w-full" style={{ background: 'var(--color-divider)' }}>
-              <div className="h-1" style={{ width: `${((step + 1) / STEPS.length) * 100}%`, background: 'var(--color-accent)', transition: 'width 0.25s ease' }} />
+              <div className="h-1" style={{ width: `${((step + 1) / STEPS.length) * 100}%`, background: 'var(--color-text)', transition: 'width 0.25s ease' }} />
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default function OnboardingPage() {
             <h1 className="text-[30px] sm:text-[34px] font-black tracking-[-0.03em] leading-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
               {STEPS[step].title}
             </h1>
-            <p className="text-[15px] mt-2 max-w-xl" style={{ color: 'var(--color-neutral-600)' }}>
+            <p className="text-[15px] mt-2 max-w-xl" style={{ color: 'var(--color-neutral-700)' }}>
               {STEPS[step].desc}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function OnboardingPage() {
           {/* PASSO 1 — setores */}
           {step === 0 && (
             <div className="flex flex-wrap gap-2.5 min-h-[60px]">
-              {!loaded && <div className="text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>Carregando setores...</div>}
+              {!loaded && <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>Carregando setores...</div>}
               {verticals.map((v) => {
                 const active = selected.includes(v.slug);
                 return (
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="max-w-[420px]">
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>R$</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>R$</span>
                 <input
                   type="number"
                   min={0}
@@ -208,7 +208,7 @@ export default function OnboardingPage() {
                     checked={toggles[t.key]}
                     onChange={(e) => setToggles((prev) => ({ ...prev, [t.key]: e.target.checked }))}
                     className="w-[18px] h-[18px] shrink-0"
-                    style={{ accentColor: 'var(--color-accent)' }}
+                    style={{ accentColor: 'var(--color-text)' }}
                   />
                 </label>
               ))}
@@ -267,7 +267,7 @@ export default function OnboardingPage() {
               onClick={save}
               disabled={saving}
               className="text-xs font-medium cursor-pointer hover:opacity-70"
-              style={{ color: 'var(--color-neutral-400)', opacity: 0.65, textDecoration: 'none' }}
+              style={{ color: 'var(--color-neutral-700)', opacity: 0.65, textDecoration: 'none' }}
             >
               pular por enquanto
             </button>

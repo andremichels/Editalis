@@ -25,7 +25,7 @@ const TIPS: { icon: string; title: string; description: string }[] = [
   {
     icon: '★',
     title: 'Favoritos',
-    description: 'Marque licitações pra acompanhar de perto — ficam reunidas em Favoritas, sincronizadas entre seus dispositivos.',
+    description: 'Marque publicações para acompanhar de perto — ficam reunidas em Favoritos, sincronizadas entre seus dispositivos.',
   },
 ];
 
@@ -60,7 +60,7 @@ export function OnboardingModal() {
         style={{ background: 'var(--color-bg)', border: '2px solid var(--color-text)' }}
       >
         <div className="p-8" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          <div className="text-[11px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-accent)' }}>
+          <div className="text-[11px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
             Bem-vindo(a)
           </div>
           <h2 className="text-[28px] font-black tracking-[-0.03em] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -94,7 +94,7 @@ export function OnboardingModal() {
           <button
             onClick={() => dismiss('skipped')}
             className="text-[13px] font-bold cursor-pointer"
-            style={{ color: 'var(--color-neutral-600)' }}
+            style={{ color: 'var(--color-neutral-700)' }}
           >
             Pular
           </button>
