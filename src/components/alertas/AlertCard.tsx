@@ -35,7 +35,7 @@ function Tag({ children, variant = 'outline' }: { children: React.ReactNode; var
     strong: { background: 'var(--color-text)', color: 'var(--color-bg)', fontWeight: 700 },
   } as const;
   return (
-    <span className="text-xs py-0.5 px-2" style={styles[variant]}>
+    <span className="text-[12px] py-0.5 px-2" style={styles[variant]}>
       {children}
     </span>
   );
@@ -43,19 +43,30 @@ function Tag({ children, variant = 'outline' }: { children: React.ReactNode; var
 
 export function AlertCard({ alert, expanded, matches, matchesLoading, onToggleMatches, onEdit, onToggleEnabled, onDelete }: AlertCardProps) {
   return (
-    <div className="py-6" style={{ borderBottom: '1px solid var(--color-divider)', opacity: alert.enabled ? 1 : 0.6 }}>
+    <div className={expanded ? 'pt-6' : 'py-6'} style={{ borderBottom: '1px solid var(--color-divider)' }}>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
-            <h3 className="text-lg font-extrabold" style={{ fontFamily: 'var(--font-heading)' }}>{alert.name}</h3>
+            <h3 className="text-lg font-extrabold" style={{ fontFamily: 'var(--font-heading)', color: alert.enabled ? 'var(--color-text)' : 'var(--color-neutral-700)' }}>{alert.name}</h3>
+            {/* Chave liga/desliga: pausar não apaga o alerta, só para os avisos */}
             <button
+              type="button"
+              role="switch"
+              aria-checked={alert.enabled}
+              aria-label={`${alert.enabled ? 'Pausar' : 'Ativar'} o alerta ${alert.name}`}
               onClick={onToggleEnabled}
-              className="text-xs font-bold py-1 px-2.5 cursor-pointer whitespace-nowrap"
-              style={alert.enabled
-                ? { border: '2px solid var(--color-text)', background: 'var(--color-text)', color: 'var(--color-bg)' }
-                : { border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
+              className="flex items-center gap-2 py-1 cursor-pointer"
             >
-              {alert.enabled ? 'Ativo' : 'Pausado'}
+              <span
+                className="relative inline-block w-9 h-5 shrink-0"
+                style={{ background: alert.enabled ? 'var(--color-text)' : 'var(--color-neutral-300)', border: '2px solid var(--color-text)' }}
+              >
+                <span
+                  className="absolute top-0 w-4 h-4"
+                  style={{ left: alert.enabled ? 16 : 0, background: alert.enabled ? 'var(--color-bg)' : 'var(--color-text)', transition: 'left 0.15s ease' }}
+                />
+              </span>
+              <span className="text-[13px] font-bold" style={{ color: 'var(--color-text)' }}>{alert.enabled ? 'Ativo' : 'Pausado'}</span>
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -85,7 +96,8 @@ export function AlertCard({ alert, expanded, matches, matchesLoading, onToggleMa
         </div>
       </div>
       {expanded && (
-        <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
+        // -mb-px: a borda da última linha coincide com a do card (sem linha dupla)
+        <div className="mt-5 -mb-px" style={{ borderTop: '2px solid var(--color-text)' }}>
           <MatchesList loading={matchesLoading} matches={matches} />
         </div>
       )}

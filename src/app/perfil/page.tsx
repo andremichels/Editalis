@@ -206,7 +206,10 @@ export default function PerfilPage() {
           name={displayName}
           subtitle={subtitle}
           stats={{
-            perfis: subscription ? `${subscription.usage.alert_profiles_used}/${subscription.usage.alert_profiles_limit ?? '∞'}` : '—',
+            // "1 de 5" quando há limite; só "1" quando o plano é ilimitado (antes: "1/∞")
+            perfis: subscription
+              ? `${subscription.usage.alert_profiles_used}${subscription.usage.alert_profiles_limit != null ? ` de ${subscription.usage.alert_profiles_limit}` : ''}`
+              : '—',
             favoritas: favorites.size,
             usuarios: team.length,
           }}

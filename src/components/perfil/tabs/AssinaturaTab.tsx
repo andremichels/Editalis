@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import type { Subscription } from '@/lib/api';
 import { formatMoney } from '@/lib/utils';
 import { daysUntil, formatDateLong } from '@/lib/format';
@@ -81,21 +82,17 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
             >
               {openingPortal ? 'Abrindo...' : 'Trocar para anual e economizar 20%'}
             </button>
-            <button className="text-left py-3 px-5 text-sm font-bold cursor-pointer" style={{ background: 'transparent', border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
-              Falar com vendas
-            </button>
+            <Link href="/planos" className="text-left py-3 px-5 text-sm font-bold" style={{ background: 'transparent', border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
+              Comparar planos
+            </Link>
           </div>
         </div>
 
-        <div className="mt-9 max-w-[640px]">
-          <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>Histórico de faturas</div>
-          <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>Histórico de faturas ainda não disponível.</p>
-        </div>
 
         <div className="mt-9 pt-6 max-w-[640px]" style={{ borderTop: '2px solid var(--color-text)' }}>
           <div className="text-[15px] font-extrabold mb-1.5">Cancelar assinatura</div>
           <p className="text-sm mb-4 max-w-[520px] leading-[1.55]" style={{ color: 'var(--color-neutral-700)' }}>
-            O acesso continua até o fim do ciclo pago e seus perfis ficam guardados por 90 dias.
+            O acesso continua até o fim do ciclo pago e seus alertas ficam guardados por 90 dias.
           </p>
           <button
             onClick={handleCancel}

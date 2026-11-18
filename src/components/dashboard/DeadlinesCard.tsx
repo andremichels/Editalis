@@ -13,19 +13,25 @@ export interface DeadlineItem {
 function toneColor(days: number) {
   if (days <= 3) return 'var(--color-accent)';
   if (days <= 7) return 'var(--color-text)';
-  return 'var(--color-neutral-600)';
+  return 'var(--color-neutral-700)';
 }
 
+/** Faixa no topo do Painel: o que abre primeiro, lado a lado. */
 export function DeadlinesCard({ items }: { items: DeadlineItem[] | null }) {
   return (
-    <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
-      <div className="text-[12px] font-bold uppercase mb-3.5" style={{ letterSpacing: '0.12em', color: 'var(--color-neutral-700)' }}>
-        Prazos próximos
+    <div className="px-6 sm:px-10 py-5" style={{ borderBottom: '2px solid var(--color-text)' }}>
+      <div className="flex items-baseline justify-between gap-3 mb-3.5">
+        <h2 className="text-[12px] font-bold uppercase" style={{ letterSpacing: '0.12em', color: 'var(--color-neutral-700)' }}>
+          Prazos próximos
+        </h2>
+        {items && items.length > 0 && (
+          <span className="text-[12px]" style={{ color: 'var(--color-neutral-700)' }}>aberturas nos próximos 30 dias</span>
+        )}
       </div>
       {items === null ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-12 skeleton" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-16 skeleton" />
           ))}
         </div>
       ) : items.length === 0 ? (
@@ -33,8 +39,8 @@ export function DeadlinesCard({ items }: { items: DeadlineItem[] | null }) {
           Nenhuma abertura de licitação nos próximos 30 dias entre as publicações recentes.
         </p>
       ) : (
-        <div className="flex flex-col gap-3.5">
-          {items.map((item) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {items.slice(0, 4).map((item) => (
             <Link
               key={item.slug}
               href={`/artigo/${item.slug}`}
@@ -44,10 +50,10 @@ export function DeadlinesCard({ items }: { items: DeadlineItem[] | null }) {
               <div className="text-[13px] font-black" style={{ color: toneColor(item.days) }}>
                 {openingLabel(item.days)}
               </div>
-              <div className="text-[13px] font-bold mt-0.5 leading-snug" style={{ color: 'var(--color-text)' }}>
+              <div className="text-[13px] font-bold mt-0.5 leading-snug line-clamp-2" style={{ color: 'var(--color-text)' }}>
                 {item.title}
               </div>
-              <div className="text-[12px] mt-0.5" style={{ color: 'var(--color-neutral-700)' }}>
+              <div className="text-[12px] mt-0.5 truncate" style={{ color: 'var(--color-neutral-700)' }}>
                 {item.organ}
               </div>
             </Link>

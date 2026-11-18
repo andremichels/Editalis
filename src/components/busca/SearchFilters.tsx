@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Vertical } from '@/lib/types';
 import { modalityLabel } from '@/lib/format';
+import { UfPicker } from '@/components/ui/UfPicker';
 
 interface SearchFiltersProps {
   organs: string[];
@@ -23,7 +24,8 @@ interface SearchFiltersProps {
   setDateFrom: (v: string) => void;
   dateTo: string;
   setDateTo: (v: string) => void;
-  onApply: () => void;
+  /** só no celular: fecha a gaveta de filtros */
+  onDone?: () => void;
   onClear: () => void;
 }
 
@@ -39,7 +41,6 @@ function FilterGroup({ title, children }: { title: string; children: React.React
 }
 
 const ALL_MODALIDADES = ['pregao', 'pregao_eletronico', 'concorrencia', 'dispensa', 'inexigibilidade', 'tomada_precos', 'concurso', 'leilao', 'rdc'];
-const ALL_UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
 function CheckboxGroup({ options, selected, onChange, labelFor }: { options: string[]; selected: string[]; onChange: (v: string[]) => void; labelFor?: (v: string) => string }) {
   return (
@@ -74,7 +75,7 @@ export function SearchFilters({
   valueMax, setValueMax,
   dateFrom, setDateFrom,
   dateTo, setDateTo,
-  onApply, onClear,
+  onDone, onClear,
 }: SearchFiltersProps) {
 
   const [orgInput, setOrgInput] = useState('');
@@ -90,8 +91,8 @@ export function SearchFilters({
   return (
     <div className="py-6 px-5">
       <div className="flex justify-between items-baseline mb-5">
-        <span className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</span>
-        <button onClick={onClear} className="text-xs border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>limpar</button>
+        <span className="text-[12px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</span>
+        <button onClick={onClear} className="text-[13px] underline border-0 bg-transparent cursor-pointer py-1" style={{ color: 'var(--color-text)' }}>limpar tudo</button>
       </div>
 
       <FilterGroup title="Setores">
@@ -126,7 +127,7 @@ export function SearchFilters({
       </FilterGroup>
 
       <FilterGroup title="UF">
-        <CheckboxGroup options={ALL_UFS} selected={ufs} onChange={setUfs} />
+        <UfPicker value={ufs} onChange={setUfs} compact />
       </FilterGroup>
 
       <FilterGroup title="Modalidade">
@@ -148,9 +149,9 @@ export function SearchFilters({
         {organs.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {organs.map((o) => (
-              <span key={o} className="text-[11px] px-1.5 py-0.5 flex items-center gap-1" style={{ background: 'var(--color-neutral-200)' }}>
+              <span key={o} className="text-[12px] pl-2 flex items-center gap-1" style={{ background: 'var(--color-neutral-200)' }}>
                 {o}
-                <button onClick={() => setOrgans(organs.filter((x) => x !== o))} className="text-[11px] border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>×</button>
+                <button onClick={() => setOrgans(organs.filter((x) => x !== o))} className="w-7 h-7 text-[15px] border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-text)' }} aria-label={`Remover ${o}`}>×</button>
               </span>
             ))}
           </div>
@@ -187,15 +188,18 @@ export function SearchFilters({
         </div>
       </FilterGroup>
 
-      <div className="pt-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
+      <p className="text-[12px] pt-3" style={{ color: 'var(--color-neutral-700)' }}>
+        Os resultados atualizam sozinhos ao mudar um filtro.
+      </p>
+      {onDone && (
         <button
-          onClick={onApply}
-          className="w-full py-2.5 text-sm font-bold cursor-pointer"
-          style={{ background: 'var(--color-accent)', color: '#fff', border: 'none' }}
+          onClick={onDone}
+          className="w-full mt-3 py-3 text-sm font-bold cursor-pointer text-left px-4"
+          style={{ background: 'var(--color-text)', color: 'var(--color-bg)', border: 'none' }}
         >
-          Aplicar filtros
+          Ver resultados
         </button>
-      </div>
+      )}
     </div>
   );
 }

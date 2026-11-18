@@ -194,8 +194,8 @@ export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword,
           <div className={`${sectionLabel} mb-3.5`} style={sectionLabelStyle}>Papéis</div>
           <div className="text-sm leading-[1.55]">
             {[
-              ['Administrador', 'Cobrança, usuários e todos os perfis.'],
-              ['Editor', 'Cria perfis e alertas nos temas liberados.'],
+              ['Administrador', 'Cobrança, equipe e todos os alertas.'],
+              ['Editor', 'Cria e edita alertas.'],
               ['Leitor', 'Consulta e favorita, sem editar alertas.'],
             ].map(([role, desc], i, arr) => (
               <div key={role} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
@@ -204,10 +204,6 @@ export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword,
               </div>
             ))}
           </div>
-        </div>
-        <div className="p-6">
-          <div className={`${sectionLabel} mb-3.5`} style={sectionLabelStyle}>Sessões ativas</div>
-          <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>Gerenciamento de sessões ainda não disponível.</p>
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ export function AlertForm({ form, onChange, isEditing, editingName, onSubmit, on
     >
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-base font-black" style={{ fontFamily: 'var(--font-heading)' }}>
-          {isEditing ? `Editando: ${editingName}` : 'Novo perfil de alerta'}
+          {isEditing ? `Editando: ${editingName}` : 'Novo alerta'}
         </h3>
         {isEditing && (
           <button onClick={onCancel} className="text-xs font-bold cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>
