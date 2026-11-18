@@ -22,7 +22,7 @@ export function ArticleLinks({ article }: { article: Article }) {
         target="_blank"
         rel="noopener noreferrer"
         className="block py-2 text-[13px] font-bold cursor-pointer"
-        style={{ color: 'var(--color-accent)', textDecoration: 'none' }}
+        style={{ color: 'var(--color-text)', textDecoration: 'underline' }}
       >
         Ver no Diário Oficial ↗
       </a>

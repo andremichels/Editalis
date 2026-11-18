@@ -4,7 +4,7 @@ import { formatDate, formatMoney } from '@/lib/utils';
 import type { Payment } from '@/lib/api';
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
 
 const STATUS: Record<string, { label: string; color: string; bg: string }> = {
   paid: { label: 'Pago', color: '#15803d', bg: '#dcfce7' },
@@ -32,7 +32,7 @@ export function PagamentosTab({ payments }: { payments: Payment[] }) {
     return (
       <div className="py-8 px-10">
         <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>Histórico de pagamentos</div>
-        <p className="text-sm" style={{ color: 'var(--color-neutral-600)' }}>
+        <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
           Nenhum pagamento encontrado para a sua organização.
         </p>
       </div>
@@ -71,7 +71,7 @@ export function PagamentosTab({ payments }: { payments: Payment[] }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[13px] font-bold underline"
-                    style={{ color: 'var(--color-accent-700)' }}
+                    style={{ color: 'var(--color-text)' }}
                   >
                     Fatura
                   </a>

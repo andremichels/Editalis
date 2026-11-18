@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/components/Toast';
+import { useAccount } from '@/lib/useAccount';
 
 export interface TeamMember {
   id: number;
@@ -13,7 +14,8 @@ export interface TeamMember {
 
 const ROLE_LABELS: Record<TeamMember['role'], string> = { admin: 'Administrador', editor: 'Editor', leitor: 'Leitor' };
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
+const ROLE_HINTS: Record<TeamMember['role'], string> = { admin: 'Acesso total, inclusive equipe e assinatura', editor: 'Cria e edita alertas', leitor: 'Somente leitura' };
 
 interface EquipeTabProps {
   team: TeamMember[];
@@ -31,6 +33,8 @@ function initials(name: string) {
 }
 
 export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword, onNewPasswordChange, onUpdatePassword, passwordSaving }: EquipeTabProps) {
+  const { email: myEmail } = useAccount();
+  const adminCount = team.filter((m) => m.role === 'admin').length;
   const { toast } = useToast();
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<TeamMember['role']>('editor');
@@ -72,22 +76,42 @@ export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword,
                 <div className="text-[15px] font-extrabold truncate">{m.nome || m.email}</div>
                 <div className="text-[13px] truncate" style={{ color: 'var(--color-neutral-700)' }}>{m.email}</div>
               </div>
-              <div className="text-right">
-                <select
-                  value={m.role}
-                  onChange={(e) => onUpdateRole(m.id, e.target.value as TeamMember['role'])}
-                  className="text-[13px] font-bold py-1.5 px-2 cursor-pointer"
-                  style={{ border: '2px solid var(--color-text)', background: 'var(--color-bg)' }}
-                >
-                  {(Object.keys(ROLE_LABELS) as TeamMember['role'][]).map((r) => (
-                    <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-                  ))}
-                </select>
-                <div className="text-xs mt-1" style={{ color: 'var(--color-neutral-600)' }}>{m.scope || (m.role === 'admin' ? 'Todos os perfis' : m.role === 'leitor' ? 'Somente leitura' : '')}</div>
-              </div>
-              <button onClick={() => handleRemove(m.id)} className="text-xs font-bold py-2 px-3 cursor-pointer self-start" style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
-                Remover
-              </button>
+              {(() => {
+                // A própria pessoa não troca o próprio papel nem se remove (dava pra
+                // ficar sem acesso de admin); o último admin também é protegido.
+                const isMe = !!myEmail && m.email?.toLowerCase() === myEmail.toLowerCase();
+                const lastAdmin = m.role === 'admin' && adminCount <= 1;
+                const locked = isMe || lastAdmin;
+                return (
+                  <>
+                    <div className="text-right">
+                      {locked ? (
+                        <div className="text-[13px] font-bold py-1.5">{ROLE_LABELS[m.role]}{isMe ? ' (você)' : ''}</div>
+                      ) : (
+                        <select
+                          value={m.role}
+                          onChange={(e) => onUpdateRole(m.id, e.target.value as TeamMember['role'])}
+                          className="text-[13px] font-bold py-1.5 px-2 cursor-pointer"
+                          style={{ border: '2px solid var(--color-text)', background: 'var(--color-bg)' }}
+                          aria-label={`Papel de ${m.nome || m.email}`}
+                        >
+                          {(Object.keys(ROLE_LABELS) as TeamMember['role'][]).map((r) => (
+                            <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+                          ))}
+                        </select>
+                      )}
+                      <div className="text-xs mt-1" style={{ color: 'var(--color-neutral-700)' }}>{m.scope || ROLE_HINTS[m.role]}</div>
+                    </div>
+                    {locked ? (
+                      <span />
+                    ) : (
+                      <button onClick={() => handleRemove(m.id)} className="text-[13px] font-semibold py-2 px-3 cursor-pointer self-start underline" style={{ color: 'var(--color-neutral-700)' }}>
+                        Remover
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           ))}
         </div>
@@ -149,7 +173,7 @@ export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword,
                   checked={val as boolean}
                   onChange={(e) => (set as (v: boolean) => void)(e.target.checked)}
                   className="w-[18px] h-[18px]"
-                  style={{ accentColor: 'var(--color-accent)' }}
+                  style={{ accentColor: 'var(--color-text)' }}
                 />
               </label>
             ))}
@@ -183,7 +207,7 @@ export function EquipeTab({ team, onUpdateRole, onInvite, onRemove, newPassword,
         </div>
         <div className="p-6">
           <div className={`${sectionLabel} mb-3.5`} style={sectionLabelStyle}>Sessões ativas</div>
-          <p className="text-sm" style={{ color: 'var(--color-neutral-600)' }}>Gerenciamento de sessões ainda não disponível.</p>
+          <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>Gerenciamento de sessões ainda não disponível.</p>
         </div>
       </div>
     </div>

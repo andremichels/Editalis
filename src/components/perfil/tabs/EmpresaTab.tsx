@@ -18,7 +18,7 @@ export interface CompanyData {
 }
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
 
 const DOCS = [
   { tipo: 'CND Federal' },
@@ -67,9 +67,9 @@ export function EmpresaTab({ company, onCompanyChange, onSaveCompany, cnaes, onA
           <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>CNAEs de atuação</div>
           <div className="flex flex-wrap gap-2 mb-3">
             {cnaes.map((c) => (
-              <span key={c.codigo} className="text-[13px] font-bold py-2 px-3 flex items-center gap-2" style={{ border: '2px solid var(--color-accent)', color: 'var(--color-accent-700)' }}>
+              <span key={c.codigo} className="text-[13px] font-bold py-2 px-3 flex items-center gap-2" style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
                 {c.codigo} · {c.descricao}
-                <button onClick={() => onRemoveCnae(c.codigo)} className="cursor-pointer" style={{ color: 'var(--color-accent-700)' }}>×</button>
+                <button onClick={() => onRemoveCnae(c.codigo)} className="cursor-pointer w-7 h-7 -my-1 -mr-2 text-[18px] leading-none" style={{ color: 'var(--color-text)' }} aria-label={`Remover CNAE ${c.codigo}`}>×</button>
               </span>
             ))}
           </div>
@@ -120,11 +120,11 @@ export function EmpresaTab({ company, onCompanyChange, onSaveCompany, cnaes, onA
             {DOCS.map((d, i) => (
               <div key={d.tipo} className="flex justify-between py-3" style={{ borderBottom: i < DOCS.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
                 <span>{d.tipo}</span>
-                <span style={{ color: 'var(--color-neutral-500)' }}>não configurado</span>
+                <span style={{ color: 'var(--color-neutral-700)' }}>não configurado</span>
               </div>
             ))}
           </div>
-          <p className="text-xs mt-3.5" style={{ color: 'var(--color-neutral-600)' }}>Em breve.</p>
+          <p className="text-xs mt-3.5" style={{ color: 'var(--color-neutral-700)' }}>Em breve.</p>
         </div>
       </div>
     </div>

@@ -1,11 +1,12 @@
 'use client';
 
 import type { Subscription } from '@/lib/api';
-import { formatDate, formatMoney } from '@/lib/utils';
+import { formatMoney } from '@/lib/utils';
+import { daysUntil, formatDateLong } from '@/lib/format';
 import { useToast } from '@/components/Toast';
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
 
 interface AssinaturaTabProps {
   subscription: Subscription | null;
@@ -33,16 +34,27 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
     ? Math.min(100, (subscription.usage.alert_profiles_used / subscription.usage.alert_profiles_limit) * 100)
     : 100;
 
+  // Só fala em "fim do teste" enquanto o teste está em andamento — antes
+  // aparecia uma data de teste já vencida num plano ativo.
+  const trialDays = subscription.status === 'trialing' ? daysUntil(subscription.trial_ends_at) : null;
+  const inTrial = trialDays != null && trialDays >= 0;
+  const billingLabel = inTrial
+    ? 'Fim do teste'
+    : subscription.cancel_at_period_end
+      ? 'Acesso até'
+      : 'Próxima cobrança';
+  const billingDate = inTrial ? subscription.trial_ends_at : subscription.current_period_end;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="py-8 px-10 min-w-0" style={{ borderRight: '2px solid var(--color-text)' }}>
         <div className="p-7 max-w-[640px]" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
           <div className="flex justify-between items-start gap-6">
             <div>
-              <div className={sectionLabel} style={{ letterSpacing: '0.16em', color: 'var(--color-accent-700)' }}>Plano atual</div>
+              <div className={sectionLabel} style={{ letterSpacing: '0.16em', color: 'var(--color-neutral-700)' }}>Plano atual</div>
               <div className="text-[32px] font-black tracking-[-0.03em] mt-2 mb-1" style={{ fontFamily: 'var(--font-heading)' }}>{subscription.plan_label}</div>
               <div className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
-                {subscription.usage.alert_profiles_limit ?? 'ilimitados'} perfis · {subscription.billing_cycle === 'annual' ? 'cobrança anual' : 'cobrança mensal'}
+                {subscription.usage.alert_profiles_limit == null ? 'Alertas ilimitados' : `Até ${subscription.usage.alert_profiles_limit} alertas`} · {subscription.billing_cycle === 'annual' ? 'cobrança anual' : 'cobrança mensal'}
               </div>
             </div>
             <div className="text-right whitespace-nowrap">
@@ -57,8 +69,8 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
             </div>
           </div>
           <div className="flex justify-between text-sm mt-6 pt-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
-            <span style={{ color: 'var(--color-neutral-700)' }}>{subscription.status === 'trialing' ? 'Fim do teste' : 'Próxima cobrança'}</span>
-            <span className="font-bold">{formatDate((subscription.trial_ends_at ?? subscription.current_period_end).slice(0, 10))}</span>
+            <span style={{ color: 'var(--color-neutral-700)' }}>{billingLabel}</span>
+            <span className="font-bold">{formatDateLong(billingDate)}</span>
           </div>
           <div className="flex gap-3 mt-6">
             <button
@@ -77,7 +89,7 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
 
         <div className="mt-9 max-w-[640px]">
           <div className={`${sectionLabel} mb-4`} style={sectionLabelStyle}>Histórico de faturas</div>
-          <p className="text-sm" style={{ color: 'var(--color-neutral-600)' }}>Histórico de faturas ainda não disponível.</p>
+          <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>Histórico de faturas ainda não disponível.</p>
         </div>
 
         <div className="mt-9 pt-6 max-w-[640px]" style={{ borderTop: '2px solid var(--color-text)' }}>
@@ -98,7 +110,7 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
       <div>
         <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div className={`${sectionLabel} mb-3.5`} style={sectionLabelStyle}>Forma de pagamento</div>
-          <p className="text-sm mb-3.5" style={{ color: 'var(--color-neutral-600)' }}>Nenhuma forma de pagamento cadastrada.</p>
+          <p className="text-sm mb-3.5" style={{ color: 'var(--color-neutral-700)' }}>Nenhuma forma de pagamento cadastrada.</p>
           <button
             onClick={handleChangeCard}
             className="w-full text-left py-2.5 px-4 text-[13px] font-bold cursor-pointer"
@@ -112,17 +124,17 @@ export function AssinaturaTab({ subscription, teamCount, onManagePortal, opening
           <div className="text-sm">
             <div className="pb-3" style={{ borderBottom: '1px solid var(--color-divider)' }}>
               <div className="flex justify-between mb-2">
-                <span>Perfis monitorados</span>
+                <span>Alertas</span>
                 <span className="font-bold">{subscription.usage.alert_profiles_used} de {subscription.usage.alert_profiles_limit ?? '∞'}</span>
               </div>
               <div className="h-1.5" style={{ background: 'var(--color-neutral-300)' }}>
-                <div className="h-full" style={{ width: `${usagePct}%`, background: 'var(--color-accent)' }} />
+                <div className="h-full" style={{ width: `${usagePct}%`, background: 'var(--color-text)' }} />
               </div>
             </div>
             <div className="py-3" style={{ borderBottom: '1px solid var(--color-divider)' }}>
               <div className="flex justify-between">
                 <span>Usuários</span>
-                <span className="font-bold">{teamCount} · ilimitado</span>
+                <span className="font-bold">{teamCount} {teamCount === 1 ? 'usuário' : 'usuários'} · sem limite</span>
               </div>
             </div>
             <div className="flex justify-between py-3">

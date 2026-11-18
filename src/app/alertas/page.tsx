@@ -10,30 +10,43 @@ import { useToast } from '@/components/Toast';
 import { supabase } from '@/lib/auth';
 import { getSubscription, authFetch, type Subscription } from '@/lib/api';
 import { track } from '@/lib/analytics';
+import { setAlertsSnapshot } from '@/lib/useAccount';
+import type { Article } from '@/lib/types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
-interface MatchArticle {
-  id: number;
-  slug: string;
-  title: string;
-  title_marker?: string;
-  published_date: string;
-  organ_level_1?: string;
-}
-
 const emptyForm: AlertFormState = { name: '', keywords: '', organs: '', ufs: '', modalities: '', value_min: '', value_max: '' };
+
+/** "Salvar como alerta" na Busca chega aqui com ?prefill=<querystring da busca>. */
+function formFromPrefill(): AlertFormState | null {
+  if (typeof window === 'undefined') return null;
+  const raw = new URLSearchParams(window.location.search).get('prefill');
+  if (!raw) return null;
+  const p = new URLSearchParams(raw);
+  const list = (k: string) => (p.get(k) || '').split(',').map((x) => x.trim()).filter(Boolean).join(', ');
+  return {
+    name: p.get('name') || '',
+    keywords: p.get('keywords') || '',
+    organs: list('organs'),
+    ufs: list('ufs'),
+    modalities: list('modalities'),
+    value_min: p.get('value_min') || '',
+    value_max: p.get('value_max') || '',
+  };
+}
 
 export default function AlertasPage() {
   const [alerts, setAlerts] = useState<AlertProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [prefill] = useState(formFromPrefill);
+  const [showForm, setShowForm] = useState(prefill !== null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [form, setForm] = useState<AlertFormState>(emptyForm);
+  const [form, setForm] = useState<AlertFormState>(prefill ?? emptyForm);
   const [expanded, setExpanded] = useState<number | null>(null);
-  const [matches, setMatches] = useState<MatchArticle[]>([]);
+  const [matches, setMatches] = useState<Article[]>([]);
   const [matchesLoading, setMatchesLoading] = useState(false);
+  const openedFromQuery = useRef(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const { toast } = useToast();
   const formRef = useRef<HTMLDivElement>(null);
@@ -50,16 +63,6 @@ export default function AlertasPage() {
   const limit = subscription?.usage.alert_profiles_limit ?? null;
   const atLimit = limit !== null && alerts.length >= limit;
 
-  const load = () => {
-    if (!userId) return;
-    authFetch(`${API_BASE}/api/v1/alerts`)
-      .then((r) => r.json())
-      .then(setAlerts)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => { if (userId) load(); }, [userId]);
 
   const submitForm = async () => {
     if (!form.name) return;
@@ -68,7 +71,7 @@ export default function AlertasPage() {
       return;
     }
     if (editingId === null && atLimit) {
-      toast(`Limite de ${limit} perfis do plano ${subscription?.plan_label} atingido. Fale com o suporte pra fazer upgrade.`, 'error');
+      toast(`Limite de ${limit} alertas do plano ${subscription?.plan_label} atingido. Fale com o suporte para fazer upgrade.`, 'error');
       return;
     }
     const body = {
@@ -161,32 +164,53 @@ export default function AlertasPage() {
     setMatchesLoading(false);
   };
 
+  const load = () => {
+    if (!userId) return;
+    authFetch(`${API_BASE}/api/v1/alerts`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: AlertProfile[]) => {
+        const list = Array.isArray(data) ? data : [];
+        setAlerts(list);
+        setAlertsSnapshot(list); // mantém o contador do menu em sincronia
+        // "?abrir=<id>" (vindo do Painel) já abre os resultados daquele alerta
+        const open = Number(new URLSearchParams(window.location.search).get('abrir'));
+        if (open && list.some((a) => a.id === open) && !openedFromQuery.current) {
+          openedFromQuery.current = true;
+          toggleMatches(open);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { if (userId) load(); }, [userId]);
+
   const isEditing = editingId !== null;
 
   return (
     <AuthGuard>
       <DashboardLayout>
-        <DesktopOnlyNotice description="A criação e edição de alertas ainda não foi adaptada pro celular — abra pelo computador pra gerenciar seus perfis de busca." />
+        <DesktopOnlyNotice description="A criação e edição de alertas ainda não foi adaptada pro celular — abra pelo computador para gerenciar seus alertas." />
         <div className="hidden lg:block">
         <div className="py-7 px-10 flex items-center justify-between" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div>
             <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
               Alertas
             </h1>
-            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-600)' }}>
+            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>
               {subscription ? (
                 limit !== null
-                  ? `${alerts.length} de ${limit} perfis usados no plano ${subscription.plan_label}`
-                  : `${alerts.length} perfil${alerts.length !== 1 ? 's' : ''} · perfis ilimitados no plano ${subscription.plan_label}`
+                  ? `${alerts.length} de ${limit} alertas usados no plano ${subscription.plan_label}`
+                  : `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} · alertas ilimitados no plano ${subscription.plan_label}`
               ) : (
-                `${alerts.length} perfil${alerts.length !== 1 ? 's' : ''} configurado${alerts.length !== 1 ? 's' : ''}`
+                `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} configurado${alerts.length !== 1 ? 's' : ''}`
               )}
             </div>
           </div>
           <button
             onClick={() => {
               if (!showForm && atLimit) {
-                toast(`Limite de ${limit} perfis do plano ${subscription?.plan_label} atingido. Fale com o suporte pra fazer upgrade.`, 'error');
+                toast(`Limite de ${limit} alertas do plano ${subscription?.plan_label} atingido. Fale com o suporte para fazer upgrade.`, 'error');
                 return;
               }
               cancelForm();
@@ -221,7 +245,7 @@ export default function AlertasPage() {
             </div>
           ) : alerts.length === 0 ? (
             <div className="py-16 text-center">
-              <p className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>
+              <p className="text-sm" style={{ color: 'var(--color-neutral-700)' }}>
                 Nenhum alerta configurado. Crie um para receber notificações de novas licitações.
               </p>
             </div>

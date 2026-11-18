@@ -73,21 +73,21 @@ function CheckoutForm() {
       )}
 
       <h1 className="text-[30px] font-black tracking-[-0.03em] mb-2" style={{ fontFamily: "var(--font-heading)" }}>Checkout</h1>
-      <p className="text-sm mb-6" style={{ color: "var(--color-neutral-500)" }}>
+      <p className="text-sm mb-6" style={{ color: "var(--color-neutral-700)" }}>
         7 dias de trial. Cobre apenas se aprovar.
       </p>
 
       <div className="p-5 mb-6" style={{ border: "2px solid var(--color-text)", background: "var(--color-neutral-100)" }}>
         <div className="text-lg font-black">{PLAN_LABELS[plan] || plan}</div>
-        <div className="text-[13px] mt-1" style={{ color: "var(--color-neutral-600)" }}>
+        <div className="text-[13px] mt-1" style={{ color: "var(--color-neutral-700)" }}>
           {cycleLabel} · {priceLabel}/mês
         </div>
       </div>
 
       <div className="mb-6">
         <h3 className="text-sm font-bold mb-2">O que está incluído:</h3>
-        <ul className="text-sm space-y-1" style={{ color: "var(--color-neutral-600)" }}>
-          <li>✓ {plan === "essencial" ? "3" : "25"} perfis de busca monitorados</li>
+        <ul className="text-sm space-y-1" style={{ color: "var(--color-neutral-700)" }}>
+          <li>✓ {plan === "essencial" ? "3" : "25"} alertas</li>
           <li>✓ {plan === "essencial" ? "Histórico 30 dias" : "Histórico completo"}</li>
           <li>✓ Alerta por e-mail</li>
           {plan !== "essencial" && <li>✓ WhatsApp + app</li>}
@@ -102,7 +102,7 @@ function CheckoutForm() {
         {loading ? "Redirecionando..." : "Assinar agora"}
       </button>
 
-      <p className="text-xs text-center mt-4" style={{ color: "var(--color-neutral-500)" }}>
+      <p className="text-xs text-center mt-4" style={{ color: "var(--color-neutral-700)" }}>
         Você será redirecionado para o checkout seguro do Stripe.
       </p>
     </div>

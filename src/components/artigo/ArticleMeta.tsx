@@ -1,38 +1,10 @@
+import Link from 'next/link';
 import type { Article } from '@/lib/types';
-import { formatDate, parseSectionNumber, formatMoney } from '@/lib/utils';
+import { parseSectionNumber } from '@/lib/utils';
+import { daysUntil, docTypeLabel, formatDateLong, formatMoney, modalityLabel } from '@/lib/format';
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
-
-const TYPE_LABELS: Record<string, string> = {
-  licitacao: 'Licitação',
-  contrato: 'Contrato',
-  aditivo: 'Aditivo',
-  rescisao: 'Rescisão',
-  dispensa: 'Dispensa',
-  inexigibilidade: 'Inexigibilidade',
-  adjudicacao: 'Adjudicação',
-  homologacao: 'Homologação',
-  suspensao: 'Suspensão',
-  revogacao: 'Revogação',
-  nomeacao: 'Nomeação',
-  exoneracao: 'Exoneração',
-  portaria: 'Portaria',
-  acordo: 'Acordo',
-  convenio: 'Convênio',
-};
-
-const MODALITY_LABELS: Record<string, string> = {
-  pregao: 'Pregão',
-  pregao_eletronico: 'Pregão eletrônico',
-  concorrencia: 'Concorrência',
-  dispensa: 'Dispensa',
-  inexigibilidade: 'Inexigibilidade',
-  tomada_precos: 'Tomada de preços',
-  concurso: 'Concurso',
-  leilao: 'Leilão',
-  rdc: 'RDC',
-};
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
 
 export function ArticleMeta({ article }: { article: Article }) {
   const sectionNumber = parseSectionNumber(article.section);
@@ -43,7 +15,7 @@ export function ArticleMeta({ article }: { article: Article }) {
   const n = article.normalized_data;
 
   const rows: [string, string][] = [
-    ['Publicado em', formatDate(article.published_date)],
+    ['Publicado em', formatDateLong(article.published_date)],
     ...(sectionNumber ? ([['Seção', sectionNumber]] as [string, string][]) : []),
     ...(article.page ? ([['Página', article.page]] as [string, string][]) : []),
     ...(edition ? ([['Edição', edition]] as [string, string][]) : []),
@@ -51,11 +23,11 @@ export function ArticleMeta({ article }: { article: Article }) {
 
   // Normalized fields
   if (n) {
-    if (n.doc_type && TYPE_LABELS[n.doc_type]) {
-      rows.push(['Tipo', TYPE_LABELS[n.doc_type]]);
+    if (n.doc_type) {
+      rows.push(['Tipo', docTypeLabel(n.doc_type)]);
     }
-    if (n.modality && MODALITY_LABELS[n.modality]) {
-      rows.push(['Modalidade', MODALITY_LABELS[n.modality]]);
+    if (n.modality) {
+      rows.push(['Modalidade', modalityLabel(n.modality)]);
     }
     if (n.process_number) {
       rows.push(['Processo', n.process_number]);
@@ -64,7 +36,7 @@ export function ArticleMeta({ article }: { article: Article }) {
       rows.push(['Contrato', n.contract_number]);
     }
     if (n.opening_date) {
-      rows.push(['Abertura', formatDate(n.opening_date)]);
+      rows.push(['Abertura', formatDateLong(n.opening_date)]);
     }
   }
 
@@ -89,7 +61,7 @@ export function ArticleMeta({ article }: { article: Article }) {
               style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
             >
               <span style={{ color: 'var(--color-neutral-700)' }}>{label}</span>
-              <span className="font-bold text-right" style={label === 'Abertura' ? { color: 'var(--color-accent)' } : undefined}>{value}</span>
+              <span className="font-bold text-right" style={label === 'Abertura' && (daysUntil(n?.opening_date) ?? 99) >= 0 && (daysUntil(n?.opening_date) ?? 99) <= 3 ? { color: 'var(--color-accent)' } : undefined}>{value}</span>
             </div>
           ))}
         </div>
@@ -102,23 +74,8 @@ export function ArticleMeta({ article }: { article: Article }) {
           <div className="flex flex-wrap gap-2">
             {n.ufs.map((uf) => (
               <span key={uf} className="px-2 py-0.5 text-xs font-bold"
-                style={{ background: 'var(--color-accent)', color: '#fff' }}>
+                style={{ border: '1px solid var(--color-text)', color: 'var(--color-text)' }}>
                 {uf}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Keywords */}
-      {n?.keywords && n.keywords.length > 0 && (
-        <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          <div className={`${sectionLabel} mb-3`} style={sectionLabelStyle}>Palavras-chave</div>
-          <div className="flex flex-wrap gap-1.5">
-            {n.keywords.map((kw) => (
-              <span key={kw} className="px-2 py-0.5 text-xs"
-                style={{ background: 'var(--color-neutral-200)', color: 'var(--color-neutral-700)' }}>
-                {kw}
               </span>
             ))}
           </div>
@@ -131,7 +88,9 @@ export function ArticleMeta({ article }: { article: Article }) {
           <div className={`${sectionLabel} mb-3`} style={sectionLabelStyle}>CNPJs mencionados</div>
           <div className="text-xs space-y-1 font-mono">
             {n.cnpjs.map((cnpj) => (
-              <div key={cnpj} style={{ color: 'var(--color-neutral-700)' }}>{cnpj}</div>
+              <Link key={cnpj} href={`/busca/cnpj?cnpj=${cnpj.replace(/\D/g, '')}`} className="block underline py-0.5" style={{ color: 'var(--color-text)' }} title="Ver outras publicações deste CNPJ">
+                {cnpj}
+              </Link>
             ))}
           </div>
         </div>
@@ -152,12 +111,12 @@ export function ArticleMeta({ article }: { article: Article }) {
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm font-bold underline inline-flex items-center gap-1"
-          style={{ color: 'var(--color-accent)' }}
+          style={{ color: 'var(--color-text)' }}
         >
           Ver no Diário Oficial ↗
         </a>
-        <div className="text-xs mt-1" style={{ color: 'var(--color-neutral-500)' }}>
-          DOU · publicado em {article.published_date}
+        <div className="text-xs mt-1" style={{ color: 'var(--color-neutral-700)' }}>
+          DOU · publicado em {formatDateLong(article.published_date)}
         </div>
       </div>
     </div>

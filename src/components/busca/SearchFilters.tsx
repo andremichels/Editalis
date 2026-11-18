@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Vertical } from '@/lib/types';
+import { modalityLabel } from '@/lib/format';
 
 interface SearchFiltersProps {
   organs: string[];
@@ -12,7 +13,8 @@ interface SearchFiltersProps {
   setUfs: (v: string[]) => void;
   verticals: string[];
   setVerticals: (v: string[]) => void;
-  availableVerticals: Vertical[];
+  /** null = carregando */
+  availableVerticals: Vertical[] | null;
   valueMin: string;
   setValueMin: (v: string) => void;
   valueMax: string;
@@ -39,7 +41,7 @@ function FilterGroup({ title, children }: { title: string; children: React.React
 const ALL_MODALIDADES = ['pregao', 'pregao_eletronico', 'concorrencia', 'dispensa', 'inexigibilidade', 'tomada_precos', 'concurso', 'leilao', 'rdc'];
 const ALL_UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
-function CheckboxGroup({ options, selected, onChange }: { options: string[]; selected: string[]; onChange: (v: string[]) => void }) {
+function CheckboxGroup({ options, selected, onChange, labelFor }: { options: string[]; selected: string[]; onChange: (v: string[]) => void; labelFor?: (v: string) => string }) {
   return (
     <div className="max-h-[180px] overflow-y-auto">
       {options.map((opt) => {
@@ -49,12 +51,12 @@ function CheckboxGroup({ options, selected, onChange }: { options: string[]; sel
             <input
               type="checkbox"
               checked={checked}
-              style={{ accentColor: 'var(--color-accent)' }}
+              style={{ accentColor: 'var(--color-text)' }}
               onChange={() => {
                 onChange(checked ? selected.filter((s) => s !== opt) : [...selected, opt]);
               }}
             />
-            {opt.replace(/_/g, ' ')}
+            {labelFor ? labelFor(opt) : opt}
           </label>
         );
       })}
@@ -93,8 +95,12 @@ export function SearchFilters({
       </div>
 
       <FilterGroup title="Setores">
-        {availableVerticals.length === 0 ? (
-          <div className="text-[12px]" style={{ color: 'var(--color-neutral-500)' }}>Carregando setores…</div>
+        {availableVerticals === null ? (
+          <div className="flex flex-wrap gap-1.5">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-7 w-20 skeleton" />)}
+          </div>
+        ) : availableVerticals.length === 0 ? (
+          <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>Não foi possível carregar os setores.</div>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {availableVerticals.map((v) => {
@@ -106,9 +112,9 @@ export function SearchFilters({
                   onClick={() => setVerticals(active ? verticals.filter((s) => s !== v.slug) : [...verticals, v.slug])}
                   className="text-[12px] px-2.5 py-1.5 font-bold cursor-pointer transition-all"
                   style={{
-                    background: active ? 'var(--color-accent)' : 'transparent',
+                    background: active ? 'var(--color-text)' : 'transparent',
                     color: active ? '#fff' : 'var(--color-text)',
-                    border: `2px solid ${active ? 'var(--color-accent)' : 'var(--color-divider)'}`,
+                    border: `2px solid ${active ? 'var(--color-text)' : 'var(--color-neutral-400)'}`,
                   }}
                 >
                   {v.name}
@@ -124,7 +130,7 @@ export function SearchFilters({
       </FilterGroup>
 
       <FilterGroup title="Modalidade">
-        <CheckboxGroup options={ALL_MODALIDADES} selected={modalities} onChange={setModalities} />
+        <CheckboxGroup options={ALL_MODALIDADES} selected={modalities} onChange={setModalities} labelFor={modalityLabel} />
       </FilterGroup>
 
       <FilterGroup title="Órgão">

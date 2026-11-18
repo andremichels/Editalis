@@ -200,9 +200,9 @@ export function LandingPage({ variant }: { variant: LandingVariant }) {
   ];
 
   const plans = [
-    { name: 'Essencial', tag: 'Pequena empresa', price: annual ? 39 : 49, features: ['3 perfis de busca monitorados', 'Histórico de 30 dias', 'Alerta por e-mail diário', 'Exportação CSV', 'Suporte por e-mail'], cta: 'Assinar Essencial', highlight: false },
-    { name: 'Profissional', tag: 'Média empresa · mais assinado', price: annual ? 159 : 199, features: ['25 perfis de busca monitorados', 'Histórico completo desde 2018', 'E-mail, WhatsApp e app', 'Exportação CSV e Excel', 'Suporte prioritário em 4h'], cta: 'Assinar Profissional →', highlight: true },
-    { name: 'Enterprise', tag: 'Grande fornecedor', price: null, priceLabel: 'Sob consulta', features: ['Perfis ilimitados', 'API e webhooks', 'SSO e gestão de equipes', 'Gerente de conta dedicado', 'SLA contratual'], cta: 'Falar com vendas', highlight: false },
+    { name: 'Essencial', tag: 'Pequena empresa', price: annual ? 39 : 49, features: ['3 alertas', 'Histórico de 30 dias', 'Alerta por e-mail diário', 'Exportação CSV', 'Suporte por e-mail'], cta: 'Assinar Essencial', highlight: false },
+    { name: 'Profissional', tag: 'Média empresa · mais assinado', price: annual ? 159 : 199, features: ['25 alertas', 'Histórico completo desde 2018', 'E-mail, WhatsApp e app', 'Exportação CSV e Excel', 'Suporte prioritário em 4h'], cta: 'Assinar Profissional →', highlight: true },
+    { name: 'Enterprise', tag: 'Grande fornecedor', price: null, priceLabel: 'Sob consulta', features: ['Alertas ilimitados', 'API e webhooks', 'SSO e gestão de equipes', 'Gerente de conta dedicado', 'SLA contratual'], cta: 'Falar com vendas', highlight: false },
   ];
 
   const faq = [
@@ -321,7 +321,7 @@ export function LandingPage({ variant }: { variant: LandingVariant }) {
                 Operadores de verdade, não uma caixinha de pesquisa.
               </h3>
               <p className="text-base leading-[1.6] mb-5" style={{ color: 'var(--color-neutral-800)' }}>
-                Combine termos com E / OU / NÃO, restrinja por UF, órgão, modalidade, valor e situação, e salve a consulta como perfil monitorado.
+                Combine termos com E / OU / NÃO, restrinja por UF, órgão, modalidade, valor e situação, e salve a consulta como alerta.
               </p>
               <div className="p-4" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)', fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 14, lineHeight: 1.7 }}>
                 <span style={{ color: 'var(--color-accent-700)', fontWeight: 700 }}>({cfg.searchTerms.map((t) => `"${t}"`).join(' OU ')})</span><br />

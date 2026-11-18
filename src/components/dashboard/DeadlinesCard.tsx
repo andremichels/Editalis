@@ -1,24 +1,25 @@
 import Link from 'next/link';
+import { openingLabel } from '@/lib/format';
 
-interface Deadline {
-  id?: number;
-  slug?: string;
+export interface DeadlineItem {
+  slug: string;
   title: string;
-  organ?: string;
-  days: string;
-  tone: 'urgent' | 'default' | 'later';
+  organ: string;
+  /** dias até a abertura (0 = hoje) */
+  days: number;
 }
 
-const toneColor = {
-  urgent: 'var(--color-accent)',
-  default: 'var(--color-text)',
-  later: 'var(--color-neutral-400)',
-} as const;
+/** Vermelho só para o que é urgente (até 3 dias). */
+function toneColor(days: number) {
+  if (days <= 3) return 'var(--color-accent)';
+  if (days <= 7) return 'var(--color-text)';
+  return 'var(--color-neutral-600)';
+}
 
-export function DeadlinesCard({ items }: { items: Deadline[] | null }) {
+export function DeadlinesCard({ items }: { items: DeadlineItem[] | null }) {
   return (
     <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
-      <div className="text-[11px] font-bold uppercase mb-3.5" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
+      <div className="text-[12px] font-bold uppercase mb-3.5" style={{ letterSpacing: '0.12em', color: 'var(--color-neutral-700)' }}>
         Prazos próximos
       </div>
       {items === null ? (
@@ -28,28 +29,26 @@ export function DeadlinesCard({ items }: { items: Deadline[] | null }) {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <p className="text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>
-          Nenhum prazo de abertura encontrado nos artigos recentes.
+        <p className="text-[14px]" style={{ color: 'var(--color-neutral-700)' }}>
+          Nenhuma abertura de licitação nos próximos 30 dias entre as publicações recentes.
         </p>
       ) : (
-        <div className="flex flex-col gap-3">
-          {items.map((item, i) => (
+        <div className="flex flex-col gap-3.5">
+          {items.map((item) => (
             <Link
-              key={i}
-              href={item.slug ? `/artigo/${item.slug}` : '#'}
-              className="block pl-3 cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ borderLeft: `4px solid ${toneColor[item.tone]}`, textDecoration: 'none' }}
+              key={item.slug}
+              href={`/artigo/${item.slug}`}
+              className="block pl-3 hover:opacity-80 transition-opacity"
+              style={{ borderLeft: `4px solid ${toneColor(item.days)}` }}
             >
-              <div className="text-[13px] font-extrabold" style={{ color: 'var(--color-text)' }}>
+              <div className="text-[13px] font-black" style={{ color: toneColor(item.days) }}>
+                {openingLabel(item.days)}
+              </div>
+              <div className="text-[13px] font-bold mt-0.5 leading-snug" style={{ color: 'var(--color-text)' }}>
                 {item.title}
               </div>
-              {item.organ && (
-                <div className="text-[11px] mt-0.5" style={{ color: 'var(--color-neutral-600)' }}>
-                  {item.organ}
-                </div>
-              )}
-              <div className="text-xs mt-0.5 font-bold" style={{ color: toneColor[item.tone] }}>
-                {item.days}
+              <div className="text-[12px] mt-0.5" style={{ color: 'var(--color-neutral-700)' }}>
+                {item.organ}
               </div>
             </Link>
           ))}

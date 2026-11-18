@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Article } from '@/lib/types';
+import { articleTitle } from '@/lib/format';
 
 function formatContent(raw: string): React.ReactNode[] {
   const paragraphs = raw.split(/\n{2,}/);
@@ -34,7 +35,12 @@ function formatContent(raw: string): React.ReactNode[] {
 
 export function ArticleContent({ article }: { article: Article }) {
   const [copied, setCopied] = useState(false);
-  const summary = article.normalized_data?.summary || article.normalized_data?.object_summary;
+  // Só mostra o resumo quando ele acrescenta algo: o objeto já virou o título,
+  // e resumos curtos/cortados repetiam o subtítulo.
+  const rawSummary = article.normalized_data?.summary?.trim() || '';
+  const title = articleTitle(article, 1000).toLowerCase();
+  const summary =
+    rawSummary.length >= 80 && !title.startsWith(rawSummary.slice(0, 40).toLowerCase()) ? rawSummary : '';
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(article.content);
@@ -45,8 +51,8 @@ export function ArticleContent({ article }: { article: Article }) {
   return (
     <div className="py-8 px-10 min-w-0" style={{ borderRight: '2px solid var(--color-text)' }}>
       {summary && (
-        <div className="mb-7 p-5" style={{ border: '2px solid var(--color-accent)', background: 'var(--color-accent-100)' }}>
-          <div className="text-[11px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-accent-800)' }}>
+        <div className="mb-7 p-5" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
+          <div className="text-[12px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
             Resumo
           </div>
           <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-neutral-800)' }}>
@@ -55,19 +61,19 @@ export function ArticleContent({ article }: { article: Article }) {
         </div>
       )}
       <div className="flex items-center justify-between mb-6">
-        <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-600)' }}>
+        <div className="text-[12px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
           Texto da publicação
         </div>
         <button
           onClick={handleCopy}
-          className="text-[11px] font-bold px-3 py-1 cursor-pointer transition-colors"
+          className="text-[13px] font-bold px-3 py-2 cursor-pointer transition-colors"
           style={{
-            border: '1px solid var(--color-divider)',
-            color: copied ? '#155724' : 'var(--color-neutral-500)',
+            border: '1px solid var(--color-neutral-400)',
+            color: copied ? '#155724' : 'var(--color-text)',
             background: copied ? '#d4edda' : 'transparent',
           }}
         >
-          {copied ? '✓ Copiado' : '📋 Copiar texto'}
+          {copied ? '✓ Copiado' : 'Copiar texto'}
         </button>
       </div>
       <div>

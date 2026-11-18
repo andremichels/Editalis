@@ -51,7 +51,7 @@ export function CadastroForm() {
         <FormField label="Senha" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="mínimo 8 caracteres" required minLength={8} />
 
         <label className="flex items-start gap-2.5 text-[13px] leading-[1.5] cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>
-          <input type="checkbox" checked={aceito} onChange={e => setAceito(e.target.checked)} className="w-4 h-4 mt-0.5" style={{ accentColor: 'var(--color-accent)' }} />
+          <input type="checkbox" checked={aceito} onChange={e => setAceito(e.target.checked)} className="w-4 h-4 mt-0.5" style={{ accentColor: 'var(--color-text)' }} />
           Li e aceito os <Link href="/termos" className="underline" style={{ color: 'var(--color-accent)' }}>termos de uso</Link> e a{' '}
           <Link href="/privacidade" className="underline" style={{ color: 'var(--color-accent)' }}>política de privacidade</Link> (LGPD).
         </label>

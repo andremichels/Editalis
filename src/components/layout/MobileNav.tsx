@@ -1,42 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/auth';
-import { authFetch } from '@/lib/api';
-import { useFavorites } from '@/lib/useFavorites';
+import { newMatchesCount, useAccount } from '@/lib/useAccount';
 import { resetUser } from '@/lib/analytics';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
 const TABS: { label: string; href: string }[] = [
   { label: 'Painel', href: '/dashboard' },
-  { label: 'Buscar', href: '/busca' },
-  { label: 'Favoritas', href: '/favoritos' },
+  { label: 'Busca', href: '/busca' },
+  { label: 'Favoritos', href: '/favoritos' },
   { label: 'Alertas', href: '/alertas' },
 ];
 
 export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { favorites } = useFavorites();
-  const [name, setName] = useState('');
-  const [alertCount, setAlertCount] = useState(0);
+  const { name, alerts } = useAccount();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      const user = data.session?.user;
-      setName(user?.user_metadata?.nome || user?.email?.split('@')[0] || '');
-      if (user) {
-        authFetch(`${API_BASE}/api/v1/alerts`)
-          .then((r) => r.json())
-          .then((alerts: { id: number }[]) => setAlertCount(alerts.length))
-          .catch(() => {});
-      }
-    });
-  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -45,7 +27,8 @@ export function MobileNav() {
   };
 
   const initials = (name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
-  const counts: Record<string, number> = { '/favoritos': favorites.size, '/alertas': alertCount };
+  const matches = newMatchesCount(alerts);
+  const badges: Record<string, string | undefined> = { '/alertas': matches > 0 ? `+${matches}` : undefined };
 
   return (
     <>
@@ -98,23 +81,23 @@ export function MobileNav() {
       >
         {TABS.map((tab) => {
           const active = pathname === tab.href;
-          const count = counts[tab.href];
+          const badge = badges[tab.href];
           return (
             <Link
               key={tab.href}
               href={tab.href}
               className="flex flex-col items-center justify-center gap-0.5 py-2.5"
               style={{
-                borderTop: active ? '3px solid var(--color-accent)' : '3px solid transparent',
+                borderTop: active ? '3px solid var(--color-text)' : '3px solid transparent',
                 marginTop: '-2px',
-                color: active ? 'var(--color-accent)' : 'var(--color-neutral-600)',
+                color: active ? 'var(--color-text)' : 'var(--color-neutral-700)',
                 minHeight: 44,
               }}
             >
               <span className="text-[11px] font-bold">{tab.label}</span>
-              {!!count && (
-                <span className="text-[10px] font-bold" style={{ color: active ? 'var(--color-accent)' : 'var(--color-neutral-500)' }}>
-                  {count}
+              {badge && (
+                <span className="text-[10px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>
+                  {badge}
                 </span>
               )}
             </Link>

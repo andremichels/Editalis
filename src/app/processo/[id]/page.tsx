@@ -62,13 +62,13 @@ export default function ProcessoPage() {
           <button
             onClick={() => router.back()}
             className="text-[12px] font-bold mb-4 cursor-pointer"
-            style={{ color: 'var(--color-neutral-500)', background: 'none', border: 'none' }}
+            style={{ color: 'var(--color-neutral-700)', background: 'none', border: 'none' }}
           >
             ← Voltar
           </button>
 
           {loading && (
-            <div className="text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>Carregando...</div>
+            <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>Carregando...</div>
           )}
           {error && !loading && (
             <div className="text-[13px] font-bold" style={{ color: 'var(--color-accent)' }}>{error}</div>
@@ -90,7 +90,7 @@ export default function ProcessoPage() {
                   </span>
                 )}
                 {p.modalidade && (
-                  <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-600)' }}>
+                  <span className="text-[12px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>
                     {p.modalidade}
                   </span>
                 )}
@@ -102,7 +102,7 @@ export default function ProcessoPage() {
               >
                 {p.objeto || p.numero}
               </h1>
-              <div className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-600)' }}>
+              <div className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-700)' }}>
                 {p.organ || 'Órgão'} · Processo {p.numero}
                 {p.uf ? ` · ${p.uf}` : ''}
               </div>
@@ -118,7 +118,7 @@ export default function ProcessoPage() {
               </h2>
               <div style={{ borderTop: '2px solid var(--color-text)' }}>
                 {(p.timeline || []).length === 0 && (
-                  <div className="py-6 text-[13px]" style={{ color: 'var(--color-neutral-500)' }}>
+                  <div className="py-6 text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
                     Sem atos registrados.
                   </div>
                 )}
@@ -128,7 +128,7 @@ export default function ProcessoPage() {
                     className="flex gap-4 py-4"
                     style={{ borderBottom: '1px solid var(--color-divider)' }}
                   >
-                    <div className="w-24 shrink-0 text-[12px] font-bold" style={{ color: 'var(--color-neutral-500)' }}>
+                    <div className="w-24 shrink-0 text-[12px] font-bold" style={{ color: 'var(--color-neutral-700)' }}>
                       {formatDate(ato.published_date)}
                     </div>
                     <div className="min-w-0">
@@ -139,7 +139,7 @@ export default function ProcessoPage() {
                         {ato.title}
                       </div>
                       {ato.value != null && (
-                        <div className="text-[12px] mt-0.5" style={{ color: 'var(--color-neutral-500)' }}>
+                        <div className="text-[12px] mt-0.5" style={{ color: 'var(--color-neutral-700)' }}>
                           {formatMoney(ato.value)}
                         </div>
                       )}
@@ -155,19 +155,19 @@ export default function ProcessoPage() {
               </h2>
               <dl className="space-y-3">
                 <div>
-                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-500)' }}>Valor</dt>
+                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-700)' }}>Valor</dt>
                   <dd className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>{formatMoney(p.valor) || '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-500)' }}>Abertura</dt>
+                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-700)' }}>Abertura</dt>
                   <dd className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>{formatDate(p.data_abertura) || '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-500)' }}>Primeira publicação</dt>
+                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-700)' }}>Primeira publicação</dt>
                   <dd className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>{formatDate(p.data_primeira_publicacao) || '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-500)' }}>Atos</dt>
+                  <dt className="text-[11px] font-bold uppercase" style={{ color: 'var(--color-neutral-700)' }}>Atos</dt>
                   <dd className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>{p.total_artigos ?? (p.timeline || []).length}</dd>
                 </div>
               </dl>

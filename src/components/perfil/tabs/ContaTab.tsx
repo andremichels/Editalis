@@ -34,13 +34,13 @@ export interface ActivityItem {
 }
 
 const sectionLabel = 'text-[11px] font-bold uppercase';
-const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-600)' };
+const sectionLabelStyle = { letterSpacing: '0.14em', color: 'var(--color-neutral-700)' };
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex justify-between items-center cursor-pointer py-3" style={{ borderBottom: '1px solid var(--color-divider)' }}>
       <span className="text-sm">{label}</span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-[18px] h-[18px]" style={{ accentColor: 'var(--color-accent)' }} />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="w-[18px] h-[18px]" style={{ accentColor: 'var(--color-text)' }} />
     </label>
   );
 }
@@ -104,7 +104,7 @@ export function ContaTab({
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {preferences.ufs_padrao.map((uf) => (
-                  <span key={uf} className="text-xs font-bold py-1 px-2 flex items-center gap-1.5" style={{ background: 'var(--color-accent)', color: '#fff' }}>
+                  <span key={uf} className="text-xs font-bold py-1 px-2 flex items-center gap-1.5" style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
                     {uf}
                     <button
                       onClick={() => onPreferencesChange({ ...preferences, ufs_padrao: preferences.ufs_padrao.filter((u) => u !== uf) })}
@@ -136,7 +136,7 @@ export function ContaTab({
                   checked={preferences.favoritar_ao_baixar}
                   onChange={(e) => onPreferencesChange({ ...preferences, favoritar_ao_baixar: e.target.checked })}
                   className="w-[18px] h-[18px]"
-                  style={{ accentColor: 'var(--color-accent)' }}
+                  style={{ accentColor: 'var(--color-text)' }}
                 />
               </label>
             </div>
@@ -172,7 +172,7 @@ export function ContaTab({
                   checked={notifications.notificacao_app}
                   onChange={(e) => onNotificationsChange({ ...notifications, notificacao_app: e.target.checked })}
                   className="w-[18px] h-[18px]"
-                  style={{ accentColor: 'var(--color-accent)' }}
+                  style={{ accentColor: 'var(--color-text)' }}
                 />
               </label>
             </div>
@@ -185,13 +185,13 @@ export function ContaTab({
         <div className="p-6" style={{ borderBottom: '2px solid var(--color-text)' }}>
           <div className={`${sectionLabel} mb-3.5`} style={sectionLabelStyle}>Atividade recente</div>
           {activity.length === 0 ? (
-            <p className="text-[13px]" style={{ color: 'var(--color-neutral-600)' }}>Nenhuma atividade ainda.</p>
+            <p className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>Nenhuma atividade ainda.</p>
           ) : (
             <div className="flex flex-col gap-3.5 text-[13px]">
               {activity.map((a) => (
                 <div key={a.id}>
                   <div className="font-extrabold">{a.description}</div>
-                  <div style={{ color: 'var(--color-neutral-600)' }}>{new Date(a.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
+                  <div style={{ color: 'var(--color-neutral-700)' }}>{new Date(a.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
               ))}
             </div>
