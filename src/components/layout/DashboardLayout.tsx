@@ -12,7 +12,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
       {/* Desktop + tablet layout */}
       <div className="grid lg:grid-cols-[232px_1fr] min-h-screen">
-        <aside className="hidden lg:block" style={{ borderRight: '2px solid var(--color-divider)', background: 'var(--color-surface)' }}>
+        <aside className="hidden lg:block sticky top-0 h-screen self-start" style={{ borderRight: '2px solid var(--color-divider)', background: 'var(--color-surface)' }}>
           <Sidebar />
         </aside>
         <div style={{ background: 'var(--color-bg)' }} className="min-w-0 pb-16 lg:pb-0">

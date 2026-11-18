@@ -55,7 +55,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   ];
 
   return (
-    <div className="flex flex-col py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-400)' }}>
+    <div className="flex flex-col h-full overflow-y-auto py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-400)' }}>
       <div className="px-5 pb-6 mb-5" style={{ borderBottom: '1px solid var(--color-neutral-800)' }}>
         <div className="text-[19px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: '#fff' }}>
           EDITALIS
