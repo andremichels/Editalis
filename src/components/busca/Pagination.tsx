@@ -20,11 +20,11 @@ export function Pagination({ pages, current, onPage }: { pages: number; current:
   }
 
   return (
-    <div className="py-6 px-10 flex gap-2 items-center">
+    <nav aria-label="Páginas" className="pt-8 flex gap-2 items-center flex-wrap">
       {current > 1 && (
         <button
           onClick={() => onPage(current - 1)}
-          className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"
+          className="h-11 min-w-11 text-[14px] font-bold px-3.5 cursor-pointer"
           style={{ border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
         >
           ← Anterior
@@ -37,7 +37,7 @@ export function Pagination({ pages, current, onPage }: { pages: number; current:
           <button
             key={page}
             onClick={() => onPage(page)}
-            className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"
+            className="h-11 min-w-11 text-[14px] font-bold px-3.5 cursor-pointer"
             style={page === current
               ? { border: '2px solid var(--color-text)', background: 'var(--color-text)', color: '#fff' }
               : { border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
@@ -49,12 +49,12 @@ export function Pagination({ pages, current, onPage }: { pages: number; current:
       {current < pages && (
         <button
           onClick={() => onPage(current + 1)}
-          className="text-[13px] font-bold py-2 px-3.5 cursor-pointer"
+          className="h-11 min-w-11 text-[14px] font-bold px-3.5 cursor-pointer"
           style={{ border: '2px solid var(--color-text)', background: 'transparent', color: 'var(--color-text)' }}
         >
           Próxima →
         </button>
       )}
-    </div>
+    </nav>
   );
 }

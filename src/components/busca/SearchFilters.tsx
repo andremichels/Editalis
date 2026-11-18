@@ -24,35 +24,54 @@ interface SearchFiltersProps {
   setDateFrom: (v: string) => void;
   dateTo: string;
   setDateTo: (v: string) => void;
+  /** Escopo: só os setores/UFs do perfil × todo o Diário */
+  sectorOnly: boolean;
+  onSectorOnly: (v: boolean) => void;
+  /** "Comunicação, Tecnologia · DF, SP" — resumo do perfil, quando há */
+  scopeSummary?: string;
   /** só no celular: fecha a gaveta de filtros */
   onDone?: () => void;
   onClear: () => void;
 }
 
-const inputStyle = { border: '1px solid var(--color-neutral-400)', background: 'var(--color-neutral-100)' };
+const inputStyle = { border: '1px solid var(--color-text)', background: 'var(--color-field)', color: 'var(--color-text)' };
+const boxStyle = { width: 18, height: 18, accentColor: 'var(--color-text)' } as const;
 
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="py-4" style={{ borderTop: '1px solid var(--color-divider)' }}>
-      <div className="text-[13px] font-extrabold mb-2.5">{title}</div>
+    <fieldset className="m-0 p-0 border-0 flex flex-col gap-2.5 min-w-0">
+      <legend className="p-0 pb-2.5 text-[14px] font-bold">{title}</legend>
       {children}
-    </div>
+    </fieldset>
   );
 }
+
+/** "AAAA-MM-DD" de N dias atrás */
+function daysAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+const PERIODS = [
+  { label: '7 dias', days: 7 },
+  { label: '30 dias', days: 30 },
+  { label: '12 meses', days: 365 },
+];
 
 const ALL_MODALIDADES = ['pregao', 'pregao_eletronico', 'concorrencia', 'dispensa', 'inexigibilidade', 'tomada_precos', 'concurso', 'leilao', 'rdc'];
 
 function CheckboxGroup({ options, selected, onChange, labelFor }: { options: string[]; selected: string[]; onChange: (v: string[]) => void; labelFor?: (v: string) => string }) {
   return (
-    <div className="max-h-[180px] overflow-y-auto">
+    <div className="flex flex-col gap-2.5">
       {options.map((opt) => {
         const checked = selected.includes(opt);
         return (
-          <label key={opt} className="flex items-center gap-2 text-[13px] py-1 cursor-pointer">
+          <label key={opt} className="flex items-center gap-2.5 text-[14px] cursor-pointer">
             <input
               type="checkbox"
               checked={checked}
-              style={{ accentColor: 'var(--color-text)' }}
+              style={boxStyle}
               onChange={() => {
                 onChange(checked ? selected.filter((s) => s !== opt) : [...selected, opt]);
               }}
@@ -75,10 +94,14 @@ export function SearchFilters({
   valueMax, setValueMax,
   dateFrom, setDateFrom,
   dateTo, setDateTo,
+  sectorOnly, onSectorOnly, scopeSummary,
   onDone, onClear,
 }: SearchFiltersProps) {
 
   const [orgInput, setOrgInput] = useState('');
+  const [customPeriod, setCustomPeriod] = useState(false);
+  const activePeriod = !dateTo ? PERIODS.find((p) => dateFrom === daysAgo(p.days)) : undefined;
+  const showDates = customPeriod || (!!(dateFrom || dateTo) && !activePeriod);
 
   const addOrgan = () => {
     const v = orgInput.trim();
@@ -89,11 +112,24 @@ export function SearchFilters({
   };
 
   return (
-    <div className="py-6 px-5">
-      <div className="flex justify-between items-baseline mb-5">
-        <span className="text-[12px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</span>
-        <button onClick={onClear} className="text-[13px] underline border-0 bg-transparent cursor-pointer py-1" style={{ color: 'var(--color-text)' }}>limpar tudo</button>
+    <div className="pt-6 pb-12 px-5 lg:pl-12 lg:pr-6 flex flex-col gap-7">
+      <div className="flex justify-between items-baseline">
+        <h2 className="text-[13px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>Filtros</h2>
+        <button onClick={onClear} className="h-8 text-[13px] font-semibold underline border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-text)' }}>Limpar</button>
       </div>
+
+      <FilterGroup title="Escopo">
+        <label className="flex items-center gap-2.5 text-[14px] cursor-pointer">
+          <input type="radio" name="escopo" checked={sectorOnly} onChange={() => onSectorOnly(true)} style={boxStyle} /> Meus setores e UFs
+        </label>
+        <label className="flex items-center gap-2.5 text-[14px] cursor-pointer">
+          <input type="radio" name="escopo" checked={!sectorOnly} onChange={() => onSectorOnly(false)} style={boxStyle} /> Todo o Diário Oficial
+        </label>
+        <p className="text-[12px] leading-[1.45]" style={{ color: 'var(--color-muted)' }}>
+          {scopeSummary ? `${scopeSummary} · ` : ''}
+          <a href="/setores" className="underline" style={{ color: 'var(--color-muted)' }}>editar</a>
+        </p>
+      </FilterGroup>
 
       <FilterGroup title="Setores">
         {availableVerticals === null ? (
@@ -111,11 +147,12 @@ export function SearchFilters({
                   key={v.slug}
                   type="button"
                   onClick={() => setVerticals(active ? verticals.filter((s) => s !== v.slug) : [...verticals, v.slug])}
-                  className="text-[12px] px-2.5 py-1.5 font-bold cursor-pointer transition-all"
+                  aria-pressed={active}
+                  className={`h-8 text-[13px] px-2.5 cursor-pointer ${active ? 'font-bold' : 'font-semibold'}`}
                   style={{
                     background: active ? 'var(--color-text)' : 'transparent',
                     color: active ? '#fff' : 'var(--color-text)',
-                    border: `2px solid ${active ? 'var(--color-text)' : 'var(--color-neutral-400)'}`,
+                    border: `1px solid ${active ? 'var(--color-text)' : 'var(--color-neutral-400)'}`,
                   }}
                 >
                   {v.name}
@@ -135,66 +172,98 @@ export function SearchFilters({
       </FilterGroup>
 
       <FilterGroup title="Órgão">
-        <div className="flex gap-1 mb-2">
+        {organs.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {organs.map((o) => (
+              <button
+                key={o}
+                type="button"
+                onClick={() => setOrgans(organs.filter((x) => x !== o))}
+                className="inline-flex items-center gap-1.5 h-8 px-2.5 text-[13px] font-bold cursor-pointer text-left"
+                style={{ background: 'var(--color-text)', color: '#fff', border: 0 }}
+                aria-label={`Remover ${o}`}
+              >
+                {o} <span aria-hidden>×</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="flex">
+          <label htmlFor="filtro-orgao" className="sr-only-text">Adicionar órgão</label>
           <input
+            id="filtro-orgao"
             value={orgInput}
             onChange={(e) => setOrgInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addOrgan()}
-            placeholder="Prefeitura, ministério..."
-            className="flex-1 p-2 text-[13px]"
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addOrgan(); } }}
+            placeholder="Prefeitura, ministério…"
+            className="flex-1 min-w-0 h-11 px-3 text-[14px]"
             style={inputStyle}
           />
-          <button onClick={addOrgan} className="text-[13px] px-3 border-0 cursor-pointer font-bold" style={{ background: 'var(--color-text)', color: '#fff' }}>+</button>
+          <button onClick={addOrgan} className="h-11 px-3.5 text-[14px] cursor-pointer font-bold" style={{ background: 'var(--color-text)', color: '#fff', border: '1px solid var(--color-text)' }} aria-label="Adicionar órgão">+</button>
         </div>
-        {organs.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {organs.map((o) => (
-              <span key={o} className="text-[12px] pl-2 flex items-center gap-1" style={{ background: 'var(--color-neutral-200)' }}>
-                {o}
-                <button onClick={() => setOrgans(organs.filter((x) => x !== o))} className="w-7 h-7 text-[15px] border-0 bg-transparent cursor-pointer" style={{ color: 'var(--color-text)' }} aria-label={`Remover ${o}`}>×</button>
-              </span>
-            ))}
+      </FilterGroup>
+
+      <FilterGroup title="Valor estimado">
+        <div className="flex gap-2">
+          <label className="flex-1 flex flex-col gap-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            Mínimo
+            <input type="number" inputMode="numeric" placeholder="R$ 0" value={valueMin} onChange={(e) => setValueMin(e.target.value)} className="h-11 min-w-0 px-2.5 text-[14px]" style={inputStyle} />
+          </label>
+          <label className="flex-1 flex flex-col gap-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+            Máximo
+            <input type="number" inputMode="numeric" placeholder="sem limite" value={valueMax} onChange={(e) => setValueMax(e.target.value)} className="h-11 min-w-0 px-2.5 text-[14px]" style={inputStyle} />
+          </label>
+        </div>
+      </FilterGroup>
+
+      <FilterGroup title="Publicado">
+        <div className="flex flex-wrap gap-1.5">
+          {PERIODS.map((p) => {
+            const active = activePeriod?.days === p.days && !customPeriod;
+            return (
+              <button
+                key={p.days}
+                type="button"
+                aria-pressed={active}
+                onClick={() => { setCustomPeriod(false); setDateTo(''); setDateFrom(active ? '' : daysAgo(p.days)); }}
+                className={`h-8 px-2.5 text-[13px] cursor-pointer ${active ? 'font-bold' : 'font-semibold'}`}
+                style={{ border: '1px solid var(--color-text)', background: active ? 'var(--color-text)' : 'transparent', color: active ? '#fff' : 'var(--color-text)' }}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            aria-pressed={showDates}
+            onClick={() => setCustomPeriod(!showDates)}
+            className={`h-8 px-2.5 text-[13px] cursor-pointer ${showDates ? 'font-bold' : 'font-semibold'}`}
+            style={{ border: '1px solid var(--color-text)', background: showDates ? 'var(--color-text)' : 'transparent', color: showDates ? '#fff' : 'var(--color-text)' }}
+          >
+            Período…
+          </button>
+        </div>
+        {showDates && (
+          <div className="flex gap-2">
+            <label className="flex-1 flex flex-col gap-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+              De
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="h-11 min-w-0 px-2 text-[13px]" style={inputStyle} />
+            </label>
+            <label className="flex-1 flex flex-col gap-1 text-[12px]" style={{ color: 'var(--color-muted)' }}>
+              Até
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="h-11 min-w-0 px-2 text-[13px]" style={inputStyle} />
+            </label>
           </div>
         )}
       </FilterGroup>
 
-      <FilterGroup title="Valor estimado (R$)">
-        <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="mín."
-            value={valueMin}
-            onChange={(e) => setValueMin(e.target.value)}
-            className="w-full p-2 text-[13px]"
-            style={inputStyle}
-          />
-          <input
-            type="number"
-            placeholder="máx."
-            value={valueMax}
-            onChange={(e) => setValueMax(e.target.value)}
-            className="w-full p-2 text-[13px]"
-            style={inputStyle}
-          />
-        </div>
-      </FilterGroup>
-
-      <FilterGroup title="Período">
-        <div className="flex gap-2">
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-            className="w-full p-2 text-[13px]" style={inputStyle} />
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-            className="w-full p-2 text-[13px]" style={inputStyle} />
-        </div>
-      </FilterGroup>
-
-      <p className="text-[12px] pt-3" style={{ color: 'var(--color-neutral-700)' }}>
-        Os resultados atualizam sozinhos ao mudar um filtro.
+      <p className="text-[12px]" style={{ color: 'var(--color-muted)' }}>
+        Os filtros se aplicam na hora.
       </p>
       {onDone && (
         <button
           onClick={onDone}
-          className="w-full mt-3 py-3 text-sm font-bold cursor-pointer text-left px-4"
+          className="w-full h-12 text-sm font-bold cursor-pointer text-left px-4"
           style={{ background: 'var(--color-text)', color: 'var(--color-bg)', border: 'none' }}
         >
           Ver resultados

@@ -1,6 +1,5 @@
 'use client';
 
-import { Search } from 'lucide-react';
 import { useState } from 'react';
 
 export type SearchMode = 'palavras' | 'semantica' | 'ia';
@@ -32,8 +31,6 @@ export function SearchHeader({
   mode,
   onModeChange,
   onSmartSearch,
-  sectorOnly,
-  onSectorOnly,
   initialQuery = '',
 }: {
   onSearch: (q: string) => void;
@@ -41,8 +38,6 @@ export function SearchHeader({
   mode: SearchMode;
   onModeChange: (m: SearchMode) => void;
   onSmartSearch: (q: string) => void;
-  sectorOnly: boolean;
-  onSectorOnly: (v: boolean) => void;
   /** texto restaurado da última busca (ao voltar de uma publicação) */
   initialQuery?: string;
 }
@@ -66,31 +61,9 @@ export function SearchHeader({
   };
 
   return (
-    <div className="py-6 px-6 sm:px-10" style={{ borderBottom: '2px solid var(--color-text)' }}>
-      <form onSubmit={handleSubmit} className="flex" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
-        <div className="flex items-center px-3.5" style={{ color: 'var(--color-neutral-700)' }}>
-          <Search size={18} />
-        </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 border-0 bg-transparent py-4 text-base outline-none"
-          placeholder={current.placeholder}
-          aria-label="Buscar no Diário Oficial"
-          autoFocus
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="text-sm font-bold text-white px-6 cursor-pointer disabled:opacity-50"
-          style={{ borderLeft: '2px solid var(--color-text)', background: 'var(--color-text)' }}
-        >
-          {loading ? 'Buscando…' : 'Buscar'}
-        </button>
-      </form>
-
-      <div className="flex items-center gap-x-5 gap-y-2 mt-3 flex-wrap">
-        <div role="radiogroup" aria-label="Modo de busca" className="flex" style={{ border: '2px solid var(--color-text)' }}>
+    <header className="flex flex-col gap-3.5 pt-7 pb-5 px-4 sm:px-12" style={{ borderBottom: '2px solid var(--color-text)' }}>
+      <div className="flex gap-3 flex-wrap">
+        <div role="radiogroup" aria-label="Modo de busca" className="flex h-[52px] box-border" style={{ border: '2px solid var(--color-text)' }}>
           {MODES.map((m, i) => {
             const active = m.id === mode;
             return (
@@ -100,10 +73,11 @@ export function SearchHeader({
                 role="radio"
                 aria-checked={active}
                 onClick={() => onModeChange(m.id)}
-                className="text-[13px] font-bold py-1.5 px-3 cursor-pointer"
+                title={m.hint}
+                className={`text-[13px] px-3.5 cursor-pointer ${active ? 'font-bold' : 'font-semibold'}`}
                 style={{
-                  background: active ? 'var(--color-text)' : 'transparent',
-                  color: active ? 'var(--color-bg)' : 'var(--color-text)',
+                  background: active ? 'var(--color-text)' : 'var(--color-field)',
+                  color: active ? '#fff' : 'var(--color-text)',
                   borderLeft: i > 0 ? '2px solid var(--color-text)' : 'none',
                 }}
               >
@@ -113,39 +87,53 @@ export function SearchHeader({
           })}
         </div>
 
-        <label className="flex items-center gap-2 text-[13px] cursor-pointer py-1" style={{ color: 'var(--color-text)', fontWeight: sectorOnly ? 800 : 400 }}>
-          <input type="checkbox" checked={sectorOnly} onChange={(e) => onSectorOnly(e.target.checked)} className="cursor-pointer w-4 h-4" style={{ accentColor: 'var(--color-text)' }} />
-          Somente meu setor
-        </label>
+        <form onSubmit={handleSubmit} role="search" className="flex flex-[1_1_420px] min-w-0">
+          <label htmlFor="busca-q" className="sr-only-text">Buscar no Diário Oficial</label>
+          <input
+            id="busca-q"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 min-w-0 h-[52px] box-border px-4 text-[16px] font-medium"
+            style={{ border: '2px solid var(--color-text)', borderRight: 0, background: 'var(--color-field)', color: 'var(--color-text)' }}
+            placeholder={current.placeholder}
+            autoFocus
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="h-[52px] px-[26px] text-[15px] font-bold cursor-pointer disabled:opacity-60"
+            style={{ border: '2px solid var(--color-text)', background: 'var(--color-text)', color: '#fff' }}
+          >
+            {loading ? 'Buscando…' : 'Buscar'}
+          </button>
+        </form>
       </div>
 
-      <div className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-700)' }}>
-        {current.hint}{' '}
-        {mode === 'palavras' && (
-          <button
-            type="button"
-            onClick={() => setShowHelp(!showHelp)}
-            className="underline cursor-pointer"
-            style={{ color: 'var(--color-text)' }}
-          >
-            {showHelp ? 'Ocultar exemplos' : 'Ver exemplos'}
-          </button>
+      <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
+        {mode === 'palavras' ? (
+          <>
+            Dica: use aspas para frase exata e <strong style={{ color: 'var(--color-text)' }}>-</strong> para excluir —{' '}
+            <span className="font-mono" style={{ color: 'var(--color-text)' }}>&quot;fábrica de software&quot; -manutenção</span> ·{' '}
+            <button type="button" onClick={() => setShowHelp(!showHelp)} className="underline font-semibold cursor-pointer" style={{ color: 'var(--color-text)' }}>
+              {showHelp ? 'Ocultar operadores' : 'Ver todos os operadores'}
+            </button>
+          </>
+        ) : (
+          current.hint
         )}
-      </div>
+      </p>
 
       {showHelp && mode === 'palavras' && (
-        <div className="mt-2 p-3 text-[13px] leading-relaxed max-w-2xl" style={{ background: 'var(--color-neutral-100)', border: '1px solid var(--color-divider)' }}>
+        <div className="p-3 text-[13px] leading-relaxed max-w-2xl" style={{ background: 'var(--color-field)', border: '1px solid var(--color-line)' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-            <div><b style={{ color: 'var(--color-text)' }}>termo1 termo2</b> → precisa ter os dois</div>
-            <div><b style={{ color: 'var(--color-text)' }}>termo1 OR termo2</b> → qualquer um dos dois</div>
-            <div><b style={{ color: 'var(--color-text)' }}>-termo</b> → exclui quem tiver este termo</div>
-            <div><b style={{ color: 'var(--color-text)' }}>&quot;frase exata&quot;</b> → a frase inteira, nessa ordem</div>
-          </div>
-          <div className="mt-1.5" style={{ color: 'var(--color-neutral-700)' }}>
-            Ex.: <b>pregão OR concorrência &quot;são paulo&quot; -dispensa</b>
+            <div><b>termo1 termo2</b> → precisa ter os dois</div>
+            <div><b>termo1 OR termo2</b> → qualquer um dos dois</div>
+            <div><b>-termo</b> → exclui quem tiver este termo</div>
+            <div><b>&quot;frase exata&quot;</b> → a frase inteira, nessa ordem</div>
           </div>
         </div>
       )}
-    </div>
+    </header>
   );
 }
