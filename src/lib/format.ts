@@ -355,3 +355,28 @@ export function openingWhen(value?: string | null): string {
 export function articleUfs(a: Article): string {
   return (a.normalized_data?.ufs ?? []).filter(Boolean).join(', ');
 }
+
+/**
+ * Oportunidade = algo em que ainda dá para entrar (aviso de licitação,
+ * edital, chamamento, com data de abertura ou modalidade). O resto —
+ * extratos, aditivos, resultados — é movimentação.
+ */
+export function isOpportunity(a: Article): boolean {
+  const nd = a.normalized_data;
+  if (nd?.opening_date) return true;
+  const kind = fold(articleKind(a));
+  if (/(extrato|aditivo|resultado|homologa|adjudica|ratifica|rescis|apostil|penalidade|sancao)/.test(kind)) return false;
+  return /(aviso de licitacao|edital|chamamento|pregao|concorrencia|credenciamento|intencao de registro|licitacao)/.test(kind) || !!nd?.modality;
+}
+
+/** "Hoje", "Ontem · 17/11" ou "Seg · 16/11" para agrupar listas por dia. */
+export function dayGroupLabel(value?: string | null): string {
+  const days = daysUntil(value);
+  const d = parseDate(value);
+  if (days == null || !d) return 'Sem data';
+  if (days === 0) return 'Hoje';
+  const short = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  if (days === -1) return `Ontem · ${short}`;
+  const weekday = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${short}`;
+}

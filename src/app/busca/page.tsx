@@ -81,6 +81,10 @@ export default function BuscaPage() {
   // Última busca da sessão (ao voltar de uma publicação): inicializa os filtros
   // direto no estado; a tela fica atrás do esqueleto do AuthGuard no 1º render.
   const [saved] = useState<SavedSearch | null>(() => (typeof window === "undefined" ? null : readSavedSearch()));
+  // ?q=… vindo do Painel: busca esse termo (por cima da última busca, se houver)
+  const [urlQuery] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("q")?.trim() || null,
+  );
   const router = useRouter();
 
   const [query, setQuery] = useState("");
@@ -115,8 +119,10 @@ export default function BuscaPage() {
   const restoredRef = useRef(saved !== null);
   // Ignora respostas de buscas antigas (filtros mudam rápido e as buscas se cruzam)
   const requestId = useRef(0);
-  const pendingRestore = useRef<SavedSearch | null>(saved);
-  const initialQuery = saved?.q ?? "";
+  const pendingRestore = useRef<{ q: string; page: number } | null>(
+    urlQuery ? { q: urlQuery, page: 1 } : saved,
+  );
+  const initialQuery = urlQuery ?? saved?.q ?? "";
 
 
 
