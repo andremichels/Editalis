@@ -23,7 +23,7 @@ export function SimilarArticles({ slug }: { slug: string }) {
   if (articles.length === 0) return null;
 
   return (
-    <div className="py-8 px-10" style={{ borderTop: '2px solid var(--color-divider)' }}>
+    <div className="py-8 px-10 print:hidden" style={{ borderTop: '2px solid var(--color-divider)' }}>
       <div className="text-[11px] font-bold uppercase mb-4" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
         Publicações semelhantes
       </div>

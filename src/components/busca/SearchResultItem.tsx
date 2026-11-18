@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { Article } from '@/lib/types';
-import { KindTag, OpeningBadge } from '@/components/articles/ArticleRow';
+import { KindTag, OpeningBadge, ReadMark } from '@/components/articles/ArticleRow';
+import { useIsRead } from '@/lib/useReads';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import {
   articleKind,
@@ -22,6 +25,7 @@ export function SearchResultItem({ article, query }: SearchResultItemProps) {
   const ufs = nd?.ufs?.filter(Boolean) ?? [];
   const value = formatMoney(nd?.value);
   const snippet = nd?.summary || highlightSnippet(article.content || article.excerpt, query);
+  const read = useIsRead(article.id);
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-6 py-5 px-10" style={{ borderBottom: '1px solid var(--color-divider)' }}>
@@ -32,11 +36,12 @@ export function SearchResultItem({ article, query }: SearchResultItemProps) {
           <span className="text-[12px]" style={{ color: 'var(--color-neutral-700)' }}>
             {nd?.process_number && `nº ${nd.process_number} · `}publicado em {formatDateShort(article.published_date)}
           </span>
+          <ReadMark articleId={article.id} />
         </div>
         <Link
           href={`/artigo/${article.slug}`}
-          className="block text-[15px] font-bold leading-snug mb-1 hover:underline"
-          style={{ color: 'var(--color-text)' }}
+          className={`block text-[15px] leading-snug mb-1 hover:underline ${read ? 'font-semibold' : 'font-bold'}`}
+          style={{ color: read ? 'var(--color-neutral-700)' : 'var(--color-text)' }}
         >
           {articleTitle(article)}
         </Link>

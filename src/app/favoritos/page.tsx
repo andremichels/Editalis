@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ArticleRow, ArticleRowSkeleton } from "@/components/articles/ArticleRow";
+import { EMPTY_META, FavoriteMetaControls, type FavoritesMeta } from "@/components/favoritos/FavoriteMeta";
+import { useToast } from "@/components/Toast";
 import { useFavorites } from "@/lib/useFavorites";
 import { articleOrgan, articleTitle, daysUntil, fold, parseDate } from "@/lib/format";
 import type { Article } from "@/lib/types";
@@ -47,6 +49,53 @@ export default function FavoritesPage() {
   const [articles, setArticles] = useState<Article[] | null>(null);
   const [text, setText] = useState("");
   const [order, setOrder] = useState<Order>("recentes");
+  // Pastas e notas (GET/PUT /favorites/meta). "" = todas; "__none" = sem pasta.
+  const [meta, setMeta] = useState<FavoritesMeta>(EMPTY_META);
+  const [folder, setFolder] = useState("");
+  const [newFolder, setNewFolder] = useState<string | null>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    authFetch(`${API_BASE}/api/v1/favorites/meta`)
+      .then((r) => (r.ok ? r.json() : EMPTY_META))
+      .then((m: FavoritesMeta) => setMeta({ folders: m.folders ?? [], items: m.items ?? {} }))
+      .catch(() => {});
+  }, []);
+
+  // Salva 500ms depois da última mudança (o servidor guarda o estado inteiro).
+  const updateMeta = (next: FavoritesMeta) => {
+    setMeta(next);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      authFetch(`${API_BASE}/api/v1/favorites/meta`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(next),
+      })
+        .then((r) => { if (!r.ok) throw new Error(); })
+        .catch(() => toast("Não foi possível salvar pastas e notas", "error"));
+    }, 500);
+  };
+
+  const createFolder = () => {
+    const name = (newFolder ?? "").trim().slice(0, 60);
+    setNewFolder(null);
+    if (!name || meta.folders.includes(name)) return;
+    updateMeta({ ...meta, folders: [...meta.folders, name] });
+    setFolder(name);
+  };
+
+  const deleteFolder = (name: string) => {
+    if (!confirm(`Apagar a pasta “${name}”? As publicações continuam nos favoritos, sem pasta.`)) return;
+    const items = Object.fromEntries(
+      Object.entries(meta.items)
+        .map(([k, v]) => [k, v.folder === name ? { ...v, folder: "" } : v] as const)
+        .filter(([, v]) => v.note || v.folder),
+    );
+    updateMeta({ folders: meta.folders.filter((f) => f !== name), items });
+    setFolder("");
+  };
 
   // Uma única busca: /api/v1/favorites já devolve as publicações completas.
   useEffect(() => {
@@ -59,8 +108,12 @@ export default function FavoritesPage() {
   // Desfavoritar aqui some da lista na hora.
   const saved = (articles ?? []).filter((a) => favorites.has(a.id));
   const needle = fold(text.trim());
+  const folderOf = (a: Article) => meta.items[String(a.id)]?.folder ?? "";
+  const countIn = (f: string) => saved.filter((a) => (f === "__none" ? !folderOf(a) : folderOf(a) === f)).length;
   const visible = saved
-    .filter((a) => !needle || fold(`${articleTitle(a, 400)} ${articleOrgan(a)} ${a.normalized_data?.process_number ?? ""}`).includes(needle))
+    .filter((a) => !folder || (folder === "__none" ? !folderOf(a) : folderOf(a) === folder))
+    // o texto procura também nas notas
+    .filter((a) => !needle || fold(`${articleTitle(a, 400)} ${articleOrgan(a)} ${a.normalized_data?.process_number ?? ""} ${meta.items[String(a.id)]?.note ?? ""}`).includes(needle))
     .sort(ORDERS.find((o) => o.id === order)!.compare);
 
   const loading = !loaded || articles === null;
@@ -83,7 +136,7 @@ export default function FavoritesPage() {
               type="search"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Filtrar por objeto, órgão ou nº do processo"
+              placeholder="Filtrar por objeto, órgão, processo ou nota"
               aria-label="Filtrar favoritos"
               className="flex-1 min-w-[220px] max-w-md py-2 px-3 text-[14px]"
               style={{ border: "2px solid var(--color-text)", background: "var(--color-bg)", color: "var(--color-text)" }}
@@ -101,6 +154,66 @@ export default function FavoritesPage() {
                 ))}
               </select>
             </label>
+          </div>
+        )}
+
+        {!loading && saved.length > 0 && (
+          <div className="px-6 sm:px-10 py-3 flex flex-wrap items-center gap-2" role="tablist" aria-label="Pastas" style={{ borderBottom: "1px solid var(--color-divider)" }}>
+            {[
+              { id: "", label: "Todas", count: saved.length },
+              ...meta.folders.map((f) => ({ id: f, label: f, count: countIn(f) })),
+              ...(meta.folders.length ? [{ id: "__none", label: "Sem pasta", count: countIn("__none") }] : []),
+            ].map((f) => {
+              const active = folder === f.id;
+              return (
+                <span key={f.id || "all"} className="inline-flex items-stretch" style={{ border: `2px solid ${active ? "var(--color-text)" : "var(--color-neutral-400)"}`, background: active ? "var(--color-text)" : "transparent" }}>
+                  <button
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setFolder(f.id)}
+                    className="text-[13px] font-bold py-1.5 px-3 cursor-pointer"
+                    style={{ color: active ? "var(--color-bg)" : "var(--color-text)" }}
+                  >
+                    {f.label} <span style={{ opacity: 0.75 }}>{f.count}</span>
+                  </button>
+                  {active && f.id && f.id !== "__none" && (
+                    <button
+                      onClick={() => deleteFolder(f.id)}
+                      className="px-2 text-[15px] cursor-pointer"
+                      style={{ color: "var(--color-bg)", borderLeft: "1px solid var(--color-neutral-600)" }}
+                      aria-label={`Apagar a pasta ${f.label}`}
+                      title="Apagar pasta"
+                    >
+                      ×
+                    </button>
+                  )}
+                </span>
+              );
+            })}
+            {newFolder === null ? (
+              <button
+                onClick={() => setNewFolder("")}
+                className="text-[13px] font-bold underline cursor-pointer py-1.5 px-1"
+                style={{ color: "var(--color-text)" }}
+              >
+                + Nova pasta
+              </button>
+            ) : (
+              <form onSubmit={(e) => { e.preventDefault(); createFolder(); }} className="flex">
+                <input
+                  value={newFolder}
+                  onChange={(e) => setNewFolder(e.target.value)}
+                  onBlur={createFolder}
+                  onKeyDown={(e) => e.key === "Escape" && setNewFolder(null)}
+                  autoFocus
+                  maxLength={60}
+                  placeholder="Nome da pasta"
+                  aria-label="Nome da nova pasta"
+                  className="py-1.5 px-2 text-[13px] w-44"
+                  style={{ border: "2px solid var(--color-text)", background: "var(--color-bg)", color: "var(--color-text)" }}
+                />
+              </form>
+            )}
           </div>
         )}
 
@@ -124,9 +237,9 @@ export default function FavoritesPage() {
           ) : saved.length > 0 && visible.length === 0 ? (
             <div className="py-12 max-w-md">
               <p className="text-[14px]" style={{ color: "var(--color-neutral-700)" }}>
-                Nenhum favorito com “{text}”.{" "}
-                <button onClick={() => setText("")} className="underline font-bold cursor-pointer" style={{ color: "var(--color-text)" }}>
-                  Limpar filtro
+                {text ? <>Nenhum favorito com “{text}”{folder ? " nesta pasta" : ""}.</> : <>Nenhuma publicação nesta pasta ainda. Use “Pasta” em cada favorito para movê-lo.</>}{" "}
+                <button onClick={() => { setText(""); setFolder(""); }} className="underline font-bold cursor-pointer" style={{ color: "var(--color-text)" }}>
+                  Ver todos
                 </button>
               </p>
             </div>
@@ -140,7 +253,11 @@ export default function FavoritesPage() {
           ) : (
             <div>
               {visible.map((article) => (
-                <ArticleRow key={article.id} article={article} />
+                <ArticleRow
+                  key={article.id}
+                  article={article}
+                  extra={<FavoriteMetaControls articleId={article.id} meta={meta} onChange={updateMeta} />}
+                />
               ))}
             </div>
           )}

@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { Article } from '@/lib/types';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { useIsRead } from '@/lib/useReads';
 import {
   articleKind,
   articleOrgan,
@@ -20,6 +23,17 @@ export function KindTag({ children }: { children: ReactNode }) {
       style={{ letterSpacing: '0.06em', border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-700)' }}
     >
       {children}
+    </span>
+  );
+}
+
+/** "Lida": publicação já aberta por este usuário. */
+export function ReadMark({ articleId }: { articleId: number }) {
+  const read = useIsRead(articleId);
+  if (!read) return null;
+  return (
+    <span className="text-[12px]" style={{ color: 'var(--color-neutral-700)' }} title="Você já abriu esta publicação">
+      ✓ lida
     </span>
   );
 }
@@ -45,6 +59,7 @@ export function ArticleRow({ article, showFavorite = true, extra }: { article: A
   const nd = article.normalized_data;
   const ufs = nd?.ufs?.filter(Boolean) ?? [];
   const value = formatMoney(nd?.value);
+  const read = useIsRead(article.id);
 
   return (
     <div className="relative py-4 grid grid-cols-[1fr_auto] gap-4" style={{ borderBottom: '1px solid var(--color-divider)' }}>
@@ -54,11 +69,12 @@ export function ArticleRow({ article, showFavorite = true, extra }: { article: A
           <span className="text-[12px]" style={{ color: 'var(--color-neutral-700)' }}>
             {formatDateShort(article.published_date)}
           </span>
+          <ReadMark articleId={article.id} />
         </div>
         <Link
           href={`/artigo/${article.slug}`}
-          className="block text-[15px] font-bold leading-snug mb-1 hover:underline"
-          style={{ color: 'var(--color-text)' }}
+          className={`block text-[15px] leading-snug mb-1 hover:underline ${read ? 'font-semibold' : 'font-bold'}`}
+          style={{ color: read ? 'var(--color-neutral-700)' : 'var(--color-text)' }}
         >
           {articleTitle(article)}
         </Link>
