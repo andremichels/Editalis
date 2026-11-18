@@ -61,7 +61,7 @@ export function ArticleMeta({ article }: { article: Article }) {
               style={{ borderBottom: i < rows.length - 1 ? '1px solid var(--color-divider)' : 'none' }}
             >
               <span style={{ color: 'var(--color-neutral-700)' }}>{label}</span>
-              <span className="font-bold text-right" style={label === 'Abertura' && (daysUntil(n?.opening_date) ?? 99) >= 0 && (daysUntil(n?.opening_date) ?? 99) <= 3 ? { color: 'var(--color-accent)' } : undefined}>{value}</span>
+              <span className="font-bold text-right" style={label === 'Abertura' && (daysUntil(n?.opening_date) ?? 99) >= 0 && (daysUntil(n?.opening_date) ?? 99) <= 3 ? { color: 'var(--color-accent-text)' } : undefined}>{value}</span>
             </div>
           ))}
         </div>
