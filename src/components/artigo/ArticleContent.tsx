@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { Article } from '@/lib/types';
-import { articleTitle } from '@/lib/format';
+import { articleKind, articleTitle, keywordLabel, modalityLabel } from '@/lib/format';
 
 function formatContent(raw: string): React.ReactNode[] {
   const paragraphs = raw.split(/\n{2,}/);
@@ -12,16 +12,16 @@ function formatContent(raw: string): React.ReactNode[] {
     // Single line in all caps = header
     if (lines.length === 1 && lines[0].length < 120 && lines[0] === lines[0].toUpperCase() && lines[0].length > 5) {
       return (
-        <h3 key={i} className="text-sm font-extrabold mt-6 mb-2 tracking-wide"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
+        <h3 key={i} className="text-[15px] font-extrabold mt-5 first:mt-0 mb-2.5"
+          style={{ color: 'var(--color-text)' }}>
           {lines[0]}
         </h3>
       );
     }
 
     return (
-      <p key={i} className="mb-3 leading-[1.7] text-[15px]"
-        style={{ color: 'var(--color-neutral-800)' }}>
+      <p key={i} className="mb-3 last:mb-0 leading-[1.75] text-[15px]"
+        style={{ color: 'var(--color-text)' }}>
         {lines.map((line, j) => (
           <span key={j}>
             {line}
@@ -48,37 +48,47 @@ export function ArticleContent({ article }: { article: Article }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const n = article.normalized_data;
+  const resumo: [string, React.ReactNode][] = [
+    ...(summary ? [['O que é', summary] as [string, React.ReactNode]] : []),
+    ...(n?.modality ? [['Modalidade', modalityLabel(n.modality)] as [string, React.ReactNode]] : []),
+    ['Tipo de ato', articleKind(article)],
+    ...(n?.ufs?.length ? [['UF', n.ufs.join(', ')] as [string, React.ReactNode]] : []),
+    ...(n?.keywords?.length ? [['Assuntos', n.keywords.slice(0, 8).map(keywordLabel).join(' · ')] as [string, React.ReactNode]] : []),
+  ];
+  const h2 = 'text-[13px] font-bold uppercase';
+
   return (
-    <div className="py-8 px-10 min-w-0" style={{ borderRight: '2px solid var(--color-text)' }}>
-      {summary && (
-        <div className="mb-7 p-5" style={{ border: '2px solid var(--color-text)', background: 'var(--color-neutral-100)' }}>
-          <div className="text-[12px] font-bold uppercase mb-2" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
-            Resumo
-          </div>
-          <p className="text-[15px] leading-[1.6]" style={{ color: 'var(--color-neutral-800)' }}>
-            {summary}
-          </p>
-        </div>
+    <div className="flex flex-col gap-9 min-w-0">
+      {resumo.length > 1 && (
+        <section className="flex flex-col">
+          <h2 className={`${h2} mb-3`} style={{ letterSpacing: '0.14em' }}>Em resumo</h2>
+          <dl className="grid grid-cols-1 sm:grid-cols-[150px_minmax(0,1fr)]" style={{ borderTop: '1px solid var(--color-line)' }}>
+            {resumo.map(([label, value]) => (
+              <div key={label} className="contents">
+                <dt className="pt-3.5 sm:py-3.5 text-[14px] font-bold sm:border-b" style={{ borderColor: 'var(--color-line)' }}>{label}</dt>
+                <dd className="pb-3.5 sm:py-3.5 text-[15px] leading-[1.5]" style={{ borderBottom: '1px solid var(--color-line)' }}>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       )}
-      <div className="flex items-center justify-between mb-6">
-        <div className="text-[12px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
-          Texto da publicação
+
+      <section className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className={h2} style={{ letterSpacing: '0.14em' }}>Texto da publicação</h2>
+          <button
+            onClick={handleCopy}
+            className="h-9 px-3 text-[13px] font-semibold cursor-pointer print:hidden"
+            style={{ border: '1px solid var(--color-text)', background: copied ? 'var(--color-text)' : 'transparent', color: copied ? '#fff' : 'var(--color-text)' }}
+          >
+            {copied ? '✓ Copiado' : 'Copiar texto'}
+          </button>
         </div>
-        <button
-          onClick={handleCopy}
-          className="text-[13px] font-bold px-3 py-2 cursor-pointer transition-colors print:hidden"
-          style={{
-            border: '1px solid var(--color-neutral-400)',
-            color: copied ? '#155724' : 'var(--color-text)',
-            background: copied ? '#d4edda' : 'transparent',
-          }}
-        >
-          {copied ? '✓ Copiado' : 'Copiar texto'}
-        </button>
-      </div>
-      <div>
-        {formatContent(article.content)}
-      </div>
+        <div className="p-5 sm:p-6 max-w-[760px]" style={{ background: 'var(--color-field)', border: '1px solid var(--color-line)' }}>
+          {formatContent(article.content)}
+        </div>
+      </section>
     </div>
   );
 }
