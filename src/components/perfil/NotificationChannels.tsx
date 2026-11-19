@@ -21,7 +21,7 @@ const btnLine = { border: '2px solid var(--color-text)', background: 'transparen
 export function NotificationChannels() {
   const { status, reload } = useNotificationStatus();
   const { toast } = useToast();
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState<string | null>(null); // null = ainda não editado
   const [code, setCode] = useState('');
   const [step, setStep] = useState<'idle' | 'code'>('idle');
   const [busy, setBusy] = useState(false);
@@ -93,14 +93,14 @@ export function NotificationChannels() {
             className="flex flex-wrap items-end gap-2 mt-2"
             onSubmit={(e) => {
               e.preventDefault();
-              run(() => startWhatsapp(phone), 'Código enviado pelo WhatsApp', () => setStep('code'));
+              run(() => startWhatsapp(phone ?? wa.phone ?? ''), 'Código enviado pelo WhatsApp', () => setStep('code'));
             }}
           >
             <label className="flex flex-col gap-1 text-[13px] font-bold">
               Seu número com DDD
-              <input value={phone || wa.phone || ''} onChange={(e) => setPhone(e.target.value)} type="tel" autoComplete="tel" placeholder="(11) 91234-5678" className="h-11 w-56 px-3 text-[15px] font-normal" style={fieldStyle} />
+              <input value={phone ?? wa.phone ?? ''} onChange={(e) => setPhone(e.target.value)} type="tel" autoComplete="tel" placeholder="(11) 91234-5678" className="h-11 w-56 px-3 text-[15px] font-normal" style={fieldStyle} />
             </label>
-            <button type="submit" disabled={busy || !(phone || wa.phone)} className="h-11 px-4 text-[14px] font-bold cursor-pointer disabled:opacity-50" style={btnDark}>Enviar código</button>
+            <button type="submit" disabled={busy || !(phone ?? wa.phone ?? '').trim()} className="h-11 px-4 text-[14px] font-bold cursor-pointer disabled:opacity-50" style={btnDark}>Enviar código</button>
             <p className="w-full text-[12px]" style={{ color: 'var(--color-muted)' }}>Mandamos um código pelo WhatsApp para confirmar que o número é seu.</p>
           </form>
         )}
