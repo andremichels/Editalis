@@ -81,6 +81,10 @@ export default function BuscaPage() {
   // Última busca da sessão (ao voltar de uma publicação): inicializa os filtros
   // direto no estado; a tela fica atrás do esqueleto do AuthGuard no 1º render.
   const [saved] = useState<SavedSearch | null>(() => (typeof window === "undefined" ? null : readSavedSearch()));
+  // ?q=… vindo do Painel: busca esse termo (por cima da última busca, se houver)
+  const [urlQuery] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("q")?.trim() || null,
+  );
   const router = useRouter();
 
   const [query, setQuery] = useState("");
@@ -115,8 +119,10 @@ export default function BuscaPage() {
   const restoredRef = useRef(saved !== null);
   // Ignora respostas de buscas antigas (filtros mudam rápido e as buscas se cruzam)
   const requestId = useRef(0);
-  const pendingRestore = useRef<SavedSearch | null>(saved);
-  const initialQuery = saved?.q ?? "";
+  const pendingRestore = useRef<{ q: string; page: number } | null>(
+    urlQuery ? { q: urlQuery, page: 1 } : saved,
+  );
+  const initialQuery = urlQuery ?? saved?.q ?? "";
 
 
 
@@ -362,6 +368,34 @@ export default function BuscaPage() {
     ...(dateTo ? [{ key: 'dt', label: `até ${formatDateShort(dateTo)}`, remove: () => setDateTo('') }] : []),
   ];
 
+  const chipStyle = { border: "1px solid var(--color-text)", background: "var(--color-field)", color: "var(--color-text)" };
+  const chipList = (
+    <>
+      {chips.map((c) => (
+        <button
+          key={c.key}
+          type="button"
+          onClick={c.remove}
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 text-[13px] font-semibold cursor-pointer"
+          style={chipStyle}
+          aria-label={`Remover filtro ${c.label}`}
+        >
+          {c.label} <span aria-hidden>×</span>
+        </button>
+      ))}
+      {chips.length > 1 && (
+        <button
+          type="button"
+          onClick={() => { handleClearFilters(); setVerticals([]); }}
+          className="h-8 px-1.5 text-[13px] font-semibold underline cursor-pointer"
+          style={{ color: "var(--color-accent-text)", background: "transparent", border: 0 }}
+        >
+          Limpar tudo
+        </button>
+      )}
+    </>
+  );
+
   const activeFilterCount = organs.length + modalities.length + ufs.length
     + (valueMin ? 1 : 0) + (valueMax ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0);
 
@@ -369,7 +403,12 @@ export default function BuscaPage() {
     .map((slug) => availableVerticals?.find((v) => v.slug === slug)?.name)
     .filter(Boolean)
     .join(', ');
-  const profileScoped = verticals.length > 0 || ufs.length > 0 || !!valueMin;
+  const scopeSummary = sectorOnly
+    ? [verticalNames, ufs.join(', '), valueMin ? `a partir de ${formatMoney(valueMin)}` : ''].filter(Boolean).join(' · ')
+    : [
+        (profilePrefs?.verticals ?? []).map((slug) => availableVerticals?.find((v) => v.slug === slug)?.name).filter(Boolean).join(', '),
+        (profilePrefs?.ufs_padrao ?? []).join(', '),
+      ].filter(Boolean).join(' · ');
 
 
   return (
@@ -381,15 +420,13 @@ export default function BuscaPage() {
           mode={mode}
           onModeChange={handleModeChange}
           onSmartSearch={handleSmartSearch}
-          sectorOnly={sectorOnly}
-          onSectorOnly={handleSectorOnly}
           initialQuery={initialQuery}
         />
         {/* Mobile filters trigger */}
-        <div className="lg:hidden px-10 py-3 flex items-center" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+        <div className="lg:hidden px-4 sm:px-12 py-3 flex items-center" style={{ borderBottom: '1px solid var(--color-line)' }}>
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="text-[13px] font-bold py-2 px-4 cursor-pointer"
+            className="h-11 text-[14px] font-bold px-4 cursor-pointer"
             style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}
           >
             Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
@@ -419,6 +456,7 @@ export default function BuscaPage() {
                 valueMax={valueMax} setValueMax={setValueMax}
                 dateFrom={dateFrom} setDateFrom={setDateFrom}
                 dateTo={dateTo} setDateTo={setDateTo}
+                sectorOnly={sectorOnly} onSectorOnly={handleSectorOnly} scopeSummary={scopeSummary}
                 onDone={() => setMobileFiltersOpen(false)}
                 onClear={handleClearFilters}
               />
@@ -426,26 +464,7 @@ export default function BuscaPage() {
           </div>
         )}
 
-        {profileScoped && (
-          <div className="px-5 py-3 flex items-center justify-between gap-3" style={{ background: 'var(--color-neutral-100)', borderBottom: '1px solid var(--color-divider)' }}>
-            <span className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>
-              {verticalNames ? (
-                <>Buscando no seu setor: <strong>{verticalNames}</strong>{ufs.length > 0 ? ` · ${ufs.join('/')}` : ''}{valueMin ? ` · a partir de R$ ${Number(valueMin).toLocaleString('pt-BR')}` : ''}</>
-              ) : (
-                <>Filtros do seu perfil aplicados</>
-              )}
-            </span>
-            <button
-              onClick={() => handleSectorOnly(false)}
-              className="text-[13px] font-bold underline cursor-pointer border-0 bg-transparent shrink-0 py-1"
-              style={{ color: 'var(--color-text)' }}
-            >
-              mostrar tudo
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-[268px_1fr]" style={{ minHeight: 600 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[288px_minmax(0,1fr)]" style={{ minHeight: 600 }}>
           <div className="hidden lg:block" style={{ borderRight: '2px solid var(--color-text)' }}>
             <SearchFilters
               organs={organs} setOrgans={setOrgans}
@@ -457,52 +476,25 @@ export default function BuscaPage() {
               valueMax={valueMax} setValueMax={setValueMax}
               dateFrom={dateFrom} setDateFrom={setDateFrom}
               dateTo={dateTo} setDateTo={setDateTo}
+              sectorOnly={sectorOnly} onSectorOnly={handleSectorOnly} scopeSummary={scopeSummary}
               onClear={handleClearFilters}
             />
           </div>
-          <div className="min-w-0">
-            {chips.length > 0 && (
-              <div className="px-6 sm:px-10 py-3 flex flex-wrap items-center gap-2" style={{ borderBottom: '1px solid var(--color-divider)' }}>
-                {chips.map((c) => (
-                  <span key={c.key} className="inline-flex items-center text-[13px] font-bold pl-2.5" style={{ border: '2px solid var(--color-text)' }}>
-                    {c.label}
-                    <button
-                      type="button"
-                      onClick={c.remove}
-                      className="w-8 h-7 text-[16px] leading-none cursor-pointer"
-                      style={{ background: 'transparent', border: 'none', color: 'var(--color-text)' }}
-                      aria-label={`Remover filtro ${c.label}`}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {chips.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => { handleClearFilters(); setVerticals([]); }}
-                    className="text-[13px] underline cursor-pointer py-1"
-                    style={{ color: 'var(--color-text)' }}
-                  >
-                    limpar tudo
-                  </button>
-                )}
-              </div>
-            )}
+          <div className="min-w-0 px-4 sm:px-12 pb-16">
             {!searched ? (
-              <div className="py-16 px-6 sm:px-10">
+              <div className="py-16">
                 <p className="text-[14px]" style={{ color: "var(--color-neutral-700)" }}>
                   Digite o que procura no campo acima — um assunto, um órgão ou um número de processo.
                 </p>
               </div>
             ) : loading ? (
-              <div className="py-16 px-10 space-y-4">
+              <div className="py-10 space-y-4">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="h-24 skeleton" />
                 ))}
               </div>
             ) : results.length === 0 ? (
-              <div className="py-16 px-10 max-w-xl">
+              <div className="py-16 max-w-xl">
                 {unscopedTotal ? (
                   <>
                     <p className="text-[15px] font-bold mb-1">Nenhum resultado no seu setor.</p>
@@ -529,7 +521,7 @@ export default function BuscaPage() {
             ) : (
               <>
                 {smartFilters && (
-                <div className="px-10 py-3 text-sm" style={{ background: "var(--color-neutral-100)", borderBottom: "1px solid var(--color-divider)" }}>
+                <div className="mt-5 px-4 py-3 text-sm" style={{ background: "var(--color-field)", border: "1px solid var(--color-line)" }}>
                   <span style={{ color: "var(--color-neutral-700)" }}>Entendi: </span>
                   {smartFilters.modalities?.length > 0 && <span className="font-bold">{smartFilters.modalities.join(", ")} </span>}
                   {smartFilters.ufs?.length > 0 && <span className="font-bold">em {smartFilters.ufs.join(", ")} </span>}
@@ -537,7 +529,16 @@ export default function BuscaPage() {
                   {smartFilters.keywords?.length > 0 && <span style={{ color: "var(--color-neutral-700)" }}>— {smartFilters.keywords.join(" ")}</span>}
                 </div>
               )}
-              <SearchResultsHeader total={total.toLocaleString("pt-BR")} elapsed={elapsed} sortBy={sortBy} onSortChange={handleSortChange} onExportCsv={handleExportCsv} onSaveAlert={handleSaveAsAlert} />
+              <SearchResultsHeader
+                total={total.toLocaleString("pt-BR")}
+                query={query}
+                elapsed={elapsed}
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
+                onExportCsv={handleExportCsv}
+                onSaveAlert={handleSaveAsAlert}
+                chips={chips.length > 0 ? chipList : undefined}
+              />
                 {results.map((a) => (
                   <SearchResultItem
                     key={a.id}

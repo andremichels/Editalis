@@ -96,3 +96,15 @@ export function useIsRead(articleId: number): boolean {
     () => false,
   );
 }
+
+/** Todas as lidas (para filtrar listas, ex.: "Esconder vistos"). */
+export function useReadIds(): Set<number> {
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      init();
+      return reads;
+    },
+    () => EMPTY,
+  );
+}

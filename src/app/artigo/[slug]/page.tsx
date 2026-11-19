@@ -3,6 +3,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ArticleDetailHeader } from '@/components/artigo/ArticleDetailHeader';
 import { ArticleContent } from '@/components/artigo/ArticleContent';
 import { ArticleMeta } from '@/components/artigo/ArticleMeta';
+import { ArticleFacts } from '@/components/artigo/ArticleFacts';
 import { ArticleItems } from '@/components/artigo/ArticleItems';
 import { ArticleLinks } from '@/components/artigo/ArticleLinks';
 import { SimilarArticles } from '@/components/artigo/SimilarArticles';
@@ -30,17 +31,18 @@ export default async function ArticlePage({
       <DashboardLayout>
         <ArticleViewTracker id={article.id} slug={slug} title={articleTitle(article, 90)} docType={article.normalized_data?.doc_type} />
         <ArticleDetailHeader article={article} />
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
+        <ArticleFacts article={article} />
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-12 mt-10 mb-16 mx-4 sm:mx-12">
           <div className="min-w-0">
             <ArticleContent article={article} />
             <ArticleItems article={article} />
           </div>
-          <div>
+          <aside className="flex flex-col gap-8">
             <ArticleMeta article={article} />
             <ArticleLinks article={article} />
-          </div>
+            <SimilarArticles slug={slug} />
+          </aside>
         </div>
-        <SimilarArticles slug={slug} />
       </DashboardLayout>
     </AuthGuard>
   );

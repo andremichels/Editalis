@@ -71,7 +71,7 @@ export default function ProcessoPage() {
             <div className="text-[13px]" style={{ color: 'var(--color-neutral-700)' }}>Carregando...</div>
           )}
           {error && !loading && (
-            <div className="text-[13px] font-bold" style={{ color: 'var(--color-accent)' }}>{error}</div>
+            <div className="text-[13px] font-bold" style={{ color: 'var(--color-accent-text)' }}>{error}</div>
           )}
 
           {p && !loading && (
@@ -132,7 +132,7 @@ export default function ProcessoPage() {
                       {formatDate(ato.published_date)}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[11px] font-bold uppercase tracking-[0.04em] mb-0.5" style={{ color: 'var(--color-accent)' }}>
+                      <div className="text-[11px] font-bold uppercase tracking-[0.04em] mb-0.5" style={{ color: 'var(--color-accent-text)' }}>
                         {DOC_LABEL[ato.doc_type || ''] || 'Ato'}
                       </div>
                       <div className="text-[14px] font-bold leading-snug" style={{ color: 'var(--color-text)' }}>

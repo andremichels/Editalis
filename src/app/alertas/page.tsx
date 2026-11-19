@@ -39,7 +39,10 @@ export default function AlertasPage() {
   const [alerts, setAlerts] = useState<AlertProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [prefill] = useState(formFromPrefill);
-  const [showForm, setShowForm] = useState(prefill !== null);
+  // ?novo=1 (link "Criar alerta" do Painel) já abre o formulário vazio
+  const [showForm, setShowForm] = useState(
+    () => prefill !== null || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('novo') === '1'),
+  );
   const [editingId, setEditingId] = useState<number | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [form, setForm] = useState<AlertFormState>(prefill ?? emptyForm);
@@ -192,68 +195,52 @@ export default function AlertasPage() {
       <DashboardLayout>
         <DesktopOnlyNotice description="A criação e edição de alertas ainda não foi adaptada pro celular — abra pelo computador para gerenciar seus alertas." />
         <div className="hidden lg:block">
-        <div className="py-7 px-10 flex items-center justify-between" style={{ borderBottom: '2px solid var(--color-text)' }}>
-          <div>
-            <h1 className="text-[30px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
+        <header className="py-8 px-12 flex items-end justify-between gap-6 flex-wrap" style={{ borderBottom: '2px solid var(--color-text)' }}>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-[32px] font-extrabold tracking-[-0.02em]" style={{ fontFamily: 'var(--font-heading)', color: 'var(--color-text)' }}>
               Alertas
             </h1>
-            <div className="text-[13px] mt-1" style={{ color: 'var(--color-neutral-700)' }}>
+            <p className="text-[14px]" style={{ color: 'var(--color-muted)' }}>
               {subscription ? (
                 limit !== null
-                  ? `${alerts.length} de ${limit} alertas usados no plano ${subscription.plan_label}`
-                  : `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} · alertas ilimitados no plano ${subscription.plan_label}`
+                  ? `${alerts.length} de ${limit} alertas usados no plano ${subscription.plan_label} · avisamos quando sair publicação nova`
+                  : `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} · ilimitados no plano ${subscription.plan_label}`
               ) : (
-                `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} configurado${alerts.length !== 1 ? 's' : ''}`
+                `${alerts.length} alerta${alerts.length !== 1 ? 's' : ''} · avisamos quando sair publicação nova`
               )}
-            </div>
+            </p>
           </div>
           <button
+            type="button"
             onClick={() => {
-              if (!showForm && atLimit) {
+              if (atLimit) {
                 toast(`Limite de ${limit} alertas do plano ${subscription?.plan_label} atingido. Fale com o suporte para fazer upgrade.`, 'error');
                 return;
               }
               cancelForm();
-              setShowForm(!showForm);
+              setShowForm(true);
             }}
-            className="text-left py-3 px-5 text-sm font-bold cursor-pointer"
-            style={{ background: 'var(--color-accent)', border: '2px solid var(--color-accent)', color: '#fff' }}
+            className="h-12 px-[22px] text-[15px] font-bold cursor-pointer"
+            style={{ background: 'var(--color-accent)', border: 0, color: '#fff' }}
           >
-            {showForm && !isEditing ? 'Cancelar' : '+ Novo alerta'}
+            + Novo alerta
           </button>
-        </div>
+        </header>
 
-        <div className="px-10 py-7">
-          {showForm && (
-            <div ref={formRef}>
-              <AlertForm
-                form={form}
-                onChange={setForm}
-                isEditing={isEditing}
-                editingName={form.name}
-                onSubmit={submitForm}
-                onCancel={cancelForm}
-              />
-            </div>
-          )}
-
-          {loading ? (
-            <div className="flex flex-col gap-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-20 skeleton" />
-              ))}
-            </div>
-          ) : alerts.length === 0 ? (
-            <div className="py-12 max-w-md">
-              <p className="text-[15px] font-bold mb-1">Nenhum alerta ainda.</p>
-              <p className="text-[14px]" style={{ color: 'var(--color-neutral-700)' }}>
-                Um alerta é uma busca salva: avisamos quando sair uma publicação nova que combine com ela.
-                Crie um aqui ou use “Salvar como alerta” depois de uma busca.
-              </p>
-            </div>
-          ) : (
-            <div style={{ borderTop: '2px solid var(--color-text)' }}>
-              {alerts.map((alert) => (
+        <div className={`grid gap-8 py-8 px-12 ${showForm ? 'grid-cols-[minmax(0,1fr)_420px]' : 'grid-cols-1'}`}>
+          <div className="flex flex-col gap-4 min-w-0">
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-36 skeleton" />)
+            ) : alerts.length === 0 ? (
+              <div className="py-12 max-w-md">
+                <p className="text-[15px] font-bold mb-1">Nenhum alerta ainda.</p>
+                <p className="text-[14px]" style={{ color: 'var(--color-muted)' }}>
+                  Um alerta é uma busca salva: avisamos quando sair uma publicação nova que combine com ela.
+                  Crie um aqui ou use “Salvar como alerta” depois de uma busca.
+                </p>
+              </div>
+            ) : (
+              alerts.map((alert) => (
                 <AlertCard
                   key={alert.id}
                   alert={alert}
@@ -265,7 +252,19 @@ export default function AlertasPage() {
                   onToggleEnabled={() => handleToggle(alert)}
                   onDelete={() => handleDelete(alert)}
                 />
-              ))}
+              ))
+            )}
+          </div>
+          {showForm && (
+            <div ref={formRef} className="self-start sticky top-6">
+              <AlertForm
+                form={form}
+                onChange={setForm}
+                isEditing={isEditing}
+                editingName={form.name}
+                onSubmit={submitForm}
+                onCancel={cancelForm}
+              />
             </div>
           )}
         </div>

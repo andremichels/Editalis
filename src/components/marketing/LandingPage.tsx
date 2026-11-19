@@ -306,7 +306,7 @@ export function LandingPage({ variant }: { variant: LandingVariant }) {
             <div className="grid grid-cols-1 sm:grid-cols-3" style={{ borderTop: '2px solid var(--color-text)' }}>
               {steps.map((step, i) => (
                 <Reveal key={i} delay={i * 80} className="py-7 px-6 first:pl-0 last:pr-0" style={{ borderRight: i < steps.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
-                  <div className="text-[13px] font-black" style={{ color: 'var(--color-accent)' }}>{step.number}</div>
+                  <div className="text-[13px] font-black" style={{ color: 'var(--color-accent-text)' }}>{step.number}</div>
                   <div className="text-[19px] font-extrabold mt-2.5 mb-2 leading-[1.2]" style={{ color: 'var(--color-text)' }}>{step.title}</div>
                   <p className="text-sm leading-[1.55]" style={{ color: 'var(--color-neutral-700)' }}>{step.description}</p>
                 </Reveal>
@@ -415,7 +415,7 @@ export function LandingPage({ variant }: { variant: LandingVariant }) {
                 <div className="text-sm leading-[1.5] flex-1" style={{ borderTop: '1px solid var(--color-divider)' }}>
                   {plan.features.map((f, j) => (
                     <div key={j} className="flex items-start gap-2 py-3" style={{ borderBottom: j < plan.features.length - 1 ? '1px solid var(--color-divider)' : 'none', color: 'var(--color-neutral-700)' }}>
-                      <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--color-accent)' }} />{f}
+                      <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--color-accent-text)' }} />{f}
                     </div>
                   ))}
                 </div>

@@ -312,3 +312,71 @@ export function highlightSnippet(content: string | undefined, query: string, rad
   }
   return `${start > 0 ? '…' : ''}${out}${end < text.length ? '…' : ''}`;
 }
+
+// ── Proposta de design (2026-11): valor curto, prazo como contagem ─────────
+
+/** "R$ 1,24 mi", "R$ 742 mil", "R$ 9.500" — para listas, onde cabe pouco. */
+export function formatMoneyCompact(value?: number | string | null): string {
+  if (value == null || value === '') return '';
+  const n = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(n) || n <= 0) return '';
+  const fmt = (v: number, digits: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: digits });
+  if (n >= 1e9) return `R$ ${fmt(n / 1e9, 2)} bi`;
+  if (n >= 1e6) return `R$ ${fmt(n / 1e6, n >= 1e7 ? 1 : 2)} mi`;
+  if (n >= 1e4) return `R$ ${fmt(Math.round(n / 1e3), 0)} mil`;
+  return `R$ ${fmt(Math.round(n), 0)}`;
+}
+
+/** Prazo como contagem: "abre hoje", "abre amanhã", "abre em 3 dias". */
+export function deadlineText(days: number): string {
+  if (days === 0) return 'abre hoje';
+  if (days === 1) return 'abre amanhã';
+  return `abre em ${days} dias`;
+}
+
+/** Vermelho só quando faltam 7 dias ou menos. */
+export function isUrgent(days: number | null | undefined): boolean {
+  return days != null && days >= 0 && days <= 7;
+}
+
+/** "21/11, 9h" (ou só "21/11" quando não há hora) para a abertura. */
+export function openingWhen(value?: string | null): string {
+  const d = parseDate(value);
+  if (!d) return '';
+  const day = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  const hasTime = typeof value === 'string' && /T\d{2}:\d{2}/.test(value) && !/T00:00(:00)?/.test(value);
+  if (!hasTime) return day;
+  const h = d.getHours();
+  const m = d.getMinutes();
+  return `${day}, ${h}h${m ? String(m).padStart(2, '0') : ''}`;
+}
+
+/** UFs da publicação, já limpas ("SP, DF"). */
+export function articleUfs(a: Article): string {
+  return (a.normalized_data?.ufs ?? []).filter(Boolean).join(', ');
+}
+
+/**
+ * Oportunidade = algo em que ainda dá para entrar (aviso de licitação,
+ * edital, chamamento, com data de abertura ou modalidade). O resto —
+ * extratos, aditivos, resultados — é movimentação.
+ */
+export function isOpportunity(a: Article): boolean {
+  const nd = a.normalized_data;
+  if (nd?.opening_date) return true;
+  const kind = fold(articleKind(a));
+  if (/(extrato|aditivo|resultado|homologa|adjudica|ratifica|rescis|apostil|penalidade|sancao)/.test(kind)) return false;
+  return /(aviso de licitacao|edital|chamamento|pregao|concorrencia|credenciamento|intencao de registro|licitacao)/.test(kind) || !!nd?.modality;
+}
+
+/** "Hoje", "Ontem · 17/11" ou "Seg · 16/11" para agrupar listas por dia. */
+export function dayGroupLabel(value?: string | null): string {
+  const days = daysUntil(value);
+  const d = parseDate(value);
+  if (days == null || !d) return 'Sem data';
+  if (days === 0) return 'Hoje';
+  const short = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  if (days === -1) return `Ontem · ${short}`;
+  const weekday = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} · ${short}`;
+}

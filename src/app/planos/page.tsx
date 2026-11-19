@@ -167,7 +167,7 @@ export default function PlanosPage() {
                       borderBottom: i < plan.features.length - 1 ? '1px solid var(--color-divider)' : 'none',
                       color: 'var(--color-neutral-700)'
                     }}>
-                    <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--color-accent)' }} />
+                    <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--color-accent-text)' }} />
                     {f}
                   </div>
                 ))}

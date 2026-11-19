@@ -1,18 +1,19 @@
 "use client";
 
 import { useFavorites } from "@/lib/useFavorites";
+import { StarIcon } from "@/components/ui/Icons";
 
 /**
- * Estrela de favorito. Neutra (não vermelha) e com área de clique de 32px —
- * o vermelho fica reservado para a ação principal e para prazos urgentes.
+ * Estrela de favorito com área de clique de 44px. `boxed` desenha a borda
+ * (versão completa da Busca); sem borda nas listas compactas.
  */
-export function FavoriteButton({ articleId, size = "sm" }: { articleId: number; size?: "sm" | "md" }) {
+export function FavoriteButton({ articleId, boxed = false }: { articleId: number; boxed?: boolean }) {
   const { isFavorite, toggle, loaded } = useFavorites();
 
-  if (!loaded) return <span className="inline-block w-8 h-8" aria-hidden />;
+  if (!loaded) return <span className="inline-block w-11 h-11 shrink-0" aria-hidden />;
 
   const active = isFavorite(articleId);
-  const fs = size === "md" ? 20 : 17;
+  const label = active ? "Remover dos favoritos" : "Adicionar aos favoritos";
 
   return (
     <button
@@ -22,18 +23,17 @@ export function FavoriteButton({ articleId, size = "sm" }: { articleId: number; 
         e.stopPropagation();
         toggle(articleId);
       }}
-      className="inline-flex items-center justify-center shrink-0 w-8 h-8 cursor-pointer transition-opacity hover:opacity-70"
-      style={{
-        fontSize: fs,
-        color: active ? "var(--color-text)" : "var(--color-neutral-600)",
-        background: "transparent",
-        border: "none",
-      }}
+      className="inline-flex items-center justify-center shrink-0 w-11 h-11 cursor-pointer"
+      style={
+        boxed
+          ? { border: "1px solid var(--color-text)", background: active ? "var(--color-text)" : "var(--color-field)", color: active ? "#fff" : "var(--color-text)" }
+          : { border: "none", background: "transparent", color: "var(--color-text)" }
+      }
       aria-pressed={active}
-      aria-label={active ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-      title={active ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+      aria-label={label}
+      title={label}
     >
-      {active ? "★" : "☆"}
+      <StarIcon filled={active} />
     </button>
   );
 }

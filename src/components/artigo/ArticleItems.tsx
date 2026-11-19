@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import type { Article } from '@/lib/types';
 
 /**
@@ -44,7 +43,6 @@ const ITEMIZABLE_DOC_TYPES = new Set([
 ]);
 
 export function ArticleItems({ article }: { article: Article }) {
-  const [copied, setCopied] = useState(false);
   const docType = article.normalized_data?.doc_type;
 
   if (docType && !ITEMIZABLE_DOC_TYPES.has(docType)) return null;
@@ -56,49 +54,32 @@ export function ArticleItems({ article }: { article: Article }) {
   // Check if it looks like a real items list (not random numbered lines)
   if (items.length < 2) return null;
 
-  const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className="py-8 px-10" style={{ borderTop: '2px solid var(--color-divider)' }}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[11px] font-bold uppercase" style={{ letterSpacing: '0.14em', color: 'var(--color-neutral-700)' }}>
-          Itens / Lotes ({items.length})
-        </div>
-        <button
-          onClick={handleCopyLink}
-          className="text-[11px] font-bold px-3 py-1 cursor-pointer"
-          style={{
-            border: '1px solid var(--color-divider)',
-            color: copied ? '#155724' : 'var(--color-neutral-500)',
-            background: copied ? '#d4edda' : 'transparent',
-          }}
-        >
-          {copied ? '✓ Link copiado' : '🔗 Compartilhar'}
-        </button>
+    <section className="mt-9">
+      <div className="mb-3">
+        <h2 className="text-[13px] font-bold uppercase" style={{ letterSpacing: '0.14em' }}>
+          Itens / lotes ({items.length})
+        </h2>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--color-text)' }}>
-              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>#</th>
-              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-700)' }}>Descrição</th>
+              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-muted)' }}>#</th>
+              <th className="text-left py-2 pr-4 text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-muted)' }}>Descrição</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, i) => (
-              <tr key={i} style={{ borderBottom: i < items.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
+              <tr key={i} style={{ borderBottom: i < items.length - 1 ? '1px solid var(--color-line)' : 'none' }}>
                 <td className="py-2.5 pr-4 font-bold text-xs" style={{ color: 'var(--color-text)', whiteSpace: 'nowrap' }}>{item.number}</td>
-                <td className="py-2.5 text-[13px] leading-[1.5]" style={{ color: 'var(--color-neutral-800)' }}>{item.description}</td>
+                <td className="py-2.5 text-[13px] leading-[1.5]" style={{ color: 'var(--color-text)' }}>{item.description}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 }

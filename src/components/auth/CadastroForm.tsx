@@ -52,11 +52,11 @@ export function CadastroForm() {
 
         <label className="flex items-start gap-2.5 text-[13px] leading-[1.5] cursor-pointer" style={{ color: 'var(--color-neutral-700)' }}>
           <input type="checkbox" checked={aceito} onChange={e => setAceito(e.target.checked)} className="w-4 h-4 mt-0.5" style={{ accentColor: 'var(--color-text)' }} />
-          Li e aceito os <Link href="/termos" className="underline" style={{ color: 'var(--color-accent)' }}>termos de uso</Link> e a{' '}
-          <Link href="/privacidade" className="underline" style={{ color: 'var(--color-accent)' }}>política de privacidade</Link> (LGPD).
+          Li e aceito os <Link href="/termos" className="underline" style={{ color: 'var(--color-accent-text)' }}>termos de uso</Link> e a{' '}
+          <Link href="/privacidade" className="underline" style={{ color: 'var(--color-accent-text)' }}>política de privacidade</Link> (LGPD).
         </label>
 
-        {error && <p className="text-xs" style={{ color: 'var(--color-accent)' }}>{error}</p>}
+        {error && <p className="text-xs" style={{ color: 'var(--color-accent-text)' }}>{error}</p>}
 
         <button
           type="submit"

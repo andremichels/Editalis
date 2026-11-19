@@ -32,15 +32,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     { label: 'Painel', href: '/dashboard' },
     { label: 'Busca', href: '/busca' },
     { label: 'Favoritos', href: '/favoritos' },
-    { label: 'Alertas', href: '/alertas', badge: matches > 0 ? `+${matches}` : undefined },
+    { label: 'Alertas', href: '/alertas', badge: matches > 0 ? `${matches} ${matches === 1 ? 'novo' : 'novos'}` : undefined },
     { label: 'Setores', href: '/setores' },
     { label: 'Minha conta', href: '/perfil' },
   ];
 
   return (
     <div className="flex flex-col h-full overflow-y-auto py-6" style={{ background: 'var(--color-text)', color: 'var(--color-neutral-300)' }}>
-      <div className="px-5 pb-6 mb-5" style={{ borderBottom: '1px solid var(--color-neutral-800)' }}>
-        <div className="text-[19px] font-black tracking-[-0.03em]" style={{ fontFamily: 'var(--font-heading)', color: '#fff' }}>
+      <div className="px-5 pt-2 pb-7 mb-4" style={{ borderBottom: '1px solid #3a3735' }}>
+        <div className="text-[18px] font-extrabold tracking-[0.02em]" style={{ fontFamily: 'var(--font-heading)', color: '#fff' }}>
           EDITALIS
         </div>
       </div>
@@ -54,16 +54,16 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               href={item.href}
               onClick={onNavigate}
               aria-current={active ? 'page' : undefined}
-              className="flex items-center justify-between px-5 py-3 text-sm font-semibold"
+              className={`flex items-center justify-between h-11 px-5 text-sm ${active ? 'font-bold' : 'font-medium'}`}
               style={{
-                background: active ? 'var(--color-neutral-800)' : 'transparent',
-                color: active ? '#fff' : 'var(--color-neutral-300)',
-                boxShadow: active ? 'inset 4px 0 0 #fff' : 'none',
+                background: active ? '#3a3735' : 'transparent',
+                color: active ? '#fff' : '#e7e4e2',
+                boxShadow: active ? 'inset 3px 0 0 var(--color-accent)' : 'none',
               }}
             >
               <span>{item.label}</span>
               {item.badge && (
-                <span className="text-[11px] font-bold" title="Resultados nos seus alertas ativos">
+                <span className="text-[12px] font-bold py-0.5 px-[7px]" style={{ background: 'var(--color-accent)', color: '#fff' }} title="Resultados novos nos seus alertas ativos">
                   {item.badge}
                 </span>
               )}
@@ -76,7 +76,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             href={`/artigo/${lastViewed.slug}`}
             onClick={onNavigate}
             className="block px-5 py-3 mt-3"
-            style={{ borderTop: '1px solid var(--color-neutral-800)' }}
+            style={{ borderTop: '1px solid #3a3735' }}
             title={lastViewed.title}
           >
             <span className="block text-[11px] font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--color-neutral-400)' }}>
@@ -89,11 +89,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         )}
       </nav>
 
-      <div className="mt-auto px-5 pt-5 pb-10" style={{ borderTop: '1px solid var(--color-neutral-800)' }}>
+      <div className="mt-auto px-5 pt-5 pb-10" style={{ borderTop: '1px solid #3a3735' }}>
         <Link href="/perfil" className="block">
-          <div className="text-[13px] font-bold" style={{ color: '#fff' }}>{name || ' '}</div>
+          <div className="text-[14px] font-bold" style={{ color: '#fff' }}>{name || ' '}</div>
           {planLabel && (
-            <div className="text-xs mt-0.5" style={{ color: 'var(--color-neutral-400)' }}>Plano {planLabel}</div>
+            <div className="text-[13px] mt-1" style={{ color: '#bdb8b5' }}>Plano {planLabel}</div>
           )}
         </Link>
         <button onClick={handleSignOut} className="text-[13px] mt-3 py-1 cursor-pointer underline" style={{ color: 'var(--color-neutral-300)' }}>

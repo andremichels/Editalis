@@ -9,7 +9,15 @@
   --color-bg: #f3f2f2;
   --color-surface: #eae9e9;
   --color-text: #201e1d;
-  --color-accent: #ec3013;
+  /* Vermelho escurecido para passar no contraste mínimo (WCAG AA):
+     #d42a10 para preenchimento com texto branco, #c4240b para texto. */
+  --color-accent: #d42a10;
+  --color-accent-text: #c4240b;
+  /* Linhas entre itens, campos e etiquetas (proposta de design 2026-11) */
+  --color-line: #d9d6d4;
+  --color-field: #fbfafa;
+  --color-chip: #e7e4e2;
+  --color-muted: #5e5a57;
   --color-accent-2: #e15b47;
   --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
 
@@ -42,6 +50,11 @@
   --color-surface: var(--color-surface);
   --color-text: var(--color-text);
   --color-accent: var(--color-accent);
+  --color-accent-text: var(--color-accent-text);
+  --color-line: var(--color-line);
+  --color-field: var(--color-field);
+  --color-chip: var(--color-chip);
+  --color-muted: var(--color-muted);
   --color-divider: var(--color-divider);
 
   /* Neutral ramp */
@@ -161,9 +174,9 @@ h1, h2, h3, h4 {
 
 /* ── Search highlights ── */
 mark, .search-highlight {
-  background: var(--color-accent-200);
+  background: #fde3dc;
   color: var(--color-text);
-  font-weight: 800;
+  font-weight: 600;
   padding: 0 2px;
 }
 
@@ -222,4 +235,14 @@ a:hover { text-decoration: underline; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .anim-pulse { animation: ed-pulse 2.4s ease-in-out 900ms 3; }
+}
+
+/* Texto só para leitores de tela */
+.sr-only-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

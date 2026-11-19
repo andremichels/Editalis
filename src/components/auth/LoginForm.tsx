@@ -42,7 +42,7 @@ export function LoginForm() {
           <a href="#recuperar" className="hover:underline" style={{ color: 'var(--color-accent-700)' }}>Esqueci a senha</a>
         </div>
 
-        {error && <p className="text-xs" style={{ color: 'var(--color-accent)' }}>{error}</p>}
+        {error && <p className="text-xs" style={{ color: 'var(--color-accent-text)' }}>{error}</p>}
 
         <button
           type="submit"
