@@ -9,6 +9,7 @@ import { parseSectionNumber } from '@/lib/utils';
 import { StarIcon } from '@/components/ui/Icons';
 import { backHrefServer, backHrefSnapshot, backLabel, subscribeBack } from '@/lib/backLink';
 import { useFavorites } from '@/lib/useFavorites';
+import { navServer, navSnapshot, resultPosition, subscribeNav } from '@/lib/resultNav';
 
 export function ArticleDetailHeader({ article }: { article: Article }) {
   const { isFavorite, toggle, loaded } = useFavorites();
@@ -20,6 +21,9 @@ export function ArticleDetailHeader({ article }: { article: Article }) {
   const n = article.normalized_data;
   const backHref = useSyncExternalStore(subscribeBack, backHrefSnapshot, backHrefServer);
   const back = { href: backHref, label: backLabel(backHref) };
+  // "Resultado 4 de 288 ‹ ›" quando a publicação foi aberta a partir da Busca
+  const navRaw = useSyncExternalStore(subscribeNav, navSnapshot, navServer);
+  const pos = backHref.startsWith('/busca') ? resultPosition(article.slug, navRaw) : null;
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -62,10 +66,31 @@ export function ArticleDetailHeader({ article }: { article: Article }) {
 
   return (
     <>
-      <nav aria-label="Voltar" className="py-3.5 px-4 sm:px-12 print:hidden" style={{ borderBottom: '1px solid var(--color-line)' }}>
+      <nav aria-label="Voltar" className="flex items-center justify-between gap-4 flex-wrap py-3.5 px-4 sm:px-12 print:hidden" style={{ borderBottom: '1px solid var(--color-line)' }}>
         <Link href={back.href} className="inline-flex items-center gap-2 h-10 text-[14px] font-semibold">
-          <span aria-hidden>←</span> {back.label}
+          <span aria-hidden>←</span> {pos ? <>Voltar para a busca “{pos.q}”</> : back.label}
         </Link>
+        {pos && (
+          <div className="flex items-center gap-1.5 text-[14px]">
+            <span style={{ color: 'var(--color-muted)' }}>
+              Resultado <strong style={{ color: 'var(--color-text)' }}>{pos.position.toLocaleString('pt-BR')}</strong> de {pos.total.toLocaleString('pt-BR')}
+            </span>
+            {[
+              { slug: pos.prev, label: 'Resultado anterior', icon: '‹' },
+              { slug: pos.next, label: 'Próximo resultado', icon: '›' },
+            ].map((b) =>
+              b.slug ? (
+                <Link key={b.icon} href={`/artigo/${b.slug}`} aria-label={b.label} className="inline-flex items-center justify-center w-10 h-10 text-[20px] font-bold hover:no-underline" style={{ border: '2px solid var(--color-text)', color: 'var(--color-text)' }}>
+                  {b.icon}
+                </Link>
+              ) : (
+                <span key={b.icon} aria-hidden className="inline-flex items-center justify-center w-10 h-10 text-[20px] font-bold" style={{ border: '2px solid var(--color-line)', color: 'var(--color-line)' }}>
+                  {b.icon}
+                </span>
+              ),
+            )}
+          </div>
+        )}
       </nav>
       <header className="flex flex-col gap-3.5 pt-8 pb-7 px-4 sm:px-12">
         <p className="flex items-center gap-2.5 flex-wrap text-[13px]" style={{ color: 'var(--color-muted)' }}>

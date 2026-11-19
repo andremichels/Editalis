@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { NotificationChannels } from '@/components/perfil/NotificationChannels';
 import { FormField } from '@/components/ui/FormField';
 import { formatDateTime } from '@/lib/format';
 
@@ -77,14 +78,14 @@ export function ContaTab({
 
         <div className="mt-8 pt-7 max-w-[640px]" style={{ borderTop: '2px solid var(--color-text)' }}>
           <div className={`${sectionLabel} mb-2`} style={sectionLabelStyle}>Avisos</div>
-          {/* Só o que de fato funciona hoje: o e-mail diário dos alertas. */}
           <Toggle
-            label="E-mail diário com as publicações novas dos seus alertas"
+            label="Novos alertas avisam pelo e-mail diário"
             checked={notifications.email_diario}
             onChange={(v) => onNotificationsChange({ ...notifications, email_diario: v })}
           />
+          <NotificationChannels />
           <p className="text-[13px] mt-3" style={{ color: 'var(--color-neutral-700)' }}>
-            O que entra no e-mail é definido em <Link href="/alertas" className="underline font-bold" style={{ color: 'var(--color-text)' }}>Alertas</Link>.
+            Cada alerta escolhe como avisar em <Link href="/alertas" className="underline font-bold" style={{ color: 'var(--color-text)' }}>Alertas</Link>.
           </p>
         </div>
 

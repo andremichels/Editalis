@@ -13,11 +13,14 @@ import { track } from "@/lib/analytics";
 import { getPreferences, getVerticals } from "@/lib/api";
 import type { SearchPreferences } from "@/lib/api";
 import type { Article, Vertical } from "@/lib/types";
+import { saveResultNav } from "@/lib/resultNav";
 import { articleKind, articleTitle, formatDateShort, formatMoney, modalityLabel } from "@/lib/format";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://editalis-api.smartpeople.us";
 const PAGE_SIZE = 10;
 const LAST_SEARCH_KEY = "editalis_last_search";
+
+type SearchFacets = { ufs: Record<string, number>; modalities: Record<string, number> };
 
 /** Última busca da sessão — restaurada ao voltar de uma publicação. */
 interface SavedSearch {
@@ -103,6 +106,7 @@ export default function BuscaPage() {
   // Filters
   const [organs, setOrgans] = useState<string[]>(saved?.organs ?? []);
   const [modalities, setModalities] = useState<string[]>(saved?.modalities ?? []);
+  const [facets, setFacets] = useState<SearchFacets | null>(null);
   const [ufs, setUfs] = useState<string[]>(saved?.ufs ?? []);
   const [verticals, setVerticals] = useState<string[]>(saved?.verticals ?? []);
   const [availableVerticals, setAvailableVerticals] = useState<Vertical[] | null>(null);
@@ -182,9 +186,12 @@ export default function BuscaPage() {
         const ufsParam = u.length ? `&ufs=${u.join(",")}` : "";
         const valueMinParam = vmin ? `&value_min=${vmin}` : "";
         const valueMaxParam = vmax ? `&value_max=${vmax}` : "";
+        // Modalidade: a busca por palavra-chave filtra no servidor (total certo);
+        // a semântica ainda não aceita, então lá o filtro continua na página.
+        const modalitiesParam = !semanticMode && modalities.length ? `&modalities=${modalities.join(",")}` : "";
         const searchPath = semanticMode ? "search/semantic" : "search";
         const hybridParam = semanticMode ? "&hybrid=true" : "";
-        const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}${verticalsParam}${ufsParam}${valueMinParam}${valueMaxParam}`;
+        const url = `${API_BASE}/api/v1/${searchPath}?q=${encodeURIComponent(q)}&limit=${PAGE_SIZE}&offset=${offset}${modeParam}${dateFromParam}${dateToParam}${sortParam}${hybridParam}${verticalsParam}${ufsParam}${valueMinParam}${valueMaxParam}${modalitiesParam}`;
         const res = await fetch(url);
         const body = await res.json();
         if (id !== requestId.current) return;
@@ -198,7 +205,7 @@ export default function BuscaPage() {
             (a) => a.organ && organs.some((o) => a.organ!.toLowerCase().includes(o.toLowerCase()))
           );
         }
-        if (modalities.length > 0) {
+        if (modalities.length > 0 && semanticMode) {
           filtered = filtered.filter((a) => {
             const m = a.normalized_data?.modality;
             return m && modalities.some((f) => f.toLowerCase() === m.toLowerCase());
@@ -207,6 +214,8 @@ export default function BuscaPage() {
 
         setResults(filtered);
         setTotal(apiTotal);
+        setFacets(body.facets ?? null);
+        saveResultNav({ q, total: apiTotal, offset, slugs: filtered.map((a) => a.slug) });
         try {
           const saved: SavedSearch = {
             q, page: p, organs, modalities, ufs: u, verticals: v, valueMin: vmin, valueMax: vmax,
@@ -234,6 +243,7 @@ export default function BuscaPage() {
         if (id !== requestId.current) return;
         setResults([]);
         setTotal(0);
+        setFacets(null);
       }
       if (id !== requestId.current) return;
       setElapsed(`${((performance.now() - t0) / 1000).toFixed(2).replace(".", ",")} s`);
@@ -449,6 +459,7 @@ export default function BuscaPage() {
               <SearchFilters
                 organs={organs} setOrgans={setOrgans}
                 modalities={modalities} setModalities={setModalities}
+                facets={facets}
                 ufs={ufs} setUfs={setUfs}
                 verticals={verticals} setVerticals={setVerticals}
                 availableVerticals={availableVerticals}
@@ -469,6 +480,7 @@ export default function BuscaPage() {
             <SearchFilters
               organs={organs} setOrgans={setOrgans}
               modalities={modalities} setModalities={setModalities}
+              facets={facets}
               ufs={ufs} setUfs={setUfs}
               verticals={verticals} setVerticals={setVerticals}
               availableVerticals={availableVerticals}

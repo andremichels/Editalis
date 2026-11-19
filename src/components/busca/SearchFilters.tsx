@@ -32,6 +32,8 @@ interface SearchFiltersProps {
   /** só no celular: fecha a gaveta de filtros */
   onDone?: () => void;
   onClear: () => void;
+  /** Contagens da busca atual por UF/modalidade (só na busca por palavra-chave) */
+  facets?: { ufs: Record<string, number>; modalities: Record<string, number> } | null;
 }
 
 const inputStyle = { border: '1px solid var(--color-text)', background: 'var(--color-field)', color: 'var(--color-text)' };
@@ -61,7 +63,7 @@ const PERIODS = [
 
 const ALL_MODALIDADES = ['pregao', 'pregao_eletronico', 'concorrencia', 'dispensa', 'inexigibilidade', 'tomada_precos', 'concurso', 'leilao', 'rdc'];
 
-function CheckboxGroup({ options, selected, onChange, labelFor }: { options: string[]; selected: string[]; onChange: (v: string[]) => void; labelFor?: (v: string) => string }) {
+function CheckboxGroup({ options, selected, onChange, labelFor, counts }: { options: string[]; selected: string[]; onChange: (v: string[]) => void; labelFor?: (v: string) => string; counts?: Record<string, number> | null }) {
   return (
     <div className="flex flex-col gap-2.5">
       {options.map((opt) => {
@@ -76,7 +78,10 @@ function CheckboxGroup({ options, selected, onChange, labelFor }: { options: str
                 onChange(checked ? selected.filter((s) => s !== opt) : [...selected, opt]);
               }}
             />
-            {labelFor ? labelFor(opt) : opt}
+            <span className="flex-1">{labelFor ? labelFor(opt) : opt}</span>
+            {counts && (
+              <span className="text-[13px] tabular-nums" style={{ color: 'var(--color-muted)' }}>{(counts[opt] ?? 0).toLocaleString('pt-BR')}</span>
+            )}
           </label>
         );
       })}
@@ -95,7 +100,7 @@ export function SearchFilters({
   dateFrom, setDateFrom,
   dateTo, setDateTo,
   sectorOnly, onSectorOnly, scopeSummary,
-  onDone, onClear,
+  onDone, onClear, facets,
 }: SearchFiltersProps) {
 
   const [orgInput, setOrgInput] = useState('');
@@ -164,11 +169,11 @@ export function SearchFilters({
       </FilterGroup>
 
       <FilterGroup title="UF">
-        <UfPicker value={ufs} onChange={setUfs} compact />
+        <UfPicker value={ufs} onChange={setUfs} compact counts={facets?.ufs} />
       </FilterGroup>
 
       <FilterGroup title="Modalidade">
-        <CheckboxGroup options={ALL_MODALIDADES} selected={modalities} onChange={setModalities} labelFor={modalityLabel} />
+        <CheckboxGroup options={ALL_MODALIDADES} selected={modalities} onChange={setModalities} labelFor={modalityLabel} counts={facets?.modalities} />
       </FilterGroup>
 
       <FilterGroup title="Órgão">
