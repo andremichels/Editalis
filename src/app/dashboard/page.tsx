@@ -7,6 +7,7 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DeadlinesCard } from '@/components/dashboard/DeadlinesCard';
 import { FavoriteDeadlines, ProfilesCard } from '@/components/dashboard/ProfilesCard';
+import { SilentAlertsBanner } from '@/components/dashboard/SilentAlertsBanner';
 import { VerticalFeed, loadVerticalFeed, type VerticalFeedData } from '@/components/dashboard/VerticalFeed';
 import { authFetch, getRecentArticles } from '@/lib/api';
 import { daysUntil, formatMoneyCompact, parseDate } from '@/lib/format';
@@ -128,6 +129,8 @@ export default function DashboardPage() {
             </button>
           </form>
         </header>
+
+        <SilentAlertsBanner alerts={alerts} />
 
         <section aria-label="Resumo" className="mt-6 mx-4 sm:mx-12 grid grid-cols-2 xl:grid-cols-4" style={{ borderTop: '1px solid var(--color-line)', borderBottom: '1px solid var(--color-line)' }}>
           <Kpi

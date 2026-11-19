@@ -22,6 +22,8 @@ export interface AlertSummary {
   name: string;
   enabled: boolean;
   match_count: number;
+  /** Como o alerta avisa ("app" = só no Editalis). */
+  channel?: "email" | "whatsapp" | "app";
 }
 
 export interface LastViewed {

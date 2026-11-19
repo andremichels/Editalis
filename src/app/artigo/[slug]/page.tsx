@@ -5,6 +5,7 @@ import { ArticleContent } from '@/components/artigo/ArticleContent';
 import { ArticleMeta } from '@/components/artigo/ArticleMeta';
 import { ArticleFacts } from '@/components/artigo/ArticleFacts';
 import { ArticleItems } from '@/components/artigo/ArticleItems';
+import { ArticleTimeline } from '@/components/artigo/ArticleTimeline';
 import { ArticleLinks } from '@/components/artigo/ArticleLinks';
 import { SimilarArticles } from '@/components/artigo/SimilarArticles';
 import { ArticleViewTracker } from '@/components/artigo/ArticleViewTracker';
@@ -36,6 +37,7 @@ export default async function ArticlePage({
           <div className="min-w-0">
             <ArticleContent article={article} />
             <ArticleItems article={article} />
+            <ArticleTimeline article={article} />
           </div>
           <aside className="flex flex-col gap-8">
             <ArticleMeta article={article} />

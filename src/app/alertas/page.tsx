@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { AlertForm, type AlertFormState } from '@/components/alertas/AlertForm';
+import { AlertForm, criteriaOf, type AlertFormState } from '@/components/alertas/AlertForm';
+import { useNotificationStatus } from '@/lib/notifications';
 import { AlertCard, type AlertProfile } from '@/components/alertas/AlertCard';
 import { DesktopOnlyNotice } from '@/components/layout/DesktopOnlyNotice';
 import { useToast } from '@/components/Toast';
@@ -15,7 +16,7 @@ import type { Article } from '@/lib/types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://editalis-api.smartpeople.us';
 
-const emptyForm: AlertFormState = { name: '', keywords: '', organs: '', ufs: '', modalities: '', value_min: '', value_max: '' };
+const emptyForm: AlertFormState = { name: '', keywords: '', organs: '', ufs: '', modalities: '', value_min: '', value_max: '', channel: '' };
 
 /** "Salvar como alerta" na Busca chega aqui com ?prefill=<querystring da busca>. */
 function formFromPrefill(): AlertFormState | null {
@@ -32,6 +33,7 @@ function formFromPrefill(): AlertFormState | null {
     modalities: list('modalities'),
     value_min: p.get('value_min') || '',
     value_max: p.get('value_max') || '',
+    channel: '',
   };
 }
 
@@ -52,6 +54,7 @@ export default function AlertasPage() {
   const openedFromQuery = useRef(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const { toast } = useToast();
+  const { status: notifications } = useNotificationStatus();
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,12 +82,8 @@ export default function AlertasPage() {
     }
     const body = {
       name: form.name,
-      keywords: form.keywords.split(',').map((s) => s.trim()).filter(Boolean),
-      organs: form.organs.split(',').map((s) => s.trim()).filter(Boolean),
-      ufs: form.ufs.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
-      modalities: form.modalities.split(',').map((s) => s.trim()).filter(Boolean),
-      value_min: form.value_min ? parseFloat(form.value_min) : null,
-      value_max: form.value_max ? parseFloat(form.value_max) : null,
+      ...criteriaOf(form),
+      ...(form.channel ? { channel: form.channel } : {}),
     };
 
     const isEdit = editingId !== null;
@@ -122,6 +121,7 @@ export default function AlertasPage() {
       modalities: alert.modalities.join(', '),
       value_min: alert.value_min?.toString() || '',
       value_max: alert.value_max?.toString() || '',
+      channel: alert.channel ?? '',
     });
     setEditingId(alert.id);
     setShowForm(true);
@@ -264,6 +264,7 @@ export default function AlertasPage() {
                 editingName={form.name}
                 onSubmit={submitForm}
                 onCancel={cancelForm}
+                notifications={notifications}
               />
             </div>
           )}

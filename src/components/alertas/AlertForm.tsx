@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { UfPicker } from '@/components/ui/UfPicker';
 import { modalityLabel } from '@/lib/format';
+import { CHANNEL_LABELS, previewAlert, type AlertChannel, type AlertPreview, type NotificationStatus } from '@/lib/notifications';
 
 export interface AlertFormState {
   name: string;
@@ -12,6 +14,8 @@ export interface AlertFormState {
   modalities: string;
   value_min: string;
   value_max: string;
+  /** '' = segue o padrão da conta */
+  channel: AlertChannel | '';
 }
 
 interface AlertFormProps {
@@ -21,6 +25,7 @@ interface AlertFormProps {
   editingName?: string;
   onSubmit: () => void;
   onCancel: () => void;
+  notifications: NotificationStatus | null;
 }
 
 const MODALITIES = ['pregao_eletronico', 'pregao', 'concorrencia', 'dispensa', 'inexigibilidade', 'credenciamento', 'tomada_precos', 'leilao', 'rdc'];
@@ -71,8 +76,117 @@ function KeywordChips({ value, onChange }: { value: string[]; onChange: (v: stri
   );
 }
 
-/** Formulário de alerta (painel lateral): nome, palavras, UFs, órgãos, modalidades e valor. */
-export function AlertForm({ form, onChange, isEditing, editingName, onSubmit, onCancel }: AlertFormProps) {
+/** Critérios do formulário no formato da API. */
+export function criteriaOf(form: AlertFormState) {
+  return {
+    keywords: split(form.keywords),
+    organs: split(form.organs),
+    ufs: split(form.ufs).map((u) => u.toUpperCase()),
+    modalities: split(form.modalities),
+    value_min: form.value_min ? parseFloat(form.value_min) : null,
+    value_max: form.value_max ? parseFloat(form.value_max) : null,
+  };
+}
+
+/** "Nos últimos 30 dias, este alerta teria encontrado N" — recalcula 600 ms depois da última mudança. */
+function Preview({ form }: { form: AlertFormState }) {
+  const key = JSON.stringify(criteriaOf(form));
+  const empty = key === JSON.stringify(criteriaOf({ ...form, keywords: '', organs: '', ufs: '', modalities: '', value_min: '', value_max: '' }));
+  const [result, setResult] = useState<{ key: string; data: AlertPreview | null } | null>(null);
+
+  useEffect(() => {
+    if (empty) return;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      previewAlert(JSON.parse(key), ctrl.signal).then((data) => {
+        if (!ctrl.signal.aborted) setResult({ key, data });
+      });
+    }, 600);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [key, empty]);
+
+  if (empty) {
+    return <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>Prévia: defina ao menos um critério.</p>;
+  }
+  const current = result?.key === key ? result : null;
+  if (current && !current.data) return null; // prévia indisponível: não atrapalha o cadastro
+  return (
+    <div className="p-3.5 text-[14px] leading-snug" style={{ background: 'var(--color-chip)' }} aria-live="polite">
+      {!current ? (
+        <span style={{ color: 'var(--color-muted)' }}>Calculando prévia…</span>
+      ) : (
+        <>
+          Prévia: nos últimos {current.data!.days} dias, este alerta teria encontrado{' '}
+          <strong>{current.data!.count.toLocaleString('pt-BR')} {current.data!.count === 1 ? 'publicação' : 'publicações'}</strong>.
+          {current.data!.sample.length > 0 && (
+            <ul className="mt-2 flex flex-col gap-1">
+              {current.data!.sample.map((s) => (
+                <li key={s.slug} className="truncate">
+                  <Link href={`/artigo/${s.slug}`} target="_blank" className="font-semibold underline" style={{ color: 'var(--color-text)' }}>
+                    {s.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Como avisar: e-mail diário, WhatsApp na hora ou só no app — com o motivo quando o canal não está disponível. */
+function ChannelPicker({ value, onChange, notifications }: { value: AlertChannel | ''; onChange: (c: AlertChannel) => void; notifications: NotificationStatus | null }) {
+  const emailOk = notifications?.email.available ?? false;
+  const waOk = (notifications?.whatsapp.available && notifications.whatsapp.verified) ?? false;
+  const fallback: AlertChannel = notifications?.defaults.email_diario && emailOk ? 'email' : 'app';
+  const current = value || fallback;
+  const options: { id: AlertChannel; ok: boolean; hint?: React.ReactNode }[] = [
+    { id: 'email', ok: emailOk, hint: emailOk ? notifications?.email.address : 'O envio de e-mail ainda não está ativo.' },
+    {
+      id: 'whatsapp',
+      ok: waOk,
+      hint: !notifications?.whatsapp.available
+        ? 'O WhatsApp ainda não está ativo.'
+        : notifications.whatsapp.verified
+          ? notifications.whatsapp.phone
+          : <>Confirme seu número em <Link href="/perfil" className="underline font-semibold" style={{ color: 'var(--color-text)' }}>Minha conta</Link>.</>,
+    },
+    { id: 'app', ok: true, hint: 'No menu e no Painel.' },
+  ];
+  return (
+    <fieldset className="m-0 p-0 border-0 flex flex-col gap-1.5">
+      <legend className={`p-0 pb-2 ${labelClass}`}>Como avisar</legend>
+      {options.map((o) => (
+        <label
+          key={o.id}
+          className={`flex items-start gap-2.5 py-2 px-3 text-[14px] ${o.ok ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+          style={{ border: current === o.id ? '2px solid var(--color-text)' : '1px solid var(--color-line)', background: '#fff', opacity: o.ok ? 1 : 0.7 }}
+        >
+          <input
+            type="radio"
+            name="alert-channel"
+            checked={current === o.id}
+            disabled={!o.ok}
+            onChange={() => onChange(o.id)}
+            className="mt-1"
+            style={{ accentColor: 'var(--color-text)' }}
+          />
+          <span className="flex flex-col">
+            <span className="font-semibold">{CHANNEL_LABELS[o.id]}</span>
+            {o.hint && <span className="text-[12px]" style={{ color: 'var(--color-muted)' }}>{o.hint}</span>}
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+/** Formulário de alerta (painel lateral): nome, palavras, UFs, órgãos, modalidades, valor, canal e prévia. */
+export function AlertForm({ form, onChange, isEditing, editingName, onSubmit, onCancel, notifications }: AlertFormProps) {
   const set = (field: keyof AlertFormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange({ ...form, [field]: e.target.value });
   const modalities = split(form.modalities);
@@ -143,6 +257,10 @@ export function AlertForm({ form, onChange, isEditing, editingName, onSubmit, on
           <input type="number" inputMode="numeric" value={form.value_max} onChange={set('value_max')} placeholder="sem limite" className="h-11 px-3 text-[15px] font-normal" style={fieldStyle} />
         </label>
       </div>
+
+      <ChannelPicker value={form.channel} onChange={(c) => onChange({ ...form, channel: c })} notifications={notifications} />
+
+      <Preview form={form} />
 
       <div className="flex gap-2.5">
         <button

@@ -1,6 +1,7 @@
 import { formatMoney } from '@/lib/utils';
 import { modalityLabel } from '@/lib/format';
 import type { Article } from '@/lib/types';
+import type { AlertChannel } from '@/lib/notifications';
 import { MatchesList } from './MatchesList';
 
 export interface AlertProfile {
@@ -15,7 +16,14 @@ export interface AlertProfile {
   enabled: boolean;
   match_count: number;
   created_at: string;
+  channel?: AlertChannel;
 }
+
+const CHANNEL_LINE: Record<AlertChannel, string> = {
+  email: 'Avisa no e-mail diário, às 6h30',
+  whatsapp: 'Avisa na hora, por WhatsApp',
+  app: 'Avisa só aqui no Editalis',
+};
 
 interface AlertCardProps {
   alert: AlertProfile;
@@ -97,7 +105,9 @@ export function AlertCard({ alert, expanded, matches, matchesLoading, onToggleMa
           </div>
           <Criteria alert={alert} />
           <p className="text-[13px]" style={{ color: 'var(--color-muted)' }}>
-            {alert.enabled ? 'Verificado de hora em hora' : 'Pausado · não envia avisos'}
+            {alert.enabled
+              ? `Verificado de hora em hora · ${CHANNEL_LINE[alert.channel ?? 'app']}`
+              : 'Pausado · não envia avisos'}
           </p>
           <div className="flex gap-2 flex-wrap pt-1">
             <button

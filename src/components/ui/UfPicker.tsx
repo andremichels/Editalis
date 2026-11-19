@@ -10,10 +10,13 @@ export function UfPicker({
   value,
   onChange,
   compact = false,
+  counts,
 }: {
   value: string[];
   onChange: (ufs: string[]) => void;
   compact?: boolean;
+  /** Quantos resultados cada UF tem na busca atual (Busca); ausente = não mostra */
+  counts?: Record<string, number> | null;
 }) {
   const toggle = (uf: string) => onChange(value.includes(uf) ? value.filter((u) => u !== uf) : [...value, uf]);
   const toggleRegion = (ufs: string[]) => {
@@ -45,6 +48,7 @@ export function UfPicker({
                     type="button"
                     onClick={() => toggle(uf)}
                     aria-pressed={active}
+                    aria-label={counts ? `${uf}: ${counts[uf] ?? 0} resultados` : undefined}
                     className={`${compact ? 'min-w-9 h-8 px-2 text-[12px]' : 'min-w-11 h-9 px-3 text-[13px]'} font-bold cursor-pointer`}
                     style={{
                       background: active ? 'var(--color-text)' : 'transparent',
@@ -53,6 +57,9 @@ export function UfPicker({
                     }}
                   >
                     {uf}
+                    {counts && (
+                      <span className="ml-1 font-semibold" style={{ opacity: 0.7 }}>{counts[uf] ?? 0}</span>
+                    )}
                   </button>
                 );
               })}
